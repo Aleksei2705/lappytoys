@@ -1,5 +1,5 @@
 export const site = {
-  name: "Творческая студия «lappy.art»",
+  name: "Творческая студия lappy.art",
   tagline: "Живые занятия вязанием тет-а-тет с Ольгой",
   phone: "+77058553873",
   phoneDisplay: "+7 (705) 855-38-73",
