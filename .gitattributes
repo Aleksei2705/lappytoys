@@ -1,2 +1,0 @@
-# Ensure deploy scripts use LF on all platforms (required for Linux/Plesk).
-deploy.sh text eol=lf
