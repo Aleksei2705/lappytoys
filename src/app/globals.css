@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-manrope);
+  --font-heading: var(--font-playfair);
+  --color-background: #fafaf9;
+  --color-foreground: #1c1917;
+  --color-muted: #f5f5f4;
+  --color-muted-foreground: #78716c;
+  --color-primary: #be123c;
+  --color-primary-foreground: #fff1f2;
+  --color-card: #ffffff;
+  --color-card-foreground: #1c1917;
+  --color-border: #e7e5e4;
+  --color-input: #e7e5e4;
+  --color-ring: #fda4af;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.font-heading {
+  font-family: var(--font-heading), Georgia, serif;
+}
+
+.page-section {
+  @apply py-16 sm:py-20;
+}
+
+.site-header {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+}
