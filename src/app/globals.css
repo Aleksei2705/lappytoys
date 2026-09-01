@@ -44,7 +44,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: calc(5rem + env(safe-area-inset-top, 0px));
 }
 
 body {
@@ -82,11 +82,19 @@ body {
 
 /* Header */
 .site-header {
-  @apply border-b border-brand-100/80 bg-white/70 backdrop-blur-lg transition-shadow duration-300;
+  @apply border-b border-brand-100/80 bg-white/95 shadow-sm md:bg-white/70 md:backdrop-blur-lg;
+  padding-top: env(safe-area-inset-top, 0px);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .site-header.scrolled {
-  @apply shadow-sm shadow-brand-100/80;
+  @apply md:shadow-sm md:shadow-brand-100/80;
+}
+
+.site-header-spacer {
+  height: calc(4rem + env(safe-area-inset-top, 0px));
+  flex-shrink: 0;
 }
 
 /* Buttons */

@@ -20,24 +20,25 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className={`site-header sticky top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
-      <div className="container-main flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <Image
-            src="/images/logo.png"
-            alt=""
-            width={48}
-            height={48}
-            className="size-12 shrink-0 object-contain"
-            priority
-          />
-          <span className="flex flex-col leading-tight">
-            <span className="font-heading text-lg font-semibold tracking-tight text-brand-800 sm:text-xl">
-              lappy.art
+    <>
+      <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
+        <div className="container-main flex min-h-16 items-center justify-between py-2">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+            <Image
+              src="/images/logo.png"
+              alt=""
+              width={40}
+              height={40}
+              className="size-10 shrink-0 object-contain sm:size-12"
+              priority
+            />
+            <span className="flex min-w-0 flex-col leading-tight">
+              <span className="font-heading text-base font-semibold tracking-tight text-brand-800 sm:text-xl">
+                lappy.art
+              </span>
+              <span className="text-[11px] text-warm-500 sm:text-sm">Творческая студия</span>
             </span>
-            <span className="text-xs text-warm-500 sm:text-sm">Творческая студия</span>
-          </span>
-        </Link>
+          </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
           {navLinks.map((link) => (
@@ -88,6 +89,8 @@ export function SiteHeader() {
           </div>
         </nav>
       )}
-    </header>
+      </header>
+      <div className="site-header-spacer" aria-hidden />
+    </>
   );
 }
