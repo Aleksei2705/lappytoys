@@ -169,7 +169,7 @@ export default function HomePage() {
             <SectionHeader
               eyebrow="Направления"
               title="Творческие направления"
-              description="Вязание, макраме, вышивка, бисероплетение и шитьё — выберите направление и начните с нуля в уютной студии."
+              description="Вязание, макраме, вышивка, бисероплетение и шитьё игрушек — выберите направление и начните с нуля в уютной студии."
             />
             <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {courses.map((course) => (
