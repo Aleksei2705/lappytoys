@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { BackButton } from "@/components/back-button";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { courses, getCourseById, site } from "@/data/site";
@@ -87,7 +88,8 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           </div>
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-12 flex flex-wrap justify-center gap-4">
+          <BackButton />
           <Link href="/#signup" className="btn-primary h-12 px-8 text-base">
             Записаться на курс
           </Link>
