@@ -105,8 +105,10 @@ export function SiteFooter() {
               width={88}
               height={31}
               alt="Яндекс.Метрика"
-              title="Яндекс.Метрика: данные за сегодня"
-              className="border-0"
+              title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)"
+              className="ym-advanced-informer border-0"
+              data-cid={site.yandexMetricaId}
+              data-lang="ru"
             />
           </a>
           <p className="text-center text-sm text-warm-500">
