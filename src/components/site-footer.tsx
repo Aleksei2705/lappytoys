@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
-import { ArrowUp, MessageCircle } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { SiteLogo } from "@/components/site-logo";
+import { TelegramIcon } from "@/components/telegram-icon";
 import { navLinks, site } from "@/data/site";
 
 function WhatsAppIcon() {
@@ -45,7 +46,7 @@ export function SiteFooter() {
                 aria-label="Telegram"
                 className="flex size-11 items-center justify-center rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50"
               >
-                <MessageCircle className="size-5 text-sky-600" />
+                <TelegramIcon className="size-5 text-sky-600" />
               </a>
               <a
                 href={site.whatsapp}

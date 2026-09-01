@@ -7,7 +7,6 @@ import {
   BookOpen,
   Clock,
   Heart,
-  MessageCircle,
   Phone,
   Sparkles,
   Star,
@@ -17,6 +16,7 @@ import { SectionHeader } from "@/components/section-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SignupForm } from "@/components/signup-form";
+import { TelegramIcon } from "@/components/telegram-icon";
 import {
   aboutParagraphs,
   benefits,
@@ -328,7 +328,7 @@ export default function HomePage() {
                 </a>
                 <a href={site.telegram} target="_blank" rel="noopener noreferrer" className="contact-card">
                   <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 text-sky-700">
-                    <MessageCircle className="size-5" />
+                    <TelegramIcon className="size-5" />
                   </div>
                   <div>
                     <p className="text-sm text-warm-500">Telegram</p>
