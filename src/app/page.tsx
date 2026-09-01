@@ -239,13 +239,8 @@ export default function HomePage() {
                     </div>
                     <p className="text-sm leading-relaxed text-warm-500">{mc.description}</p>
                     <p className="font-heading text-2xl font-bold text-brand-700">{mc.price}</p>
-                    <a
-                      href={site.telegram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary h-10 w-full"
-                    >
-                      Заказать
+                    <a href="#signup" className="btn-primary h-10 w-full">
+                      Записаться
                     </a>
                   </div>
                 </article>
@@ -377,7 +372,7 @@ export default function HomePage() {
             <div className="mx-auto max-w-xl">
               <SectionHeader
                 eyebrow="Запись"
-                title="Записаться на урок"
+                title="Записаться на урок/мастер-класс"
                 description="Оставьте заявку — в ближайшее время обязательно свяжусь с вами."
               />
               <div className="card-soft mt-10 p-6 shadow-lg sm:p-8">

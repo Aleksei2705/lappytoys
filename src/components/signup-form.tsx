@@ -12,7 +12,7 @@ export function SignupForm() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const text = [
-      "Здравствуйте! Хочу записаться на урок.",
+      "Здравствуйте! Хочу записаться на урок/мастер-класс.",
       name && `Имя: ${name}`,
       phone && `Телефон: ${phone}`,
       message && `Сообщение: ${message}`,
