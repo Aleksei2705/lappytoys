@@ -2,6 +2,7 @@
 import Image from "next/image";
 import {
   ArrowRight,
+  ArrowUp,
   ArrowUpRight,
   BookOpen,
   Clock,
@@ -377,6 +378,12 @@ export default function HomePage() {
               />
               <div className="card-soft mt-10 p-6 shadow-lg sm:p-8">
                 <SignupForm />
+              </div>
+              <div className="mt-6 flex justify-center">
+                <Link href="#top" className="btn-secondary h-11 px-8">
+                  <ArrowUp className="size-4" />
+                  На главную
+                </Link>
               </div>
             </div>
           </div>
