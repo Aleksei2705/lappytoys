@@ -8,7 +8,6 @@ import {
   Heart,
   MessageCircle,
   Phone,
-  Sparkles,
   Star,
 } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
@@ -59,20 +58,16 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-brand-100/20" />
           <div className="glow-brand -right-24 -top-24 size-96" />
           <div className="glow-accent -bottom-32 -left-24 size-80" />
-          <div className="container-main relative grid gap-12 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
+          <div className="container-main relative mx-auto max-w-3xl pt-10 pb-16 text-center sm:pt-12 lg:pt-14 lg:pb-20">
             <div className="space-y-8">
-              <div className="badge-soft gap-2 px-4 py-2">
-                <Sparkles className="size-4" />
-                Живые занятия вязанием тет-а-тет
-              </div>
               <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-warm-900 sm:text-5xl lg:text-6xl">
                 Любимое ваше <span className="text-gradient">занятие</span>
               </h1>
-              <p className="max-w-lg text-lg leading-relaxed text-warm-500">
+              <p className="mx-auto max-w-lg text-lg leading-relaxed text-warm-500">
                 Приходите в студию на занятия по вязанию и откройте для себя новое увлечение —
                 спокойно, пошагово и с поддержкой на каждом этапе.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link href="#courses" className="btn-primary h-11 px-6">
                   Выбрать курс
                   <ArrowRight className="size-4" />
@@ -81,7 +76,7 @@ export default function HomePage() {
                   Мастер-классы
                 </Link>
               </div>
-              <dl className="grid grid-cols-3 gap-4 border-t border-cream-200/70 pt-8">
+              <dl className="grid grid-cols-3 gap-4 border-t border-cream-200/70 pt-8 text-center">
                 {stats.map((stat) => (
                   <div key={stat.label}>
                     <dt className="font-heading text-2xl font-bold text-brand-700 sm:text-3xl">
@@ -93,20 +88,6 @@ export default function HomePage() {
                   </div>
                 ))}
               </dl>
-            </div>
-            <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-              <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-brand-200/40 to-accent-200/40 blur-2xl" />
-              <div className="relative aspect-square overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-brand-50 via-accent-50 to-cream shadow-2xl shadow-brand-200/40">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="select-none text-[8rem] sm:text-[10rem]" aria-hidden="true">
-                    🧶
-                  </span>
-                </div>
-                <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-white/70 bg-white/85 p-5 shadow-lg backdrop-blur-md">
-                  <p className="font-heading text-lg font-semibold text-warm-900">Ольга Лаптева</p>
-                  <p className="text-sm text-warm-500">Преподаватель вязания · Семей</p>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -120,11 +101,15 @@ export default function HomePage() {
                 <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5">
                   <Image
                     src="/images/room.jpg"
-                    alt="Уютная мастерская для занятий вязанием"
+                    alt="Ольга Лаптева — преподаватель вязания"
                     fill
                     className="object-cover object-top"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
+                </div>
+                <div className="mt-5 text-center lg:text-left">
+                  <p className="font-heading text-lg font-semibold text-warm-900">Ольга Лаптева</p>
+                  <p className="text-sm text-warm-500">Преподаватель вязания · Семей</p>
                 </div>
               </div>
               <div className="space-y-6">
