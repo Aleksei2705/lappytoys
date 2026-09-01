@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -218,31 +218,18 @@ export default function HomePage() {
                       <span className="badge-soft px-5 py-2 !text-base sm:!text-lg">
                         {mc.category}
                       </span>
-                    ) : (
-                      <span className="h-7" aria-hidden />
-                    )}
+                    ) : null}
                     <div className="flex flex-1 flex-col items-center justify-center gap-3">
-                      {"image" in mc && mc.image ? (
-                        <>
-                          <div className="relative size-32 sm:size-36">
-                            <Image
-                              src={mc.image}
-                              alt={mc.title}
-                              fill
-                              className="object-contain"
-                              sizes="144px"
-                            />
-                          </div>
-                          <p className="text-sm font-medium text-warm-500">Фото скоро</p>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-7xl drop-shadow-sm" aria-hidden="true">
-                            {"emoji" in mc ? mc.emoji : null}
-                          </span>
-                          <p className="text-sm font-medium text-warm-500">Фото скоро</p>
-                        </>
-                      )}
+                      <div className="relative size-32 sm:size-36">
+                        <Image
+                          src={mc.image}
+                          alt={mc.title}
+                          fill
+                          className="object-contain"
+                          sizes="144px"
+                        />
+                      </div>
+                      <p className="text-sm font-medium text-warm-500">Фото скоро</p>
                     </div>
                   </div>
                   <div className="space-y-3 p-5">
