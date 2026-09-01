@@ -206,7 +206,7 @@ export default function HomePage() {
               align="left"
               eyebrow="Готовые проекты"
               title="Мастер-классы"
-              description="Успейте приобрести готовые мастер-классы и не забудьте про скидку!"
+              description="Записывайтесь скорее!"
             />
             <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {masterClasses.map((mc) => (

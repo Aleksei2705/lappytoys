@@ -26,6 +26,11 @@ export const metadata: Metadata = {
     "мастер-класс",
     "Семей",
   ],
+  icons: {
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
+  },
   openGraph: {
     title: `${site.name} — уроки вязания тет-а-тет`,
     description: "Научитесь вязать спокойно и с удовольствием с преподавателем Ольгой.",
