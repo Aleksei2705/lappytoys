@@ -327,8 +327,8 @@ export default function HomePage() {
                   </div>
                 </a>
                 <a href={site.telegram} target="_blank" rel="noopener noreferrer" className="contact-card">
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 text-sky-700">
-                    <TelegramIcon className="size-5" />
+                  <div className="flex size-12 items-center justify-center">
+                    <TelegramIcon brand className="size-10" />
                   </div>
                   <div>
                     <p className="text-sm text-warm-500">Telegram</p>
