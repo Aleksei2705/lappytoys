@@ -56,7 +56,7 @@ export default function RootLayout({
       className={`${manrope.variable} ${playfair.variable} h-full scroll-smooth antialiased`}
     >
       <head>
-        <Script src="/metrica.js" strategy="afterInteractive" />
+        <Script src="/metrica.js" strategy="beforeInteractive" />
       </head>
       <body className="min-h-full font-sans">
         <SiteBackground />
