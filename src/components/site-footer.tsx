@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+﻿import Image from "next/image";
+import Link from "next/link";
 import { ArrowUp, MessageCircle } from "lucide-react";
 import { navLinks, site } from "@/data/site";
 
@@ -26,8 +27,15 @@ export function SiteFooter() {
       <div className="container-main">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Link href="/" className="font-heading text-xl font-semibold text-brand-800">
-              {site.name}
+            <Link href="/" className="inline-flex items-center gap-3">
+              <Image
+                src="/images/logo.png"
+                alt=""
+                width={48}
+                height={48}
+                className="size-12 shrink-0 object-contain"
+              />
+              <span className="font-heading text-xl font-semibold text-brand-800">{site.name}</span>
             </Link>
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-warm-500">{site.tagline}</p>
             <a

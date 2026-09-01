@@ -10,6 +10,7 @@ import {
   Phone,
   Sparkles,
   Star,
+  Users,
 } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -49,6 +50,10 @@ const benefitIcons = {
   clock: Clock,
 } as const;
 
+const statIcons = {
+  users: Users,
+} as const;
+
 export default function HomePage() {
   return (
     <div id="top">
@@ -71,7 +76,7 @@ export default function HomePage() {
                 Любимое ваше <span className="text-gradient">занятие</span>
               </h1>
               <p className="mx-auto max-w-lg text-lg leading-relaxed text-warm-500">
-                Приходите в студию на занятия по вязанию и откройте для себя новое увлечение —
+                Приходите в студию на занятия по вязанию, макраме, вышивке и откройте для себя новое увлечение —
                 спокойно, пошагово и с поддержкой на каждом этапе.
               </p>
               <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -84,16 +89,35 @@ export default function HomePage() {
                 </Link>
               </div>
               <dl className="grid grid-cols-3 gap-4 border-t border-cream-200/70 pt-8 text-center">
-                {stats.map((stat) => (
+                {stats.map((stat) => {
+                  const StatIcon =
+                    "icon" in stat && stat.icon ? statIcons[stat.icon] : null;
+
+                  return (
                   <div key={stat.label}>
-                    <dt className="font-heading text-2xl font-bold text-brand-700 sm:text-3xl">
-                      {stat.value}
-                    </dt>
-                    <dd className="mt-1 text-xs leading-snug text-warm-500 sm:text-sm">
+                    {StatIcon ? (
+                      <dt className="flex justify-center">
+                        <span className="inline-flex size-11 items-center justify-center rounded-full bg-brand-100 text-brand-700">
+                          <StatIcon className="size-6" strokeWidth={1.75} aria-hidden />
+                        </span>
+                      </dt>
+                    ) : "value" in stat && stat.value ? (
+                      <dt className="font-heading text-2xl font-bold text-brand-700 sm:text-3xl">
+                        {stat.value}
+                      </dt>
+                    ) : null}
+                    <dd
+                      className={
+                        StatIcon || ("value" in stat && stat.value)
+                          ? "mt-1 text-xs leading-snug text-warm-500 sm:text-sm"
+                          : "font-heading text-xl font-bold text-brand-700 sm:text-2xl"
+                      }
+                    >
                       {stat.label}
                     </dd>
                   </div>
-                ))}
+                  );
+                })}
               </dl>
             </div>
           </div>

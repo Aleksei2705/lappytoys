@@ -1,9 +1,10 @@
 ﻿"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { navLinks, site } from "@/data/site";
+import { navLinks } from "@/data/site";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -21,11 +22,21 @@ export function SiteHeader() {
   return (
     <header className={`site-header sticky top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
       <div className="container-main flex h-16 items-center justify-between">
-        <Link
-          href="/"
-          className="max-w-[11rem] font-heading text-base font-semibold leading-tight tracking-tight text-brand-800 sm:max-w-none sm:text-lg md:text-xl"
-        >
-          {site.name}
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/images/logo.png"
+            alt=""
+            width={48}
+            height={48}
+            className="size-12 shrink-0 object-contain"
+            priority
+          />
+          <span className="flex flex-col leading-tight">
+            <span className="font-heading text-lg font-semibold tracking-tight text-brand-800 sm:text-xl">
+              lappy.art
+            </span>
+            <span className="text-xs text-warm-500 sm:text-sm">Творческая студия</span>
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex">

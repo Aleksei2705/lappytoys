@@ -21,8 +21,8 @@ export const navLinks = [
 
 export const stats = [
   { value: "100+", label: "довольных учеников" },
-  { value: "3", label: "направления обучения" },
-  { value: "1:1", label: "занятия тет-а-тет" },
+  { value: "5", label: "направления обучения" },
+  { icon: "users", label: "групповые занятия" },
 ] as const;
 
 export type Course = {
