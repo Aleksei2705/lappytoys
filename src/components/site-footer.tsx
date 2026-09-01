@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowUp, MessageCircle } from "lucide-react";
 import { navLinks, site } from "@/data/site";
 
@@ -22,33 +22,36 @@ function InstagramIcon() {
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-stone-200 bg-white py-12">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+    <footer className="border-t border-brand-100/80 bg-white/50 py-14 backdrop-blur-md">
+      <div className="container-main">
+        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Link href="/" className="font-heading text-xl font-semibold text-rose-700">
+            <Link href="/" className="font-heading text-xl font-semibold text-brand-800">
               {site.name}
             </Link>
-            <p className="mt-2 max-w-xs text-sm text-stone-500">{site.tagline}</p>
-            <a href={`tel:${site.phone}`} className="mt-4 inline-block font-medium text-rose-700 hover:underline">
+            <p className="mt-2 max-w-xs text-sm leading-relaxed text-warm-500">{site.tagline}</p>
+            <a
+              href={`tel:${site.phone}`}
+              className="mt-4 inline-block font-semibold text-brand-700 transition-colors hover:text-brand-800"
+            >
               {site.phoneDisplay}
             </a>
-            <div className="mt-4 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-3">
               <a
                 href={site.telegram}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"
-                className="flex size-10 items-center justify-center rounded-full border border-stone-200 transition-colors hover:border-rose-200 hover:bg-sky-100"
+                className="flex size-11 items-center justify-center rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50"
               >
-                <MessageCircle className="size-5" />
+                <MessageCircle className="size-5 text-sky-600" />
               </a>
               <a
                 href={site.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
-                className="flex size-10 items-center justify-center rounded-full border border-stone-200 transition-colors hover:border-rose-200 hover:bg-green-100"
+                className="flex size-11 items-center justify-center rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-green-200 hover:bg-green-50"
               >
                 <WhatsAppIcon />
               </a>
@@ -57,19 +60,19 @@ export function SiteFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="flex size-10 items-center justify-center rounded-full border border-stone-200 transition-colors hover:border-rose-200 hover:bg-rose-100"
+                className="flex size-11 items-center justify-center rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50"
               >
                 <InstagramIcon />
               </a>
             </div>
           </div>
 
-          <nav className="grid grid-cols-2 items-start gap-x-8 gap-y-2 sm:grid-cols-3">
+          <nav className="grid grid-cols-2 items-start gap-x-10 gap-y-3 sm:grid-cols-3">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-stone-500 transition-colors hover:text-stone-900"
+                className="text-sm text-warm-500 transition-colors hover:text-brand-800"
               >
                 {link.label}
               </Link>
@@ -77,17 +80,17 @@ export function SiteFooter() {
           </nav>
 
           <Link
-            href="/"
-            className="flex size-10 items-center justify-center self-start rounded-full border border-stone-200 bg-white transition-colors hover:bg-stone-100"
+            href="/#top"
+            className="flex size-11 items-center justify-center self-start rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-brand-50"
             aria-label="Наверх"
           >
-            <ArrowUp className="size-4" />
+            <ArrowUp className="size-4 text-brand-700" />
           </Link>
         </div>
 
-        <div className="my-8 h-px bg-stone-200" />
+        <div className="my-10 h-px bg-gradient-to-r from-transparent via-cream-200 to-transparent" />
 
-        <p className="text-center text-sm text-stone-500">
+        <p className="text-center text-sm text-warm-500">
           © {new Date().getFullYear()} {site.name}. Семей, Казахстан.
         </p>
       </div>

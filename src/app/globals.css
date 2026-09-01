@@ -1,40 +1,151 @@
 @import "tailwindcss";
 
+/* Палитра lappy.art — нежная женственная гамма */
 @theme inline {
   --font-sans: var(--font-manrope);
   --font-heading: var(--font-playfair);
-  --color-background: #fafaf9;
-  --color-foreground: #1c1917;
-  --color-muted: #f5f5f4;
-  --color-muted-foreground: #78716c;
-  --color-primary: #be123c;
-  --color-primary-foreground: #fff1f2;
+
+  /* Фон — пудровый, тёплый */
+  --color-cream: #fdf8f9;
+  --color-cream-100: #f9eef2;
+  --color-cream-200: #f0dde6;
+  --color-warm-900: #3f3239;
+  --color-warm-700: #5e4f57;
+  --color-warm-500: #917a85;
+
+  /* Основной — пыльная роза */
+  --color-brand-50: #fdf2f6;
+  --color-brand-100: #fce7ef;
+  --color-brand-200: #f8cfe0;
+  --color-brand-300: #f0a8c4;
+  --color-brand-500: #de86a8;
+  --color-brand-600: #d4719a;
+  --color-brand-700: #c45c85;
+  --color-brand-800: #a84a6f;
+
+  /* Акцент — лиловый / мauve */
+  --color-accent-50: #faf5f8;
+  --color-accent-100: #f3e8f0;
+  --color-accent-200: #e8d0e0;
+  --color-accent-400: #c9a0b8;
+  --color-accent-600: #b07d9a;
+
+  /* Семантика */
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-warm-900);
+  --color-primary: var(--color-brand-700);
+  --color-primary-foreground: #fffbfc;
+  --color-muted: var(--color-cream-100);
+  --color-muted-foreground: var(--color-warm-500);
   --color-card: #ffffff;
-  --color-card-foreground: #1c1917;
-  --color-border: #e7e5e4;
-  --color-input: #e7e5e4;
-  --color-ring: #fda4af;
+  --color-border: var(--color-cream-200);
+  --color-ring: var(--color-brand-200);
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--color-background);
+  min-height: 100%;
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+  background-color: #fdf8f9;
 }
 
 .font-heading {
   font-family: var(--font-heading), Georgia, serif;
 }
 
-.page-section {
-  @apply py-16 sm:py-20;
+/* Typography */
+.text-gradient {
+  @apply bg-gradient-to-r from-brand-600 via-brand-500 to-accent-600 bg-clip-text text-transparent;
 }
 
+.eyebrow {
+  @apply text-sm font-medium uppercase tracking-[0.2em] text-brand-600;
+}
+
+/* Layout */
+.page-section {
+  @apply py-20 sm:py-24;
+}
+
+.section-alt {
+  @apply bg-white/50 backdrop-blur-sm;
+}
+
+.container-main {
+  @apply mx-auto max-w-6xl px-4 sm:px-6;
+}
+
+/* Header */
 .site-header {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
+  @apply border-b border-brand-100/80 bg-white/70 backdrop-blur-lg transition-shadow duration-300;
+}
+
+.site-header.scrolled {
+  @apply shadow-sm shadow-brand-100/80;
+}
+
+/* Buttons */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98];
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] bg-gradient-to-r from-brand-600 to-brand-700 px-5 py-2.5 text-white shadow-md shadow-brand-200/80 hover:from-brand-700 hover:to-brand-800 hover:shadow-lg hover:shadow-brand-200/90;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] border border-brand-100 bg-white/90 px-5 py-2.5 text-warm-900 hover:border-brand-200 hover:bg-brand-50/80;
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] border border-brand-100/80 bg-white/80 px-4 py-2 hover:bg-brand-50/50 hover:shadow-sm;
+}
+
+/* Cards */
+.card {
+  @apply overflow-hidden rounded-2xl bg-white ring-1 ring-brand-100/60 transition-all duration-300;
+}
+
+.card-hover {
+  @apply overflow-hidden rounded-2xl bg-white ring-1 ring-brand-100/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-100/60;
+}
+
+.card-soft {
+  @apply rounded-2xl border border-brand-100/70 bg-white/85 shadow-sm shadow-brand-50/50 backdrop-blur-md;
+}
+
+/* Form */
+.input-field {
+  @apply h-11 w-full rounded-xl border border-brand-100 bg-brand-50/30 px-4 text-sm outline-none transition-colors placeholder:text-warm-500/50 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100/80;
+}
+
+.textarea-field {
+  @apply min-h-24 w-full rounded-xl border border-brand-100 bg-brand-50/30 px-4 py-3 text-sm outline-none transition-colors placeholder:text-warm-500/50 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100/80;
+}
+
+/* Contact links */
+.contact-card {
+  @apply flex items-center gap-4 rounded-2xl border border-brand-100/80 bg-white p-4 shadow-sm shadow-brand-50/30 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md hover:shadow-brand-100/50;
+}
+
+/* Decorative */
+.glow-brand {
+  @apply absolute rounded-full bg-brand-200/45 blur-3xl;
+}
+
+.glow-accent {
+  @apply absolute rounded-full bg-accent-200/50 blur-3xl;
+}
+
+.badge-soft {
+  @apply inline-flex w-fit items-center rounded-full border border-brand-200/70 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700;
+}
+
+.badge-solid {
+  @apply inline-flex w-fit items-center rounded-full bg-gradient-to-r from-brand-600 to-brand-700 px-3 py-1 text-xs font-semibold text-white;
 }

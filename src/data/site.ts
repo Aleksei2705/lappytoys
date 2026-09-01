@@ -48,7 +48,7 @@ export const courses: Course[] = [
     description:
       "Освойте базовые петли, научитесь читать схемы и создайте первые изделия — от простых квадратов до игрушек.",
     badge: "Популярное",
-    accent: "from-rose-100 to-amber-50",
+    accent: "from-brand-50 to-accent-100",
     emoji: "🧶",
     price: "от 15 000 ₸",
     duration: "4–6 недель",
@@ -80,7 +80,7 @@ export const courses: Course[] = [
     description:
       "Пошаговые уроки для новичков: набор петель, лицевые и изнаночные, простые узоры и первый шарф или шапка.",
     badge: "Для начинающих",
-    accent: "from-stone-100 to-rose-50",
+    accent: "from-accent-50 to-brand-100",
     emoji: "🧣",
     price: "от 15 000 ₸",
     duration: "4–6 недель",
@@ -112,7 +112,7 @@ export const courses: Course[] = [
     description:
       "30 минут бесплатно — познакомьтесь с форматом. Урок с изготовлением игрушки — 1,5 часа, 2 000 ₸.",
     badge: "С 0 ₸",
-    accent: "from-amber-100 to-orange-50",
+    accent: "from-brand-100 to-accent-50",
     emoji: "✨",
     price: "0 / 2 000 ₸",
     duration: "30 мин / 1,5 ч",
@@ -147,7 +147,7 @@ export const masterClasses = [
     price: "5 000 ₸",
     badge: "Акция",
     emoji: "🧸",
-    accent: "from-rose-100 to-amber-50",
+    accent: "from-brand-50 to-accent-100",
   },
   {
     title: "Заяц прыгун",
@@ -155,7 +155,7 @@ export const masterClasses = [
     price: "7 000 ₸",
     badge: "Акция",
     emoji: "🐰",
-    accent: "from-stone-100 to-rose-50",
+    accent: "from-accent-50 to-brand-100",
   },
   {
     title: "Amigurumi-набор",
@@ -163,7 +163,7 @@ export const masterClasses = [
     price: "10 000 ₸",
     badge: "Выгодно",
     emoji: "🧶",
-    accent: "from-amber-100 to-orange-50",
+    accent: "from-brand-100 to-accent-100",
   },
 ] as const;
 

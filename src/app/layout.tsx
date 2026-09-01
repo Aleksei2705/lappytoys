@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 import Script from "next/script";
+import { SiteBackground } from "@/components/site-background";
 import { site } from "@/data/site";
 import "./globals.css";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
         <Script src="/metrica.js" strategy="beforeInteractive" />
       </head>
       <body className="min-h-full font-sans">
+        <SiteBackground />
         <noscript>
           <div>
             <img

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useState } from "react";
 import { Send } from "lucide-react";
@@ -25,9 +25,9 @@ export function SignupForm() {
   }
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+    <form className="space-y-5" onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="name" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="name" className="mb-2 block text-sm font-medium text-warm-700">
           Ваше имя
         </label>
         <input
@@ -37,11 +37,11 @@ export function SignupForm() {
           placeholder="Как к вам обращаться?"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="h-10 w-full rounded-lg border border-stone-200 bg-transparent px-3 text-sm outline-none focus:border-rose-300 focus:ring-3 focus:ring-rose-100"
+          className="input-field"
         />
       </div>
       <div>
-        <label htmlFor="phone" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="phone" className="mb-2 block text-sm font-medium text-warm-700">
           Телефон
         </label>
         <input
@@ -51,11 +51,11 @@ export function SignupForm() {
           placeholder="+7 (___) ___-__-__"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="h-10 w-full rounded-lg border border-stone-200 bg-transparent px-3 text-sm outline-none focus:border-rose-300 focus:ring-3 focus:ring-rose-100"
+          className="input-field"
         />
       </div>
       <div>
-        <label htmlFor="message" className="mb-1.5 block text-sm font-medium">
+        <label htmlFor="message" className="mb-2 block text-sm font-medium text-warm-700">
           Сообщение
         </label>
         <textarea
@@ -65,17 +65,14 @@ export function SignupForm() {
           placeholder="Расскажите, какой курс интересует"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="min-h-16 w-full rounded-lg border border-stone-200 bg-transparent px-3 py-2 text-sm outline-none focus:border-rose-300 focus:ring-3 focus:ring-rose-100"
+          className="textarea-field"
         />
       </div>
-      <button
-        type="submit"
-        className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-rose-700 text-sm font-medium text-white transition-colors hover:bg-rose-800"
-      >
+      <button type="submit" className="btn-primary h-11 w-full">
         <Send className="size-4" />
         Отправить заявку
       </button>
-      <p className="text-center text-xs text-stone-500">
+      <p className="text-center text-xs leading-relaxed text-warm-500">
         Заявка откроется в WhatsApp для отправки Ольге. Нажимая кнопку, вы соглашаетесь на
         обработку контактных данных.
       </p>

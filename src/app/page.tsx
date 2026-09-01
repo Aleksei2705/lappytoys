@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -11,6 +11,7 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
+import { SectionHeader } from "@/components/section-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SignupForm } from "@/components/signup-form";
@@ -55,61 +56,55 @@ export default function HomePage() {
       <main>
         {/* Hero */}
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-rose-100/80 via-stone-50 to-stone-50" />
-          <div className="absolute -right-24 -top-24 size-96 rounded-full bg-amber-100/40 blur-3xl" />
-          <div className="absolute -bottom-32 -left-24 size-80 rounded-full bg-rose-100/50 blur-3xl" />
-          <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:items-start lg:py-20">
+          <div className="absolute inset-0 bg-brand-100/20" />
+          <div className="glow-brand -right-24 -top-24 size-96" />
+          <div className="glow-accent -bottom-32 -left-24 size-80" />
+          <div className="container-main relative grid gap-12 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-1.5 text-sm text-rose-800">
+              <div className="badge-soft gap-2 px-4 py-2">
                 <Sparkles className="size-4" />
                 Живые занятия вязанием тет-а-тет
               </div>
-              <h1 className="font-heading text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-                Любимое ваше{" "}
-                <span className="bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent">
-                  занятие
-                </span>
+              <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-warm-900 sm:text-5xl lg:text-6xl">
+                Любимое ваше <span className="text-gradient">занятие</span>
               </h1>
-              <p className="max-w-lg text-lg leading-relaxed text-stone-600">
+              <p className="max-w-lg text-lg leading-relaxed text-warm-500">
                 Приходите в студию на занятия по вязанию и откройте для себя новое увлечение —
                 спокойно, пошагово и с поддержкой на каждом этапе.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="#courses"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-rose-700 px-4 text-sm font-medium text-white hover:bg-rose-800"
-                >
+                <Link href="#courses" className="btn-primary h-11 px-6">
                   Выбрать курс
                   <ArrowRight className="size-4" />
                 </Link>
-                <Link
-                  href="#master-classes"
-                  className="inline-flex h-10 items-center justify-center rounded-lg border border-stone-200 bg-white px-4 text-sm font-medium hover:bg-stone-50"
-                >
+                <Link href="#master-classes" className="btn-secondary h-11 px-6">
                   Мастер-классы
                 </Link>
               </div>
-              <dl className="grid grid-cols-3 gap-4 border-t border-stone-200/60 pt-8">
+              <dl className="grid grid-cols-3 gap-4 border-t border-cream-200/70 pt-8">
                 {stats.map((stat) => (
                   <div key={stat.label}>
-                    <dt className="font-heading text-2xl font-bold text-rose-700 sm:text-3xl">
+                    <dt className="font-heading text-2xl font-bold text-brand-700 sm:text-3xl">
                       {stat.value}
                     </dt>
-                    <dd className="mt-1 text-xs text-stone-500 sm:text-sm">{stat.label}</dd>
+                    <dd className="mt-1 text-xs leading-snug text-warm-500 sm:text-sm">
+                      {stat.label}
+                    </dd>
                   </div>
                 ))}
               </dl>
             </div>
             <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-              <div className="relative aspect-square overflow-hidden rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50 via-amber-50 to-stone-100 shadow-xl shadow-rose-100/50">
+              <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-brand-200/40 to-accent-200/40 blur-2xl" />
+              <div className="relative aspect-square overflow-hidden rounded-3xl border border-white/80 bg-gradient-to-br from-brand-50 via-accent-50 to-cream shadow-2xl shadow-brand-200/40">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="select-none text-[8rem] sm:text-[10rem]" aria-hidden="true">
                     🧶
                   </span>
                 </div>
-                <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-white/60 bg-white/80 p-4 backdrop-blur-sm">
-                  <p className="font-medium">Ольга Лаптева</p>
-                  <p className="text-sm text-stone-500">Преподаватель вязания · Семей</p>
+                <div className="absolute bottom-6 left-6 right-6 rounded-2xl border border-white/70 bg-white/85 p-5 shadow-lg backdrop-blur-md">
+                  <p className="font-heading text-lg font-semibold text-warm-900">Ольга Лаптева</p>
+                  <p className="text-sm text-warm-500">Преподаватель вязания · Семей</p>
                 </div>
               </div>
             </div>
@@ -117,34 +112,32 @@ export default function HomePage() {
         </section>
 
         {/* About */}
-        <section id="about" className="page-section bg-stone-100/40">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <p className="text-sm font-medium uppercase tracking-wider text-rose-600 lg:hidden">
-              Обо мне
-            </p>
-            <div className="mt-2 grid items-start gap-8 lg:mt-0 lg:grid-cols-2 lg:gap-12">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-lg">
-                <Image
-                  src="/images/room.jpg"
-                  alt="Уютная мастерская для занятий вязанием"
-                  fill
-                  className="object-cover object-top"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
+        <section id="about" className="page-section section-alt">
+          <div className="container-main">
+            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+              <div className="relative">
+                <div className="absolute -bottom-4 -right-4 h-full w-full rounded-3xl bg-brand-100/60" />
+                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5">
+                  <Image
+                    src="/images/room.jpg"
+                    alt="Уютная мастерская для занятий вязанием"
+                    fill
+                    className="object-cover object-top"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                </div>
               </div>
               <div className="space-y-6">
-                <div>
-                  <p className="hidden text-sm font-medium uppercase tracking-wider text-rose-600 lg:block">
-                    Обо мне
-                  </p>
-                  <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl lg:mt-2">
-                    Учу вязать{" "}
-                    <span className="bg-gradient-to-r from-rose-600 to-amber-600 bg-clip-text text-transparent">
-                      с душой
-                    </span>
-                  </h2>
-                </div>
-                <div className="space-y-4 leading-relaxed text-stone-600">
+                <SectionHeader
+                  align="left"
+                  eyebrow="Обо мне"
+                  title={
+                    <>
+                      Учу вязать <span className="text-gradient">с душой</span>
+                    </>
+                  }
+                />
+                <div className="space-y-4 text-base leading-relaxed text-warm-500">
                   {aboutParagraphs.map((p) => (
                     <p key={p.slice(0, 30)}>{p}</p>
                   ))}
@@ -156,94 +149,77 @@ export default function HomePage() {
 
         {/* Courses */}
         <section id="courses" className="page-section">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-medium uppercase tracking-wider text-rose-600">
-                Направления
-              </p>
-              <h2 className="mt-2 font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-                Уроки по вязанию
-              </h2>
-              <p className="mt-4 text-stone-600">
-                Уже в этом году на мои уроки записалось много желающих. В следующем году планируем
-                расширить горизонты направлений.
-              </p>
-            </div>
-            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="container-main">
+            <SectionHeader
+              eyebrow="Направления"
+              title="Уроки по вязанию"
+              description="Уже в этом году на мои уроки записалось много желающих. В следующем году планируем расширить горизонты направлений."
+            />
+            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {courses.map((course) => (
-                <div
+                <article
                   key={course.id}
-                  className={`flex flex-col overflow-hidden rounded-xl bg-gradient-to-br ${course.accent} shadow-md ring-1 ring-stone-900/10 transition-shadow hover:shadow-lg`}
+                  className={`card-hover flex flex-col bg-gradient-to-br ${course.accent}`}
                 >
-                  <div className="flex flex-1 flex-col gap-1 p-4">
-                    <span className="w-fit rounded-full bg-white/80 px-2 py-0.5 text-xs font-medium">
-                      {course.badge}
+                  <div className="relative flex flex-1 flex-col gap-3 p-6">
+                    <span className="absolute right-5 top-5 text-3xl" aria-hidden="true">
+                      {course.emoji}
                     </span>
-                    <h3 className="font-heading text-xl font-medium">{course.title}</h3>
-                    <p className="text-base leading-relaxed text-stone-600">{course.description}</p>
+                    <span className="badge-soft">{course.badge}</span>
+                    <h3 className="pr-10 font-heading text-xl font-semibold text-warm-900">
+                      {course.title}
+                    </h3>
+                    <p className="text-base leading-relaxed text-warm-500">{course.description}</p>
                   </div>
-                  <div className="border-t border-stone-900/5 bg-white/50 p-4">
-                    <Link
-                      href={`/courses/${course.id}`}
-                      className="inline-flex h-8 w-full items-center justify-center gap-2 rounded-lg border border-stone-200 bg-white/70 text-sm font-medium hover:bg-white"
-                    >
+                  <div className="border-t border-warm-900/5 bg-white/60 p-4">
+                    <Link href={`/courses/${course.id}`} className="btn-ghost h-10 w-full">
                       Подробнее
                       <ArrowUpRight className="size-4" />
                     </Link>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
         {/* Master classes */}
-        <section id="master-classes" className="page-section bg-stone-100/40">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div>
-              <p className="text-sm font-medium uppercase tracking-wider text-rose-600">
-                Готовые проекты
-              </p>
-              <h2 className="mt-2 font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-                Мастер-классы
-              </h2>
-              <p className="mt-3 max-w-xl text-stone-600">
-                Успейте приобрести готовые мастер-классы и не забудьте про скидку!
-              </p>
-            </div>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <section id="master-classes" className="page-section section-alt">
+          <div className="container-main">
+            <SectionHeader
+              align="left"
+              eyebrow="Готовые проекты"
+              title="Мастер-классы"
+              description="Успейте приобрести готовые мастер-классы и не забудьте про скидку!"
+            />
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {masterClasses.map((mc) => (
-                <div
-                  key={mc.title}
-                  className="overflow-hidden rounded-xl bg-white shadow-md ring-1 ring-stone-900/10"
-                >
+                <article key={mc.title} className="card-hover">
                   <div
                     className={`flex aspect-[4/3] flex-col items-center justify-center bg-gradient-to-br ${mc.accent}`}
                   >
-                    <span className="text-7xl" aria-hidden="true">
+                    <span className="text-7xl drop-shadow-sm" aria-hidden="true">
                       {mc.emoji}
                     </span>
-                    <p className="mt-3 text-sm text-stone-500">Фото скоро</p>
+                    <p className="mt-3 text-sm font-medium text-warm-500">Фото скоро</p>
                   </div>
-                  <div className="space-y-2 p-4">
+                  <div className="space-y-3 p-5">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-heading font-medium leading-snug">{mc.title}</h3>
-                      <span className="shrink-0 rounded-full bg-rose-600 px-2 py-0.5 text-xs font-medium text-white">
-                        {mc.badge}
-                      </span>
+                      <h3 className="font-heading text-lg font-semibold leading-snug">{mc.title}</h3>
+                      <span className="badge-solid shrink-0">{mc.badge}</span>
                     </div>
-                    <p className="text-sm text-stone-500">{mc.description}</p>
-                    <p className="font-heading text-2xl font-bold text-rose-700">{mc.price}</p>
+                    <p className="text-sm leading-relaxed text-warm-500">{mc.description}</p>
+                    <p className="font-heading text-2xl font-bold text-brand-700">{mc.price}</p>
                     <a
                       href={site.telegram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex h-8 w-full items-center justify-center rounded-lg bg-rose-700 text-sm font-medium text-white hover:bg-rose-800"
+                      className="btn-primary h-10 w-full"
                     >
                       Заказать
                     </a>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </div>
@@ -251,59 +227,54 @@ export default function HomePage() {
 
         {/* Reviews */}
         <section id="reviews" className="page-section">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-medium uppercase tracking-wider text-rose-600">Отзывы</p>
-              <h2 className="mt-2 font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-                Что говорят ученики
-              </h2>
-              <p className="mt-4 text-stone-600">
-                Реальные истории людей, которые научились вязать вместе с Ольгой
-              </p>
-            </div>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2">
+          <div className="container-main">
+            <SectionHeader
+              eyebrow="Отзывы"
+              title="Что говорят ученики"
+              description="Реальные истории людей, которые научились вязать вместе с Ольгой"
+            />
+            <div className="mt-12 grid gap-6 sm:grid-cols-2">
               {reviews.map((review) => (
-                <div
-                  key={review.name}
-                  className="overflow-hidden rounded-xl border border-stone-200/60 bg-white p-6 shadow-sm"
-                >
+                <article key={review.name} className="card-soft card-hover p-6">
                   <div className="flex gap-0.5" aria-label="Оценка: 5 из 5">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="size-4 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="size-4 fill-accent-400 text-accent-400" />
                     ))}
                   </div>
-                  <p className="mt-4 leading-relaxed">&ldquo;{review.text}&rdquo;</p>
-                  <div className="mt-4 flex items-center justify-between border-t border-stone-200/60 pt-4">
+                  <p className="mt-4 text-base leading-relaxed text-warm-700">
+                    &ldquo;{review.text}&rdquo;
+                  </p>
+                  <div className="mt-5 flex items-center justify-between border-t border-cream-200/70 pt-4">
                     <div>
-                      <p className="font-medium">{review.name}</p>
-                      <p className="text-sm text-stone-500">{review.course}</p>
+                      <p className="font-semibold text-warm-900">{review.name}</p>
+                      <p className="text-sm text-warm-500">{review.course}</p>
                     </div>
                     <span className="text-2xl" aria-hidden="true">
                       🧶
                     </span>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </div>
         </section>
 
         {/* Benefits */}
-        <section className="page-section">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="grid gap-8 md:grid-cols-3">
+        <section className="page-section section-alt">
+          <div className="container-main">
+            <div className="grid gap-6 md:grid-cols-3">
               {benefits.map((b) => {
                 const Icon = benefitIcons[b.icon];
                 return (
                   <div
                     key={b.title}
-                    className="flex flex-col items-center rounded-2xl border border-stone-200/60 bg-white p-8 text-center shadow-sm transition-shadow hover:shadow-md"
+                    className="card-soft flex flex-col items-center p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-100/30"
                   >
-                    <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-rose-100 text-rose-700">
+                    <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-accent-100 text-brand-600 shadow-inner">
                       <Icon className="size-7" />
                     </div>
                     <h3 className="font-heading text-xl font-semibold">{b.title}</h3>
-                    <p className="mt-2 text-stone-600">{b.description}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-warm-500">{b.description}</p>
                   </div>
                 );
               })}
@@ -312,77 +283,53 @@ export default function HomePage() {
         </section>
 
         {/* Contacts */}
-        <section id="contacts" className="page-section bg-stone-100/40">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-medium uppercase tracking-wider text-rose-600">
-                Связаться
-              </p>
-              <h2 className="mt-2 font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-                Контакты
-              </h2>
-              <p className="mt-4 text-stone-600">
-                Позвоните или напишите — отвечу на вопросы и расскажу про текущие скидки.
-              </p>
-            </div>
-            <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-start">
-              <div className="space-y-4">
-                <a
-                  href={`tel:${site.phone}`}
-                  className="flex items-center gap-4 rounded-2xl border border-stone-200/60 bg-white p-4 transition-colors hover:border-rose-200 hover:bg-rose-50/50"
-                >
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
+        <section id="contacts" className="page-section">
+          <div className="container-main">
+            <SectionHeader
+              eyebrow="Связаться"
+              title="Контакты"
+              description="Позвоните или напишите — отвечу на вопросы и расскажу про текущие скидки."
+            />
+            <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-start">
+              <div className="space-y-3">
+                <a href={`tel:${site.phone}`} className="contact-card">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-100 to-brand-50 text-brand-700">
                     <Phone className="size-5" />
                   </div>
                   <div>
-                    <p className="text-sm text-stone-500">Телефон</p>
-                    <p className="font-medium">{site.phoneDisplay}</p>
+                    <p className="text-sm text-warm-500">Телефон</p>
+                    <p className="font-semibold text-warm-900">{site.phoneDisplay}</p>
                   </div>
                 </a>
-                <a
-                  href={site.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-4 rounded-2xl border border-stone-200/60 bg-white p-4 transition-colors hover:border-rose-200 hover:bg-rose-50/50"
-                >
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
+                <a href={site.telegram} target="_blank" rel="noopener noreferrer" className="contact-card">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-50 text-sky-700">
                     <MessageCircle className="size-5" />
                   </div>
                   <div>
-                    <p className="text-sm text-stone-500">Telegram</p>
-                    <p className="font-medium">{site.telegramHandle}</p>
+                    <p className="text-sm text-warm-500">Telegram</p>
+                    <p className="font-semibold text-warm-900">{site.telegramHandle}</p>
                   </div>
                 </a>
-                <a
-                  href={site.whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-4 rounded-2xl border border-stone-200/60 bg-white p-4 transition-colors hover:border-rose-200 hover:bg-rose-50/50"
-                >
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" className="contact-card">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-100 to-green-50 text-green-700">
                     <WhatsAppIcon />
                   </div>
                   <div>
-                    <p className="text-sm text-stone-500">WhatsApp</p>
-                    <p className="font-medium">{site.phoneDisplay}</p>
+                    <p className="text-sm text-warm-500">WhatsApp</p>
+                    <p className="font-semibold text-warm-900">{site.phoneDisplay}</p>
                   </div>
                 </a>
-                <a
-                  href={site.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-4 rounded-2xl border border-stone-200/60 bg-white p-4 transition-colors hover:border-rose-200 hover:bg-rose-50/50"
-                >
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
+                <a href={site.instagram} target="_blank" rel="noopener noreferrer" className="contact-card">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-100 to-brand-50 text-brand-700">
                     <InstagramIcon />
                   </div>
                   <div>
-                    <p className="text-sm text-stone-500">Instagram</p>
-                    <p className="font-medium">{site.instagramHandle}</p>
+                    <p className="text-sm text-warm-500">Instagram</p>
+                    <p className="font-semibold text-warm-900">{site.instagramHandle}</p>
                   </div>
                 </a>
               </div>
-              <div className="relative aspect-video overflow-hidden rounded-2xl shadow-lg lg:aspect-[4/3]">
+              <div className="relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 lg:aspect-[4/3]">
                 <Image
                   src="/images/signboard.jpg"
                   alt="Контакты творческой студии lappy.art"
@@ -396,19 +343,15 @@ export default function HomePage() {
         </section>
 
         {/* Signup */}
-        <section id="signup" className="page-section">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <section id="signup" className="page-section section-alt">
+          <div className="container-main">
             <div className="mx-auto max-w-xl">
-              <div className="text-center">
-                <p className="text-sm font-medium uppercase tracking-wider text-rose-600">Запись</p>
-                <h2 className="mt-2 font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-                  Записаться на урок
-                </h2>
-                <p className="mt-4 text-stone-600">
-                  Оставьте заявку — в ближайшее время обязательно свяжусь с вами.
-                </p>
-              </div>
-              <div className="mt-8 rounded-3xl border border-stone-200/60 bg-white p-6 shadow-lg sm:p-8">
+              <SectionHeader
+                eyebrow="Запись"
+                title="Записаться на урок"
+                description="Оставьте заявку — в ближайшее время обязательно свяжусь с вами."
+              />
+              <div className="card-soft mt-10 p-6 shadow-lg sm:p-8">
                 <SignupForm />
               </div>
             </div>
