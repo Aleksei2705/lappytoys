@@ -8,6 +8,7 @@ import {
   Heart,
   MessageCircle,
   Phone,
+  Sparkles,
   Star,
 } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
@@ -60,6 +61,12 @@ export default function HomePage() {
           <div className="glow-accent -bottom-32 -left-24 size-80" />
           <div className="container-main relative mx-auto max-w-3xl pt-10 pb-16 text-center sm:pt-12 lg:pt-14 lg:pb-20">
             <div className="space-y-8">
+              <div className="text-left">
+                <div className="badge-soft inline-flex gap-2 px-4 py-2">
+                  <Sparkles className="size-4" />
+                  Создаём руками вместе
+                </div>
+              </div>
               <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-warm-900 sm:text-5xl lg:text-6xl">
                 Любимое ваше <span className="text-gradient">занятие</span>
               </h1>
