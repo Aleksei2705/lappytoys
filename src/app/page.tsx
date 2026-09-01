@@ -149,7 +149,7 @@ export default function HomePage() {
                   eyebrow="Обо мне"
                   title={
                     <>
-                      Учу вязать <span className="text-gradient">с душой</span>
+                      Передаю знания <span className="text-gradient">детям</span>
                     </>
                   }
                 />
@@ -168,8 +168,8 @@ export default function HomePage() {
           <div className="container-main">
             <SectionHeader
               eyebrow="Направления"
-              title="Уроки по вязанию"
-              description="Уже в этом году на мои уроки записалось много желающих. В следующем году планируем расширить горизонты направлений."
+              title="Творческие направления"
+              description="Вязание, макраме, вышивка, бисероплетение и шитьё — выберите направление и начните с нуля в уютной студии."
             />
             <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {courses.map((course) => (
