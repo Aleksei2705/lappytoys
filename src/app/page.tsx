@@ -48,11 +48,11 @@ export default function HomePage() {
       <SiteHeader />
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden">
+        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-center overflow-hidden">
           <div className="absolute inset-0 bg-brand-100/20" />
           <div className="glow-brand -right-24 -top-24 size-96" />
           <div className="glow-accent -bottom-32 -left-24 size-80" />
-          <div className="container-main relative mx-auto max-w-3xl pt-10 pb-16 text-center sm:pt-12 lg:pt-14 lg:pb-20">
+          <div className="container-main relative mx-auto max-w-3xl py-12 text-center sm:py-14 lg:py-16">
             <div className="space-y-8">
               <div className="text-left">
                 <div className="badge-soft inline-flex gap-2 px-4 py-2">
