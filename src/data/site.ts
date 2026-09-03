@@ -3,6 +3,7 @@ export const site = {
   brandTitle: "lappy.art",
   brandSubtitle: "Творческая студия",
   tagline: "Живые занятия вязанием с опытным мастером — Ольгой",
+  url: "https://lappytoys.kz",
   phone: "+77058553873",
   phoneDisplay: "+7 (705) 855-38-73",
   telegram: "https://t.me/OlgaLapteva85",
@@ -11,6 +12,8 @@ export const site = {
   instagram: "https://www.instagram.com/lappy.art",
   instagramHandle: "@lappy.art",
   yandexMetricaId: "112086282",
+  city: "Семей",
+  country: "Казахстан",
 } as const;
 
 export const navLinks = [
