@@ -1,0 +1,147 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import { Send } from "lucide-react";
+import { courses, site } from "@/data/site";
+import { getSupabase, isReviewsEnabled } from "@/lib/supabase";
+
+type ReviewFormProps = {
+  onSubmitted?: () => void;
+};
+
+const courseOptions = [
+  ...courses.map((course) => course.title),
+  "Мастер-класс",
+  "Другое",
+];
+
+export function ReviewForm({ onSubmitted }: ReviewFormProps) {
+  const [name, setName] = useState("");
+  const [course, setCourse] = useState(courseOptions[0]);
+  const [text, setText] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setError("");
+    setStatus("loading");
+
+    const supabase = getSupabase();
+
+    if (supabase) {
+      const { error: insertError } = await supabase.from("reviews").insert({
+        name: name.trim(),
+        course: course.trim(),
+        text: text.trim(),
+      });
+
+      if (insertError) {
+        setStatus("error");
+        setError("Не удалось отправить отзыв. Попробуйте позже.");
+        return;
+      }
+
+      setName("");
+      setText("");
+      setCourse(courseOptions[0]);
+      setStatus("success");
+      onSubmitted?.();
+      return;
+    }
+
+    const message = [
+      "Здравствуйте! Хочу оставить отзыв для сайта.",
+      `Имя: ${name.trim()}`,
+      `Курс: ${course.trim()}`,
+      `Отзыв: ${text.trim()}`,
+    ].join("\n");
+
+    window.open(`${site.whatsapp}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    setName("");
+    setText("");
+    setCourse(courseOptions[0]);
+    setStatus("success");
+  }
+
+  return (
+    <div className="card-soft mt-10 p-6 shadow-lg sm:p-8">
+      <h3 className="font-heading text-xl font-semibold text-warm-900">Оставить отзыв</h3>
+      <p className="mt-2 text-sm leading-relaxed text-warm-500">
+        {isReviewsEnabled()
+          ? "Ваш отзыв сразу появится на сайте."
+          : "Отзыв откроется в WhatsApp — Ольга опубликует его на сайте."}
+      </p>
+
+      <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="review-name" className="mb-2 block text-sm font-medium text-warm-700">
+            Ваше имя
+          </label>
+          <input
+            id="review-name"
+            name="name"
+            required
+            minLength={2}
+            maxLength={60}
+            placeholder="Как вас подписать?"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="input-field"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="review-course" className="mb-2 block text-sm font-medium text-warm-700">
+            Курс или занятие
+          </label>
+          <select
+            id="review-course"
+            name="course"
+            required
+            value={course}
+            onChange={(e) => setCourse(e.target.value)}
+            className="input-field"
+          >
+            {courseOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="review-text" className="mb-2 block text-sm font-medium text-warm-700">
+            Отзыв
+          </label>
+          <textarea
+            id="review-text"
+            name="text"
+            required
+            minLength={20}
+            maxLength={600}
+            rows={4}
+            placeholder="Расскажите, как прошли занятия"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="textarea-field"
+          />
+        </div>
+
+        <button type="submit" className="btn-primary h-11 w-full" disabled={status === "loading"}>
+          <Send className="size-4" />
+          {status === "loading" ? "Отправка..." : "Отправить отзыв"}
+        </button>
+
+        {status === "success" ? (
+          <p className="text-center text-sm text-brand-700">Спасибо! Отзыв отправлен.</p>
+        ) : null}
+
+        {status === "error" ? (
+          <p className="text-center text-sm text-red-600">{error}</p>
+        ) : null}
+      </form>
+    </div>
+  );
+}

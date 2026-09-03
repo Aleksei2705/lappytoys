@@ -8,13 +8,13 @@ import {
   Clock,
   Heart,
   Sparkles,
-  Star,
   Users,
 } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SignupForm } from "@/components/signup-form";
+import { ReviewsSection } from "@/components/reviews-section";
 import {
   ContactIconFrame,
   InstagramContactIcon,
@@ -27,7 +27,6 @@ import {
   benefits,
   courses,
   masterClasses,
-  reviews,
   site,
   stats,
 } from "@/data/site";
@@ -237,39 +236,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Reviews */}
-        <section id="reviews" className="page-section">
-          <div className="container-main">
-            <SectionHeader
-              eyebrow="Отзывы"
-              title="Что говорят ученики"
-              description="Реальные истории людей, которые научились вязать вместе с Ольгой"
-            />
-            <div className="mt-12 grid gap-6 sm:grid-cols-2">
-              {reviews.map((review) => (
-                <article key={review.name} className="card-soft card-hover p-6">
-                  <div className="flex gap-0.5" aria-label="Оценка: 5 из 5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="size-4 fill-accent-400 text-accent-400" />
-                    ))}
-                  </div>
-                  <p className="mt-4 text-base leading-relaxed text-warm-700">
-                    &ldquo;{review.text}&rdquo;
-                  </p>
-                  <div className="mt-5 flex items-center justify-between border-t border-cream-200/70 pt-4">
-                    <div>
-                      <p className="font-semibold text-warm-900">{review.name}</p>
-                      <p className="text-sm text-warm-500">{review.course}</p>
-                    </div>
-                    <span className="text-2xl" aria-hidden="true">
-                      🧶
-                    </span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <ReviewsSection />
 
         {/* Benefits */}
         <section className="page-section section-alt">
