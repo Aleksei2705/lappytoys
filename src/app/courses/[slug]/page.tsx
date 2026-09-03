@@ -48,7 +48,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         </Link>
 
         <div
-          className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${course.accent} px-8 pb-8 pt-5 text-center shadow-lg ring-1 ring-warm-900/5 sm:px-10 sm:pb-10 sm:pt-6`}
+          className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${course.accent} px-6 pb-7 pt-3 text-center shadow-lg ring-1 ring-warm-900/5 sm:px-9 sm:pb-9 sm:pt-4`}
         >
           <span className="text-6xl drop-shadow-sm" aria-hidden="true">
             {course.emoji}
@@ -80,7 +80,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         </div>
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2">
-          <div className="card-soft px-6 pb-6 pt-4">
+          <div className="card-soft px-5 pb-5 pt-2.5">
             <h2 className="font-heading text-xl font-semibold">Чему научитесь</h2>
             <ul className="mt-4 space-y-3">
               {course.learn.map((item) => (
@@ -91,7 +91,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
               ))}
             </ul>
           </div>
-          <div className="card-soft px-6 pb-6 pt-4">
+          <div className="card-soft px-5 pb-5 pt-2.5">
             <h2 className="font-heading text-xl font-semibold">Кому подойдёт</h2>
             <ul className="mt-4 space-y-3">
               {course.forWhom.map((item) => (

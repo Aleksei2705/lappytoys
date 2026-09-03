@@ -70,7 +70,7 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
   }
 
   return (
-    <div className="card-soft mt-10 px-6 pb-6 pt-4 shadow-lg sm:px-8 sm:pb-8 sm:pt-5">
+    <div className="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5">
       <h3 className="font-heading text-xl font-semibold text-warm-900">Оставить отзыв</h3>
       <p className="mt-2 text-sm leading-relaxed text-warm-500">
         {isReviewsEnabled()

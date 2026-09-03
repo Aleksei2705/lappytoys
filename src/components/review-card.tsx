@@ -11,7 +11,7 @@ export function ReviewCard({ name, text, course, rating = 5 }: ReviewCardProps) 
   const stars = Math.min(5, Math.max(1, Math.round(rating)));
 
   return (
-    <article className="card-soft card-hover px-6 pb-6 pt-4">
+    <article className="card-soft card-hover px-5 pb-5 pt-2.5">
       <div className="flex gap-0.5" aria-label={`Оценка: ${stars} из 5`}>
         {Array.from({ length: 5 }).map((_, i) => (
           <Star
@@ -22,7 +22,7 @@ export function ReviewCard({ name, text, course, rating = 5 }: ReviewCardProps) 
           />
         ))}
       </div>
-      <p className="mt-4 text-base leading-relaxed text-warm-700">&ldquo;{text}&rdquo;</p>
+      <p className="mt-3 text-base leading-relaxed text-warm-700">&ldquo;{text}&rdquo;</p>
       <div className="mt-5 flex items-center justify-between border-t border-cream-200/70 pt-4">
         <div>
           <p className="font-semibold text-warm-900">{name}</p>

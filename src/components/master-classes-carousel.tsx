@@ -92,7 +92,7 @@ export function MasterClassesCarousel() {
                   ) : null}
                   <span className="badge-solid absolute right-3 top-3">{mc.badge}</span>
                 </div>
-                <div className="flex flex-1 flex-col gap-3 px-5 pb-5 pt-3.5">
+                <div className="flex flex-1 flex-col gap-2 px-4 pb-4 pt-2">
                   <h3 className="font-heading text-xl font-semibold leading-snug text-warm-900">
                     {mc.title}
                   </h3>
