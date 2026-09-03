@@ -56,17 +56,16 @@ export default function HomePage() {
               alt=""
               fill
               priority
-              className="object-contain object-center brightness-[0.92] md:scale-[1.02] md:object-cover md:object-[50%_28%] md:brightness-[0.82]"
+              className="object-contain object-center brightness-[0.94] md:brightness-[0.97]"
               sizes="100vw"
               quality={85}
             />
-            {/* Slight darken veil */}
-            <div className="absolute inset-0 bg-warm-900/5 md:bg-warm-900/12" />
+            <div className="absolute inset-0 bg-cream/35 md:bg-cream/25" />
             {/* Soft side fades on desktop — no hard white cut */}
             <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[22%] bg-gradient-to-r from-cream via-cream/70 to-transparent md:block" />
             <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[22%] bg-gradient-to-l from-cream via-cream/70 to-transparent md:block" />
             <div className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(253,248,249,0.35)_72%,rgba(253,248,249,0.88)_100%)] md:block" />
-            <div className="absolute inset-0 bg-gradient-to-b from-cream/55 via-transparent to-cream/70 md:from-cream/45 md:to-cream/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-cream/55 via-transparent to-cream/70 md:from-cream/40 md:to-cream/65" />
           </div>
           <div className="glow-brand -right-24 -top-24 size-96 opacity-40" />
           <div className="glow-accent -bottom-32 -left-24 size-80 opacity-40" />
