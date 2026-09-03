@@ -284,7 +284,7 @@ export const masterClasses = [
   {
     category: "Макраме",
     title: "Сова",
-    description: "Макраме-панно в виде совы — уютный декор своими руками",
+    description: "Макраме-брелок в виде совы — уютный аксессуар своими руками",
     price: "2 500 тг",
     badge: "Акция",
     image: "/images/macrame-sova.jpg",
@@ -293,7 +293,7 @@ export const masterClasses = [
   {
     category: "Макраме",
     title: "Черепаха",
-    description: "Макраме-панно в виде черепахи — милый декор для детской или гостиной",
+    description: "Макраме-брелок в виде черепахи — милый аксессуар на сумку или ключи",
     price: "2 000 тг",
     badge: "Акция",
     image: "/images/macrame-turtle.jpg",
