@@ -48,19 +48,19 @@ export default function HomePage() {
     <div id="top">
       <SiteHeader />
       <main>
-        {/* Hero — mobile: content higher, stats pinned to bottom; desktop: centered */}
+        {/* Hero — badge top, title/CTA middle, stats bottom (mobile); desktop centered group */}
         <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-start overflow-hidden pt-3 sm:pt-5 md:justify-center md:pt-0">
           <div className="absolute inset-0 bg-brand-100/20" />
           <div className="glow-brand -right-24 -top-24 size-96" />
           <div className="glow-accent -bottom-32 -left-24 size-80" />
 
           <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center py-4 text-center sm:py-8 md:flex-none md:py-12">
-            <div className="badge-soft mb-6 inline-flex gap-2 px-4 py-2 sm:mb-8 md:mb-10">
+            <div className="badge-soft shrink-0 inline-flex gap-2 px-4 py-2 md:mb-10">
               <Sparkles className="size-4" />
               Создаём руками вместе
             </div>
 
-            <div className="w-full space-y-6 sm:space-y-8">
+            <div className="flex w-full flex-1 flex-col items-center justify-center space-y-6 py-4 sm:space-y-8 md:flex-none md:py-0">
               <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-warm-900 sm:text-5xl lg:text-6xl">
                 Любимое ваше <span className="text-gradient">занятие</span>
               </h1>
@@ -79,7 +79,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <dl className="mt-auto grid w-full grid-cols-3 gap-4 border-t border-cream-200/70 pt-6 text-center sm:pt-8 md:mt-8">
+            <dl className="mt-auto grid w-full shrink-0 grid-cols-3 gap-4 border-t border-cream-200/70 pt-6 text-center sm:pt-8 md:mt-8">
               {stats.map((stat) => {
                 const StatIcon =
                   "icon" in stat && stat.icon ? statIcons[stat.icon] : null;
