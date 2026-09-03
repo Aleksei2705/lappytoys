@@ -48,11 +48,23 @@ export default function HomePage() {
     <div id="top">
       <SiteHeader />
       <main>
-        {/* Hero — badge top, title/CTA middle, stats bottom (mobile); desktop centered group */}
+        {/* Hero — macrame photo behind content until About */}
         <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-start overflow-hidden pt-3 sm:pt-5 md:justify-center md:pt-0">
-          <div className="absolute inset-0 bg-brand-100/20" />
-          <div className="glow-brand -right-24 -top-24 size-96" />
-          <div className="glow-accent -bottom-32 -left-24 size-80" />
+          <div className="absolute inset-0 bg-cream">
+            <Image
+              src="/images/hero-bg.jpg"
+              alt=""
+              fill
+              priority
+              className="object-contain object-center"
+              sizes="100vw"
+              quality={85}
+            />
+            <div className="absolute inset-0 bg-cream/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-cream/65 via-transparent to-cream/75" />
+          </div>
+          <div className="glow-brand -right-24 -top-24 size-96 opacity-40" />
+          <div className="glow-accent -bottom-32 -left-24 size-80 opacity-40" />
 
           <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center py-4 text-center sm:py-8 md:flex-none md:py-12">
             <div className="badge-soft shrink-0 inline-flex gap-2 px-4 py-2 md:mb-10">
