@@ -16,6 +16,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SignupForm } from "@/components/signup-form";
 import { ReviewsSection } from "@/components/reviews-section";
 import { WorksGallery } from "@/components/works-gallery";
+import { MasterClassesCarousel } from "@/components/master-classes-carousel";
 import { PriceText } from "@/components/price-text";
 import {
   ContactIconFrame,
@@ -28,7 +29,6 @@ import {
   aboutParagraphs,
   benefits,
   courses,
-  masterClasses,
   site,
   stats,
 } from "@/data/site";
@@ -191,49 +191,7 @@ export default function HomePage() {
         </section>
 
         {/* Master classes */}
-        <section id="master-classes" className="page-section section-alt">
-          <div className="container-main">
-            <SectionHeader
-              align="left"
-              eyebrow="Готовые проекты"
-              title="Мастер-классы"
-              description="Записывайтесь скорее!"
-            />
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {masterClasses.map((mc) => (
-                <article key={mc.title} className="card-hover">
-                  <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[4/3]">
-                    <Image
-                      src={mc.image}
-                      alt={mc.title}
-                      fill
-                      className="object-cover transition-transform duration-500 hover:scale-[1.03]"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    {"category" in mc && mc.category ? (
-                      <span className="badge-soft absolute left-3 top-3 bg-white/95 px-4 py-1.5 !text-sm shadow-sm sm:!text-base">
-                        {mc.category}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="space-y-3 p-5">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-heading text-lg font-semibold leading-snug">{mc.title}</h3>
-                      <span className="badge-solid shrink-0">{mc.badge}</span>
-                    </div>
-                    <p className="text-sm leading-relaxed text-warm-500">{mc.description}</p>
-                    <PriceText className="font-heading text-2xl font-bold text-brand-700" as="p">
-                      {mc.price}
-                    </PriceText>
-                    <a href="#signup" className="btn-primary h-10 w-full">
-                      Записаться
-                    </a>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <MasterClassesCarousel />
 
         <WorksGallery />
 
