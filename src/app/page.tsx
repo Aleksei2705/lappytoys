@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -113,7 +113,7 @@ export default function HomePage() {
         </section>
 
         {/* About */}
-        <section id="about" className="page-section section-alt">
+        <section id="about" className="page-section section-alt section-stitch">
           <div className="container-main">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
               <div className="relative">
@@ -153,7 +153,7 @@ export default function HomePage() {
         </section>
 
         {/* Courses */}
-        <section id="courses" className="page-section">
+        <section id="courses" className="page-section section-stitch">
           <div className="container-main">
             <SectionHeader
               eyebrow="Направления"
@@ -270,7 +270,7 @@ export default function HomePage() {
         </section>
 
         {/* Contacts */}
-        <section id="contacts" className="page-section">
+        <section id="contacts" className="page-section section-stitch">
           <div className="container-main">
             <SectionHeader
               eyebrow="Связаться"

@@ -73,7 +73,7 @@ body {
 }
 
 .section-alt {
-  @apply bg-white/50 backdrop-blur-sm;
+  @apply relative bg-white/40 backdrop-blur-[2px];
 }
 
 .container-main {
@@ -148,6 +148,70 @@ body {
 
 .glow-accent {
   @apply absolute rounded-full bg-accent-200/50 blur-3xl;
+}
+
+.atmosphere-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+.atmosphere-blob {
+  will-change: transform;
+  animation: atmosphere-drift 22s ease-in-out infinite;
+}
+
+.atmosphere-blob-a {
+  animation-duration: 26s;
+}
+
+.atmosphere-blob-b {
+  animation-duration: 20s;
+  animation-direction: reverse;
+  animation-delay: -6s;
+}
+
+.atmosphere-blob-c {
+  animation-duration: 28s;
+  animation-delay: -12s;
+}
+
+@keyframes atmosphere-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(3%, -4%, 0) scale(1.06);
+  }
+  66% {
+    transform: translate3d(-4%, 3%, 0) scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere-blob {
+    animation: none;
+  }
+}
+
+.section-stitch {
+  @apply relative;
+}
+
+.section-stitch::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: min(16rem, 55%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-brand-300) 70%, transparent),
+    transparent
+  );
 }
 
 .badge-soft {
