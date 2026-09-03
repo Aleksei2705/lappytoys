@@ -244,12 +244,3 @@ body {
   opacity: 0.85;
   pointer-events: none;
 }
-
-/* Hero photo — soft white fade on all edges */
-.hero-photo-edge-fade {
-  background:
-    linear-gradient(to right, #fff 0%, rgba(255, 255, 255, 0.92) 6%, rgba(255, 255, 255, 0.45) 16%, transparent 32%),
-    linear-gradient(to left, #fff 0%, rgba(255, 255, 255, 0.92) 6%, rgba(255, 255, 255, 0.45) 16%, transparent 32%),
-    linear-gradient(to bottom, #fff 0%, rgba(255, 255, 255, 0.88) 5%, rgba(255, 255, 255, 0.4) 14%, transparent 28%),
-    linear-gradient(to top, #fff 0%, rgba(255, 255, 255, 0.75) 4%, rgba(255, 255, 255, 0.35) 12%, transparent 24%);
-}

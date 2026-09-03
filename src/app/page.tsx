@@ -50,7 +50,7 @@ export default function HomePage() {
       <main>
         {/* Hero — macrame photo behind content until About */}
         <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-start overflow-hidden pt-3 sm:pt-5 md:justify-center md:pt-0">
-          <div className="absolute inset-0 bg-white">
+          <div className="absolute inset-0 bg-cream">
             <Image
               src="/images/hero-bg.jpg"
               alt=""
@@ -60,8 +60,12 @@ export default function HomePage() {
               sizes="100vw"
               quality={85}
             />
-            <div className="hero-photo-edge-fade pointer-events-none absolute inset-0" />
-            <div className="pointer-events-none absolute inset-0 bg-white/10 md:bg-white/5" />
+            <div className="absolute inset-0 bg-cream/35 md:bg-cream/25" />
+            {/* Soft side fades on desktop — no hard white cut */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[22%] bg-gradient-to-r from-cream via-cream/70 to-transparent md:block" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[22%] bg-gradient-to-l from-cream via-cream/70 to-transparent md:block" />
+            <div className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(253,248,249,0.35)_72%,rgba(253,248,249,0.88)_100%)] md:block" />
+            <div className="absolute inset-0 bg-gradient-to-b from-cream/55 via-transparent to-cream/70 md:from-cream/40 md:to-cream/65" />
           </div>
           <div className="glow-brand -right-24 -top-24 size-96 opacity-40" />
           <div className="glow-accent -bottom-32 -left-24 size-80 opacity-40" />
