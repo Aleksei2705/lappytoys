@@ -5,6 +5,7 @@ export type StoredReview = {
   name: string;
   text: string;
   course: string;
+  rating: number;
   created_at: string;
 };
 

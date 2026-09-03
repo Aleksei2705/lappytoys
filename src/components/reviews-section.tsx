@@ -22,7 +22,7 @@ export function ReviewsSection() {
 
     const { data, error } = await supabase
       .from("reviews")
-      .select("id,name,text,course,created_at")
+      .select("id,name,text,course,rating,created_at")
       .order("created_at", { ascending: false });
 
     if (!error && data) {
@@ -47,7 +47,13 @@ export function ReviewsSection() {
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {dynamicReviews.map((review) => (
-            <ReviewCard key={review.id} name={review.name} text={review.text} course={review.course} />
+            <ReviewCard
+              key={review.id}
+              name={review.name}
+              text={review.text}
+              course={review.course}
+              rating={review.rating ?? 5}
+            />
           ))}
           {staticReviews.map((review) => (
             <ReviewCard key={`${review.name}-${review.course}`} {...review} />

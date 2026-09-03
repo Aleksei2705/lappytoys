@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Star } from "lucide-react";
 import { courses, site } from "@/data/site";
 import { getSupabase, isReviewsEnabled } from "@/lib/supabase";
 
@@ -19,6 +19,7 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
   const [name, setName] = useState("");
   const [course, setCourse] = useState(courseOptions[0]);
   const [text, setText] = useState("");
+  const [rating, setRating] = useState(5);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -34,6 +35,7 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
         name: name.trim(),
         course: course.trim(),
         text: text.trim(),
+        rating,
       });
 
       if (insertError) {
@@ -45,6 +47,7 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
       setName("");
       setText("");
       setCourse(courseOptions[0]);
+      setRating(5);
       setStatus("success");
       onSubmitted?.();
       return;
@@ -54,6 +57,7 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
       "Здравствуйте! Хочу оставить отзыв для сайта.",
       `Имя: ${name.trim()}`,
       `Курс: ${course.trim()}`,
+      `Оценка: ${rating} из 5`,
       `Отзыв: ${text.trim()}`,
     ].join("\n");
 
@@ -61,6 +65,7 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
     setName("");
     setText("");
     setCourse(courseOptions[0]);
+    setRating(5);
     setStatus("success");
   }
 
@@ -109,6 +114,32 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
               </option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <p className="mb-2 text-sm font-medium text-warm-700">Оценка</p>
+          <div className="flex items-center gap-1" role="group" aria-label="Оценка от 1 до 5">
+            {Array.from({ length: 5 }).map((_, i) => {
+              const value = i + 1;
+              const active = value <= rating;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setRating(value)}
+                  className="rounded-lg p-1 transition-transform hover:scale-110"
+                  aria-label={`${value} из 5`}
+                  aria-pressed={rating === value}
+                >
+                  <Star
+                    className={`size-8 ${
+                      active ? "fill-accent-400 text-accent-400" : "text-cream-200"
+                    }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div>
