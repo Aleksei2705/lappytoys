@@ -69,7 +69,7 @@ body {
 
 /* Layout */
 .page-section {
-  @apply py-20 sm:py-24;
+  @apply py-10 sm:py-12;
 }
 
 .section-alt {
