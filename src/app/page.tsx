@@ -48,13 +48,13 @@ export default function HomePage() {
     <div id="top">
       <SiteHeader />
       <main>
-        {/* Hero — on mobile sit higher (Android viewport/chrome); desktop stays centered */}
+        {/* Hero — mobile: content higher, stats pinned to bottom; desktop: centered */}
         <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-start overflow-hidden pt-3 sm:pt-5 md:justify-center md:pt-0">
           <div className="absolute inset-0 bg-brand-100/20" />
           <div className="glow-brand -right-24 -top-24 size-96" />
           <div className="glow-accent -bottom-32 -left-24 size-80" />
 
-          <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center py-4 text-center sm:py-8 md:py-12">
+          <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center py-4 text-center sm:py-8 md:flex-none md:py-12">
             <div className="badge-soft mb-6 inline-flex gap-2 px-4 py-2 sm:mb-8 md:mb-10">
               <Sparkles className="size-4" />
               Создаём руками вместе
@@ -77,38 +77,39 @@ export default function HomePage() {
                   Мастер-классы
                 </Link>
               </div>
-              <dl className="grid grid-cols-3 gap-4 border-t border-cream-200/70 pt-8 text-center">
-                {stats.map((stat) => {
-                  const StatIcon =
-                    "icon" in stat && stat.icon ? statIcons[stat.icon] : null;
-
-                  return (
-                  <div key={stat.label}>
-                    {StatIcon ? (
-                      <dt className="flex justify-center">
-                        <span className="inline-flex size-11 items-center justify-center rounded-full bg-brand-100 text-brand-700">
-                          <StatIcon className="size-6" strokeWidth={1.75} aria-hidden />
-                        </span>
-                      </dt>
-                    ) : "value" in stat && stat.value ? (
-                      <dt className="font-heading text-2xl font-bold text-brand-700 sm:text-3xl">
-                        {stat.value}
-                      </dt>
-                    ) : null}
-                    <dd
-                      className={
-                        StatIcon || ("value" in stat && stat.value)
-                          ? "mt-1 text-xs leading-snug text-warm-500 sm:text-sm"
-                          : "font-heading text-xl font-bold text-brand-700 sm:text-2xl"
-                      }
-                    >
-                      {stat.label}
-                    </dd>
-                  </div>
-                  );
-                })}
-              </dl>
             </div>
+
+            <dl className="mt-auto grid w-full grid-cols-3 gap-4 border-t border-cream-200/70 pt-6 text-center sm:pt-8 md:mt-8">
+              {stats.map((stat) => {
+                const StatIcon =
+                  "icon" in stat && stat.icon ? statIcons[stat.icon] : null;
+
+                return (
+                <div key={stat.label}>
+                  {StatIcon ? (
+                    <dt className="flex justify-center">
+                      <span className="inline-flex size-11 items-center justify-center rounded-full bg-brand-100 text-brand-700">
+                        <StatIcon className="size-6" strokeWidth={1.75} aria-hidden />
+                      </span>
+                    </dt>
+                  ) : "value" in stat && stat.value ? (
+                    <dt className="font-heading text-2xl font-bold text-brand-700 sm:text-3xl">
+                      {stat.value}
+                    </dt>
+                  ) : null}
+                  <dd
+                    className={
+                      StatIcon || ("value" in stat && stat.value)
+                        ? "mt-1 text-xs leading-snug text-warm-500 sm:text-sm"
+                        : "font-heading text-xl font-bold text-brand-700 sm:text-2xl"
+                    }
+                  >
+                    {stat.label}
+                  </dd>
+                </div>
+                );
+              })}
+            </dl>
           </div>
         </section>
 
