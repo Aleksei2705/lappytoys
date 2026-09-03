@@ -313,14 +313,25 @@ export default function HomePage() {
                   </div>
                 </a>
               </div>
-              <div className="relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 lg:aspect-[4/3]">
-                <Image
-                  src="/images/signboard.jpg"
-                  alt="Контакты творческой студии lappy.art"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
+              <div className="space-y-3">
+                <div className="relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 lg:aspect-[4/3]">
+                  <iframe
+                    title="Карта: творческая студия lappy.art"
+                    src={site.mapEmbedUrl}
+                    className="absolute inset-0 h-full w-full border-0"
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+                <a
+                  href={site.mapLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-center font-heading text-sm font-semibold leading-relaxed text-brand-700 transition-colors hover:text-brand-800 sm:text-base"
+                >
+                  {site.address}
+                </a>
               </div>
             </div>
           </div>

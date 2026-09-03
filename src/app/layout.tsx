@@ -101,9 +101,16 @@ const jsonLd = {
   image: `${site.url}/images/logo.png`,
   address: {
     "@type": "PostalAddress",
+    streetAddress: "ул. Шугаева 4, каб. 304",
     addressLocality: site.city,
     addressCountry: "KZ",
   },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 50.412858,
+    longitude: 80.259144,
+  },
+  hasMap: site.mapLink,
   areaServed: {
     "@type": "City",
     name: site.city,

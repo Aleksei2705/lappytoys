@@ -14,6 +14,12 @@ export const site = {
   yandexMetricaId: "112086282",
   city: "Семей",
   country: "Казахстан",
+  address: "Казахстан, г. Семей, ул. Шугаева 4, каб. 304",
+  addressShort: "ул. Шугаева 4, каб. 304",
+  mapEmbedUrl:
+    "https://yandex.ru/map-widget/v1/?ll=80.259144%2C50.412858&z=17&pt=80.259144%2C50.412858%2Cpm2rdm&l=map&lang=ru_RU",
+  mapLink:
+    "https://yandex.kz/maps/165/semey/?ll=80.259144%2C50.412858&z=17&pt=80.259144%2C50.412858",
 } as const;
 
 export const navLinks = [
