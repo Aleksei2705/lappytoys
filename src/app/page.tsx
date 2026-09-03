@@ -79,7 +79,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <dl className="mt-auto grid w-full shrink-0 grid-cols-3 gap-4 border-t border-cream-200/70 pt-6 text-center sm:pt-8 md:mt-8">
+            <dl className="mt-auto mb-3 grid w-full shrink-0 grid-cols-3 gap-4 border-t border-cream-200/70 pt-5 text-center sm:mb-4 sm:pt-6 md:mt-8 md:mb-0 md:pt-8">
               {stats.map((stat) => {
                 const StatIcon =
                   "icon" in stat && stat.icon ? statIcons[stat.icon] : null;
