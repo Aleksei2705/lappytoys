@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -15,6 +15,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SignupForm } from "@/components/signup-form";
 import { ReviewsSection } from "@/components/reviews-section";
+import { WorksGallery } from "@/components/works-gallery";
 import { PriceText } from "@/components/price-text";
 import {
   ContactIconFrame,
@@ -240,6 +241,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <WorksGallery />
 
         <ReviewsSection />
 

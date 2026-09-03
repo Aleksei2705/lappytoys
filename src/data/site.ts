@@ -26,6 +26,7 @@ export const navLinks = [
   { href: "/#about", label: "Обо мне" },
   { href: "/#courses", label: "Уроки" },
   { href: "/#master-classes", label: "Мастер-классы" },
+  { href: "/#works", label: "Работы" },
   { href: "/#reviews", label: "Отзывы" },
   { href: "/#contacts", label: "Контакты" },
 ] as const;
@@ -308,6 +309,59 @@ export const masterClasses = [
     accent: "from-brand-100 to-accent-100",
   },
 ] as const;
+
+export type StudentWork = {
+  src: string;
+  title: string;
+  category: string;
+  alt: string;
+};
+
+/** Добавляйте сюда новые фото работ учениц — секция подхватит сама. */
+export const studentWorks: StudentWork[] = [
+  {
+    src: "/images/works/chick.jpg",
+    title: "Цыплёнок",
+    category: "Вязание крючком",
+    alt: "Вязаный цыплёнок amigurumi — работа ученицы студии",
+  },
+  {
+    src: "/images/works/bunny.jpg",
+    title: "Зайчик",
+    category: "Вязание крючком",
+    alt: "Вязаная голова зайчика amigurumi — работа ученицы студии",
+  },
+  {
+    src: "/images/works/star.jpg",
+    title: "Звёздочка",
+    category: "Шитьё игрушек",
+    alt: "Розовая плюшевая звёздочка — работа ученицы студии",
+  },
+  {
+    src: "/images/works/dragon.jpg",
+    title: "Дракончик",
+    category: "Вязание крючком",
+    alt: "Вязаный дракончик amigurumi — работа ученицы студии",
+  },
+  {
+    src: "/images/works/goose.jpg",
+    title: "Гусь",
+    category: "Вязание крючком",
+    alt: "Вязаный гусь amigurumi — работа ученицы студии",
+  },
+  {
+    src: "/images/works/rope-landscape.jpg",
+    title: "Пейзаж на канате",
+    category: "Творчество",
+    alt: "Круглое панно-пейзаж на плетёном канате — работа ученицы студии",
+  },
+  {
+    src: "/images/works/macrame-keychain.jpg",
+    title: "Брелок",
+    category: "Макраме",
+    alt: "Макраме-брелок с бахромой — работа ученицы студии",
+  },
+];
 
 export const reviews = [
   {

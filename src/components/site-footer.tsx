@@ -1,5 +1,6 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { ArrowUp } from "lucide-react";
+import { MetrikaInformer } from "@/components/metrika-informer";
 import { SiteLogo } from "@/components/site-logo";
 import { TelegramIcon } from "@/components/telegram-icon";
 import { navLinks, site } from "@/data/site";
@@ -92,25 +93,8 @@ export function SiteFooter() {
 
         <div className="my-10 h-px bg-gradient-to-r from-transparent via-cream-200 to-transparent" />
 
-        <div className="flex flex-col items-center gap-4">
-          <a
-            href={`https://metrika.yandex.ru/stat/?id=${site.yandexMetricaId}&from=informer`}
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-            className="opacity-80 transition-opacity hover:opacity-100"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`https://informer.yandex.ru/informer/${site.yandexMetricaId}/3_1_FFFFFFFF_EFEFEFFF_0_pageviews`}
-              width={88}
-              height={31}
-              alt="Яндекс.Метрика"
-              title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)"
-              className="ym-advanced-informer border-0"
-              data-cid={site.yandexMetricaId}
-              data-lang="ru"
-            />
-          </a>
+        <div className="flex flex-col items-center gap-5">
+          <MetrikaInformer />
           <p className="text-center text-sm text-warm-500">
             © {new Date().getFullYear()} {site.name}. Семей, Казахстан.
           </p>
