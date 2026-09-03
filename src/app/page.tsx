@@ -49,18 +49,20 @@ export default function HomePage() {
       <SiteHeader />
       <main>
         {/* Hero */}
-        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-center overflow-hidden">
+        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col overflow-hidden">
           <div className="absolute inset-0 bg-brand-100/20" />
           <div className="glow-brand -right-24 -top-24 size-96" />
           <div className="glow-accent -bottom-32 -left-24 size-80" />
-          <div className="container-main relative mx-auto max-w-3xl py-12 text-center sm:py-14 lg:py-16">
-            <div className="space-y-8">
-              <div className="text-left">
-                <div className="badge-soft inline-flex gap-2 px-4 py-2">
-                  <Sparkles className="size-4" />
-                  Создаём руками вместе
-                </div>
+          <div className="container-main relative mx-auto flex w-full max-w-3xl flex-1 flex-col">
+            {/* Badge sits midway between header and the main heading */}
+            <div className="flex flex-1 items-center justify-center">
+              <div className="badge-soft inline-flex gap-2 px-4 py-2">
+                <Sparkles className="size-4" />
+                Создаём руками вместе
               </div>
+            </div>
+
+            <div className="space-y-6 pb-10 text-center sm:space-y-8 sm:pb-12 lg:pb-14">
               <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-warm-900 sm:text-5xl lg:text-6xl">
                 Любимое ваше <span className="text-gradient">занятие</span>
               </h1>
