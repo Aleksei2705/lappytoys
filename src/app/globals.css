@@ -2,8 +2,8 @@
 
 /* Палитра lappy.art — нежная женственная гамма */
 @theme inline {
-  --font-sans: var(--font-manrope);
-  --font-heading: var(--font-playfair);
+  --font-sans: var(--font-manrope), "Segoe UI", sans-serif;
+  --font-heading: var(--font-playfair), Georgia, serif;
 
   /* Фон — пудровый, тёплый */
   --color-cream: #fdf8f9;

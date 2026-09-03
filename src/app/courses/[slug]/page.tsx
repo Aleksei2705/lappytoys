@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { BackButton } from "@/components/back-button";
+import { PriceText } from "@/components/price-text";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { courses, getCourseById, site } from "@/data/site";
@@ -52,15 +53,19 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           <span className="text-6xl drop-shadow-sm" aria-hidden="true">
             {course.emoji}
           </span>
-          <p className="eyebrow mt-4">{course.badge}</p>
+          <p className="eyebrow mt-4">
+            <PriceText>{course.badge}</PriceText>
+          </p>
           <h1 className="mt-2 font-heading text-3xl font-bold text-warm-900 sm:text-4xl">
             {course.title}
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-warm-600">
-            {course.intro}
+            <PriceText>{course.intro}</PriceText>
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm">
-            <span className="badge-soft">{course.price}</span>
+            <span className="badge-soft">
+              <PriceText>{course.price}</PriceText>
+            </span>
             <span className="badge-soft">{course.duration}</span>
             <span className="badge-soft">{course.level}</span>
           </div>
@@ -68,7 +73,9 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
 
         <div className="mt-10 space-y-4 text-base leading-relaxed text-warm-600">
           {course.details.map((d) => (
-            <p key={d.slice(0, 40)}>{d}</p>
+            <p key={d.slice(0, 40)}>
+              <PriceText>{d}</PriceText>
+            </p>
           ))}
         </div>
 

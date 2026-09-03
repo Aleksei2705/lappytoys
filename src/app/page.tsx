@@ -15,6 +15,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SignupForm } from "@/components/signup-form";
 import { ReviewsSection } from "@/components/reviews-section";
+import { PriceText } from "@/components/price-text";
 import {
   ContactIconFrame,
   InstagramContactIcon,
@@ -168,7 +169,9 @@ export default function HomePage() {
                     <span className="absolute right-5 top-5 text-3xl" aria-hidden="true">
                       {course.emoji}
                     </span>
-                    <span className="badge-soft">{course.badge}</span>
+                    <span className="badge-soft">
+                      <PriceText>{course.badge}</PriceText>
+                    </span>
                     <h3 className="pr-10 font-heading text-xl font-semibold text-warm-900">
                       {course.title}
                     </h3>
@@ -225,7 +228,9 @@ export default function HomePage() {
                       <span className="badge-solid shrink-0">{mc.badge}</span>
                     </div>
                     <p className="text-sm leading-relaxed text-warm-500">{mc.description}</p>
-                    <p className="font-heading text-2xl font-bold text-brand-700">{mc.price}</p>
+                    <PriceText className="font-heading text-2xl font-bold text-brand-700" as="p">
+                      {mc.price}
+                    </PriceText>
                     <a href="#signup" className="btn-primary h-10 w-full">
                       Записаться
                     </a>

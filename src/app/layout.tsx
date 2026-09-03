@@ -109,7 +109,7 @@ const jsonLd = {
     name: site.city,
   },
   sameAs: [site.instagram, site.telegram],
-  priceRange: "₸₸",
+  priceRange: "$$",
   teaches: [
     "Вязание крючком",
     "Вязание спицами",
