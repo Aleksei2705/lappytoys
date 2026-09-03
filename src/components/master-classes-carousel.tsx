@@ -97,9 +97,14 @@ export function MasterClassesCarousel() {
                     {mc.title}
                   </h3>
                   <p className="text-sm leading-relaxed text-warm-500">{mc.description}</p>
-                  <PriceText className="font-heading text-2xl font-bold text-brand-700" as="p">
-                    {mc.price}
-                  </PriceText>
+                  <div className="flex items-baseline gap-3">
+                    <PriceText className="font-heading text-2xl font-bold text-brand-700" as="p">
+                      {mc.price}
+                    </PriceText>
+                    <PriceText className="price-strike-diagonal font-heading text-lg text-warm-500" as="p">
+                      {mc.priceFull}
+                    </PriceText>
+                  </div>
                   <a href="#signup" className="btn-primary mt-auto h-10 w-full">
                     Записаться
                   </a>

@@ -221,3 +221,24 @@ body {
 .badge-solid {
   @apply inline-flex w-fit items-center rounded-full bg-gradient-to-r from-brand-600 to-brand-700 px-3 py-1 text-xs font-semibold text-white;
 }
+
+.price-strike-diagonal {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  line-height: 1.1;
+}
+
+.price-strike-diagonal::after {
+  content: "";
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  top: 50%;
+  height: 2px;
+  background: currentColor;
+  transform: rotate(-18deg);
+  transform-origin: center;
+  opacity: 0.85;
+  pointer-events: none;
+}
