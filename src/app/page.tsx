@@ -166,8 +166,8 @@ export default function HomePage() {
                   key={course.id}
                   className={`card-hover flex flex-col bg-gradient-to-br ${course.accent}`}
                 >
-                  <div className="relative flex flex-1 flex-col gap-3 p-6">
-                    <span className="absolute right-5 top-5 text-3xl" aria-hidden="true">
+                  <div className="relative flex flex-1 flex-col gap-3 px-6 pb-6 pt-4">
+                    <span className="absolute right-5 top-3.5 text-3xl" aria-hidden="true">
                       {course.emoji}
                     </span>
                     <span className="badge-soft">
@@ -206,7 +206,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={b.title}
-                    className="card-soft flex flex-col items-center p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-100/30"
+                    className="card-soft flex flex-col items-center px-8 pb-8 pt-5 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-100/30"
                   >
                     <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-accent-100 text-brand-600 shadow-inner">
                       <Icon className="size-7" />
@@ -300,7 +300,7 @@ export default function HomePage() {
                 title="Записаться на урок/мастер-класс"
                 description="Оставьте заявку — в ближайшее время обязательно свяжусь с вами."
               />
-              <div className="card-soft mt-10 p-6 shadow-lg sm:p-8">
+              <div className="card-soft mt-10 px-6 pb-6 pt-4 shadow-lg sm:px-8 sm:pb-8 sm:pt-5">
                 <SignupForm />
               </div>
               <div className="mt-6 flex justify-center">

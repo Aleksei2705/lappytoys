@@ -11,7 +11,7 @@ export function ReviewCard({ name, text, course, rating = 5 }: ReviewCardProps) 
   const stars = Math.min(5, Math.max(1, Math.round(rating)));
 
   return (
-    <article className="card-soft card-hover p-6">
+    <article className="card-soft card-hover px-6 pb-6 pt-4">
       <div className="flex gap-0.5" aria-label={`Оценка: ${stars} из 5`}>
         {Array.from({ length: 5 }).map((_, i) => (
           <Star
