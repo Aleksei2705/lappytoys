@@ -48,14 +48,14 @@ export default function HomePage() {
     <div id="top">
       <SiteHeader />
       <main>
-        {/* Hero */}
-        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-center overflow-hidden">
+        {/* Hero — on mobile sit higher (Android viewport/chrome); desktop stays centered */}
+        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-start overflow-hidden pt-3 sm:pt-5 md:justify-center md:pt-0">
           <div className="absolute inset-0 bg-brand-100/20" />
           <div className="glow-brand -right-24 -top-24 size-96" />
           <div className="glow-accent -bottom-32 -left-24 size-80" />
 
-          <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center py-10 text-center sm:py-12">
-            <div className="badge-soft mb-8 inline-flex gap-2 px-4 py-2 sm:mb-10">
+          <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center py-4 text-center sm:py-8 md:py-12">
+            <div className="badge-soft mb-6 inline-flex gap-2 px-4 py-2 sm:mb-8 md:mb-10">
               <Sparkles className="size-4" />
               Создаём руками вместе
             </div>
