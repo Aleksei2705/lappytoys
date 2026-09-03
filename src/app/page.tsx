@@ -50,9 +50,9 @@ export default function HomePage() {
       <main>
         {/* Hero — badge top, title/CTA middle, stats bottom (mobile); desktop centered group */}
         <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-start overflow-hidden pt-3 sm:pt-5 md:justify-center md:pt-0">
-          <div className="absolute inset-0 bg-cream/25" />
-          <div className="glow-brand -right-24 -top-24 size-96 opacity-50" />
-          <div className="glow-accent -bottom-32 -left-24 size-80 opacity-50" />
+          <div className="absolute inset-0 bg-brand-100/20" />
+          <div className="glow-brand -right-24 -top-24 size-96" />
+          <div className="glow-accent -bottom-32 -left-24 size-80" />
 
           <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center py-4 text-center sm:py-8 md:flex-none md:py-12">
             <div className="badge-soft shrink-0 inline-flex gap-2 px-4 py-2 md:mb-10">
