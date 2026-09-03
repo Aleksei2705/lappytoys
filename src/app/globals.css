@@ -69,7 +69,9 @@ body {
 
 /* Layout */
 .page-section {
-  @apply py-5 sm:py-6;
+  box-sizing: border-box;
+  min-height: calc(100svh - 4rem - env(safe-area-inset-top, 0px));
+  @apply py-10 sm:py-12;
 }
 
 .section-alt {
