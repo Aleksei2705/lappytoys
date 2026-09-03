@@ -49,21 +49,18 @@ export default function HomePage() {
       <SiteHeader />
       <main>
         {/* Hero */}
-        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col overflow-hidden">
+        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-center overflow-hidden">
           <div className="absolute inset-0 bg-brand-100/20" />
           <div className="glow-brand -right-24 -top-24 size-96" />
           <div className="glow-accent -bottom-32 -left-24 size-80" />
 
-          {/* Badge: midpoint between header and headline on all screen sizes */}
-          <div className="relative z-10 flex min-h-[28vh] flex-1 items-center justify-center px-4 sm:min-h-[30vh] lg:min-h-[32vh]">
-            <div className="badge-soft inline-flex gap-2 px-4 py-2">
+          <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center py-10 text-center sm:py-12">
+            <div className="badge-soft mb-8 inline-flex gap-2 px-4 py-2 sm:mb-10">
               <Sparkles className="size-4" />
               Создаём руками вместе
             </div>
-          </div>
 
-          <div className="container-main relative z-10 mx-auto w-full max-w-3xl shrink-0">
-            <div className="space-y-6 pb-10 text-center sm:space-y-8 sm:pb-12 lg:pb-14">
+            <div className="w-full space-y-6 sm:space-y-8">
               <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-warm-900 sm:text-5xl lg:text-6xl">
                 Любимое ваше <span className="text-gradient">занятие</span>
               </h1>
