@@ -2,7 +2,7 @@ export const site = {
   name: "Творческая студия lappy.art",
   brandTitle: "lappy.art",
   brandSubtitle: "Творческая студия",
-  tagline: "Живые занятия вязанием тет-а-тет с Ольгой",
+  tagline: "Живые занятия вязанием с опытным мастером — Ольгой",
   phone: "+77058553873",
   phoneDisplay: "+7 (705) 855-38-73",
   telegram: "https://t.me/OlgaLapteva85",

@@ -1,15 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { ReviewCard } from "@/components/review-card";
 import { ReviewForm } from "@/components/review-form";
 import { reviews as staticReviews } from "@/data/site";
 import { getSupabase, type StoredReview } from "@/lib/supabase";
 
+const INITIAL_VISIBLE = 4;
+
+type DisplayReview = {
+  id: string;
+  name: string;
+  text: string;
+  course: string;
+  rating: number;
+};
+
 export function ReviewsSection() {
   const [dynamicReviews, setDynamicReviews] = useState<StoredReview[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   const loadReviews = useCallback(async () => {
     const supabase = getSupabase();
@@ -36,6 +48,29 @@ export function ReviewsSection() {
     loadReviews();
   }, [loadReviews]);
 
+  const allReviews = useMemo<DisplayReview[]>(() => {
+    const fromDb = dynamicReviews.map((review) => ({
+      id: review.id,
+      name: review.name,
+      text: review.text,
+      course: review.course,
+      rating: review.rating ?? 5,
+    }));
+
+    const fromStatic = staticReviews.map((review) => ({
+      id: `static-${review.name}-${review.course}`,
+      name: review.name,
+      text: review.text,
+      course: review.course,
+      rating: 5,
+    }));
+
+    return [...fromDb, ...fromStatic];
+  }, [dynamicReviews]);
+
+  const visibleReviews = expanded ? allReviews : allReviews.slice(0, INITIAL_VISIBLE);
+  const hiddenCount = Math.max(0, allReviews.length - INITIAL_VISIBLE);
+
   return (
     <section id="reviews" className="page-section">
       <div className="container-main">
@@ -46,19 +81,38 @@ export function ReviewsSection() {
         />
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
-          {dynamicReviews.map((review) => (
+          {visibleReviews.map((review) => (
             <ReviewCard
               key={review.id}
               name={review.name}
               text={review.text}
               course={review.course}
-              rating={review.rating ?? 5}
+              rating={review.rating}
             />
           ))}
-          {staticReviews.map((review) => (
-            <ReviewCard key={`${review.name}-${review.course}`} {...review} />
-          ))}
         </div>
+
+        {hiddenCount > 0 ? (
+          <div className="mt-8 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setExpanded((value) => !value)}
+              className="btn-secondary h-11 px-6"
+            >
+              {expanded ? (
+                <>
+                  <ChevronUp className="size-4" />
+                  Скрыть
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="size-4" />
+                  Показать ещё ({hiddenCount})
+                </>
+              )}
+            </button>
+          </div>
+        ) : null}
 
         {loading ? (
           <p className="mt-8 text-center text-sm text-warm-500">Загрузка отзывов...</p>
