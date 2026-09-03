@@ -137,7 +137,7 @@ export default function HomePage() {
                   eyebrow="Обо мне"
                   title={
                     <>
-                      Передаю знания <span className="text-gradient">детям</span>
+                      Мой <span className="text-gradient">творческий путь</span>
                     </>
                   }
                 />
