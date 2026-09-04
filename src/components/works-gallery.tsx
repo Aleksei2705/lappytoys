@@ -121,8 +121,6 @@ export function WorksGallery() {
   if (count === 0) return null;
 
   const current = studentWorks[index];
-  const prevWork = studentWorks[(index - 1 + count) % count];
-  const nextWork = studentWorks[(index + 1) % count];
 
   return (
     <section id="works" className="page-section">
@@ -280,20 +278,20 @@ export function WorksGallery() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-[min(70vh,32rem)] w-full shrink-0 bg-brand-50 sm:h-[min(72vh,28rem)]">
-              {/* Preload neighbors so swaps stay smooth */}
-              <div className="pointer-events-none absolute opacity-0" aria-hidden>
-                <Image src={prevWork.src} alt="" width={1} height={1} />
-                <Image src={nextWork.src} alt="" width={1} height={1} />
-              </div>
-              <Image
-                key={current.src}
-                src={current.src}
-                alt={current.alt}
-                fill
-                className="object-contain p-2 sm:p-4"
-                sizes="(max-width: 768px) 100vw, 48rem"
-                priority
-              />
+              {/* Keep all photos mounted — opacity only. Avoids new→old→new flash on src swap. */}
+              {studentWorks.map((work, i) => (
+                <Image
+                  key={work.src}
+                  src={work.src}
+                  alt={work.alt}
+                  fill
+                  className={`object-contain p-2 transition-opacity duration-200 sm:p-4 ${
+                    i === index ? "opacity-100" : "pointer-events-none opacity-0"
+                  }`}
+                  sizes="(max-width: 768px) 100vw, 48rem"
+                  priority={Math.abs(i - index) <= 1 || i === index}
+                />
+              ))}
             </div>
             <div className="border-t border-brand-100/80 px-5 py-4 text-center">
               <p id={titleId} className="font-heading text-lg font-semibold text-warm-900">
