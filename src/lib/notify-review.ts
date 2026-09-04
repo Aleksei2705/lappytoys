@@ -1,5 +1,3 @@
-import { site } from "@/data/site";
-
 type ReviewNotice = {
   name: string;
   course: string;
@@ -10,13 +8,12 @@ type ReviewNotice = {
 /**
  * Notifies the site author about a new review.
  * Uses Web3Forms when NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY is set,
- * otherwise FormSubmit to site.notifyEmail / NEXT_PUBLIC_REVIEW_NOTIFY_EMAIL.
+ * otherwise FormSubmit with NEXT_PUBLIC_REVIEW_NOTIFY_EMAIL.
  * Failures are swallowed so review submit still succeeds.
  */
 export async function notifySiteAuthorAboutReview(review: ReviewNotice) {
   const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim();
-  const notifyEmail =
-    process.env.NEXT_PUBLIC_REVIEW_NOTIFY_EMAIL?.trim() || site.notifyEmail;
+  const notifyEmail = process.env.NEXT_PUBLIC_REVIEW_NOTIFY_EMAIL?.trim();
 
   if (!accessKey && !notifyEmail) {
     return;
@@ -54,7 +51,7 @@ export async function notifySiteAuthorAboutReview(review: ReviewNotice) {
       return;
     }
 
-    await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(notifyEmail)}`, {
+    await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(notifyEmail!)}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
