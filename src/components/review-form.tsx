@@ -7,6 +7,8 @@ import { getSupabase, isReviewsEnabled } from "@/lib/supabase";
 
 type ReviewFormProps = {
   onSubmitted?: () => void;
+  /** When set, name is taken from the signed-in profile and cannot be edited. */
+  lockedName?: string;
 };
 
 const courseOptions = [
@@ -15,8 +17,8 @@ const courseOptions = [
   "Другое",
 ];
 
-export function ReviewForm({ onSubmitted }: ReviewFormProps) {
-  const [name, setName] = useState("");
+export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
+  const [name, setName] = useState(lockedName ?? "");
   const [course, setCourse] = useState(courseOptions[0]);
   const [text, setText] = useState("");
   const [rating, setRating] = useState(5);
@@ -28,11 +30,18 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
     setError("");
     setStatus("loading");
 
+    const authorName = (lockedName ?? name).trim();
+    if (!authorName) {
+      setStatus("error");
+      setError("Не удалось определить имя профиля. Войдите снова.");
+      return;
+    }
+
     const supabase = getSupabase();
 
     if (supabase) {
       const { error: insertError } = await supabase.from("reviews").insert({
-        name: name.trim(),
+        name: authorName,
         course: course.trim(),
         text: text.trim(),
         rating,
@@ -44,7 +53,7 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
         return;
       }
 
-      setName("");
+      if (!lockedName) setName("");
       setText("");
       setCourse(courseOptions[0]);
       setRating(5);
@@ -55,14 +64,14 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
 
     const message = [
       "Здравствуйте! Хочу оставить отзыв для сайта.",
-      `Имя: ${name.trim()}`,
+      `Имя: ${authorName}`,
       `Курс: ${course.trim()}`,
       `Оценка: ${rating} из 5`,
       `Отзыв: ${text.trim()}`,
     ].join("\n");
 
     window.open(`${site.whatsapp}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
-    setName("");
+    if (!lockedName) setName("");
     setText("");
     setCourse(courseOptions[0]);
     setRating(5);
@@ -90,10 +99,14 @@ export function ReviewForm({ onSubmitted }: ReviewFormProps) {
             minLength={2}
             maxLength={60}
             placeholder="Как вас подписать?"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="input-field"
+            value={lockedName ?? name}
+            onChange={lockedName ? undefined : (e) => setName(e.target.value)}
+            readOnly={Boolean(lockedName)}
+            className={`input-field ${lockedName ? "cursor-not-allowed bg-cream-100 text-warm-700" : ""}`}
           />
+          {lockedName ? (
+            <p className="mt-1.5 text-xs text-warm-500">Имя берётся из вашего профиля и не меняется.</p>
+          ) : null}
         </div>
 
         <div>

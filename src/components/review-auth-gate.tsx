@@ -47,9 +47,15 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
   }
 
   if (user) {
+    const authorName =
+      (user.user_metadata?.full_name as string | undefined)?.trim() ||
+      (user.user_metadata?.name as string | undefined)?.trim() ||
+      user.email?.split("@")[0] ||
+      "Ученик";
+
     return (
       <div className="mt-10">
-        <ReviewForm onSubmitted={onSubmitted} />
+        <ReviewForm onSubmitted={onSubmitted} lockedName={authorName} />
       </div>
     );
   }
