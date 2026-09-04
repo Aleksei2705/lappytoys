@@ -105,6 +105,15 @@ export function HeaderAuth() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   if (!isReviewsEnabled() || !ready) {
     return null;
   }
@@ -261,152 +270,170 @@ export function HeaderAuth() {
       )}
 
       {open ? (
-        <div className="absolute right-0 top-[calc(100%+0.5rem)] z-[60] w-[min(20.5rem,calc(100vw-1.5rem))] rounded-2xl border border-cream-200 bg-white p-4 shadow-xl">
-          {user ? (
-            <div className="space-y-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-xs text-warm-500">Вы вошли как</p>
-                  <p className="truncate text-sm font-medium text-warm-900">{displayName(user)}</p>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex size-8 items-center justify-center rounded-lg text-warm-500 hover:bg-cream-100"
-                  aria-label="Закрыть"
-                  onClick={() => setOpen(false)}
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-              <button type="button" onClick={handleLogout} className="btn-ghost h-10 w-full text-sm">
-                <LogOut className="size-4" />
-                Выйти
-              </button>
-            </div>
-          ) : (
-            <div>
-              <div className="mb-3 flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-heading text-base font-semibold text-warm-900">Профиль</p>
-                  <p className="mt-0.5 text-xs text-warm-500">Вход нужен, чтобы оставить отзыв</p>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex size-8 items-center justify-center rounded-lg text-warm-500 hover:bg-cream-100"
-                  aria-label="Закрыть"
-                  onClick={() => setOpen(false)}
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleGoogle}
-                disabled={status === "loading"}
-                className="btn-secondary h-10 w-full border-brand-100 bg-white text-sm"
-              >
-                <GoogleIcon className="size-4" />
-                {status === "loading" ? "Открываем Google..." : "Войти через Google"}
-              </button>
-
-              <div className="my-3 flex items-center gap-2">
-                <div className="h-px flex-1 bg-cream-200" />
-                <span className="text-[10px] uppercase tracking-wider text-warm-500">или</span>
-                <div className="h-px flex-1 bg-cream-200" />
-              </div>
-
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("register");
-                    setStatus("idle");
-                    setMessage("");
-                  }}
-                  className={`btn h-9 flex-1 px-2 text-xs ${
-                    mode === "register" ? "btn-primary" : "btn-secondary"
-                  }`}
-                >
-                  <UserPlus className="size-3.5" />
-                  Регистрация
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("login");
-                    setStatus("idle");
-                    setMessage("");
-                  }}
-                  className={`btn h-9 flex-1 px-2 text-xs ${
-                    mode === "login" ? "btn-primary" : "btn-secondary"
-                  }`}
-                >
-                  <LogIn className="size-3.5" />
-                  Вход
-                </button>
-              </div>
-
-              <form className="mt-3 space-y-3" onSubmit={handleAuth}>
-                <div>
-                  <label htmlFor="header-auth-email" className="mb-1.5 block text-xs font-medium text-warm-700">
-                    Email
-                  </label>
-                  <input
-                    id="header-auth-email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input-field h-10 text-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="header-auth-password"
-                    className="mb-1.5 block text-xs font-medium text-warm-700"
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-[60] bg-warm-900/35 md:hidden"
+            aria-label="Закрыть"
+            onClick={() => setOpen(false)}
+          />
+          <div
+            className="fixed inset-x-3 z-[70] max-h-[min(34rem,calc(100dvh-5.5rem-env(safe-area-inset-top,0px)))] overflow-y-auto overscroll-contain rounded-2xl border border-cream-200 bg-white p-4 shadow-xl top-[calc(4.25rem+env(safe-area-inset-top,0px))] md:absolute md:inset-x-auto md:right-0 md:top-[calc(100%+0.5rem)] md:z-[60] md:max-h-none md:w-[20.5rem] md:overflow-visible"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Профиль"
+          >
+            {user ? (
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-xs text-warm-500">Вы вошли как</p>
+                    <p className="truncate text-sm font-medium text-warm-900">{displayName(user)}</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-warm-500 hover:bg-cream-100"
+                    aria-label="Закрыть"
+                    onClick={() => setOpen(false)}
                   >
-                    Пароль
-                  </label>
-                  <input
-                    id="header-auth-password"
-                    type="password"
-                    required
-                    minLength={6}
-                    autoComplete={mode === "register" ? "new-password" : "current-password"}
-                    placeholder="Не менее 6 символов"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="input-field h-10 text-sm"
-                  />
+                    <X className="size-4" />
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  className="btn-primary h-10 w-full text-sm"
-                  disabled={status === "loading"}
-                >
-                  {status === "loading"
-                    ? "Подождите..."
-                    : mode === "register"
-                      ? "Зарегистрироваться"
-                      : "Войти"}
+                <button type="button" onClick={handleLogout} className="btn-ghost h-10 w-full text-sm">
+                  <LogOut className="size-4" />
+                  Выйти
                 </button>
-              </form>
+              </div>
+            ) : (
+              <div>
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-heading text-base font-semibold text-warm-900">Профиль</p>
+                    <p className="mt-0.5 text-xs text-warm-500">Вход нужен, чтобы оставить отзыв</p>
+                  </div>
+                  <button
+                    type="button"
+                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-warm-500 hover:bg-cream-100"
+                    aria-label="Закрыть"
+                    onClick={() => setOpen(false)}
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
 
-              {message ? (
-                <p
-                  className={`mt-3 text-center text-xs ${
-                    status === "error" ? "text-red-600" : "text-brand-700"
-                  }`}
+                <button
+                  type="button"
+                  onClick={handleGoogle}
+                  disabled={status === "loading"}
+                  className="btn-secondary h-10 w-full border-brand-100 bg-white text-sm"
                 >
-                  {message}
-                </p>
-              ) : null}
-            </div>
-          )}
-        </div>
+                  <GoogleIcon className="size-4 shrink-0" />
+                  <span className="truncate">
+                    {status === "loading" ? "Открываем Google..." : "Войти через Google"}
+                  </span>
+                </button>
+
+                <div className="my-3 flex items-center gap-2">
+                  <div className="h-px flex-1 bg-cream-200" />
+                  <span className="text-[10px] uppercase tracking-wider text-warm-500">или</span>
+                  <div className="h-px flex-1 bg-cream-200" />
+                </div>
+
+                <div className="flex gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("register");
+                      setStatus("idle");
+                      setMessage("");
+                    }}
+                    className={`btn h-9 min-w-0 flex-1 px-2 text-xs ${
+                      mode === "register" ? "btn-primary" : "btn-secondary"
+                    }`}
+                  >
+                    <UserPlus className="size-3.5 shrink-0" />
+                    <span className="truncate">Регистрация</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("login");
+                      setStatus("idle");
+                      setMessage("");
+                    }}
+                    className={`btn h-9 min-w-0 flex-1 px-2 text-xs ${
+                      mode === "login" ? "btn-primary" : "btn-secondary"
+                    }`}
+                  >
+                    <LogIn className="size-3.5 shrink-0" />
+                    <span className="truncate">Вход</span>
+                  </button>
+                </div>
+
+                <form className="mt-3 space-y-3" onSubmit={handleAuth}>
+                  <div>
+                    <label
+                      htmlFor="header-auth-email"
+                      className="mb-1.5 block text-xs font-medium text-warm-700"
+                    >
+                      Email
+                    </label>
+                    <input
+                      id="header-auth-email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="input-field h-10 w-full max-w-full text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="header-auth-password"
+                      className="mb-1.5 block text-xs font-medium text-warm-700"
+                    >
+                      Пароль
+                    </label>
+                    <input
+                      id="header-auth-password"
+                      type="password"
+                      required
+                      minLength={6}
+                      autoComplete={mode === "register" ? "new-password" : "current-password"}
+                      placeholder="Не менее 6 символов"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="input-field h-10 w-full max-w-full text-sm"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn-primary h-10 w-full text-sm"
+                    disabled={status === "loading"}
+                  >
+                    {status === "loading"
+                      ? "Подождите..."
+                      : mode === "register"
+                        ? "Зарегистрироваться"
+                        : "Войти"}
+                  </button>
+                </form>
+
+                {message ? (
+                  <p
+                    className={`mt-3 text-center text-xs break-words ${
+                      status === "error" ? "text-red-600" : "text-brand-700"
+                    }`}
+                  >
+                    {message}
+                  </p>
+                ) : null}
+              </div>
+            )}
+          </div>
+        </>
       ) : null}
     </div>
   );
