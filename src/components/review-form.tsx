@@ -89,24 +89,32 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
 
       <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="review-name" className="mb-2 block text-sm font-medium text-warm-700">
-            Ваше имя
-          </label>
-          <input
-            id="review-name"
-            name="name"
-            required
-            minLength={2}
-            maxLength={60}
-            placeholder="Как вас подписать?"
-            value={lockedName ?? name}
-            onChange={lockedName ? undefined : (e) => setName(e.target.value)}
-            readOnly={Boolean(lockedName)}
-            className={`input-field ${lockedName ? "cursor-not-allowed bg-cream-100 text-warm-700" : ""}`}
-          />
+          <p className="mb-2 text-sm font-medium text-warm-700">Ваше имя</p>
           {lockedName ? (
-            <p className="mt-1.5 text-xs text-warm-500">Имя берётся из вашего профиля и не меняется.</p>
-          ) : null}
+            <div
+              className="flex h-11 items-center rounded-xl border border-brand-100 bg-cream-100 px-4 text-sm text-warm-800"
+              aria-live="polite"
+            >
+              {lockedName}
+            </div>
+          ) : (
+            <>
+              <label htmlFor="review-name" className="sr-only">
+                Ваше имя
+              </label>
+              <input
+                id="review-name"
+                name="name"
+                required
+                minLength={2}
+                maxLength={60}
+                placeholder="Как вас подписать?"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="input-field"
+              />
+            </>
+          )}
         </div>
 
         <div>
