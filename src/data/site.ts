@@ -364,6 +364,12 @@ export const studentWorks: StudentWork[] = [
     category: "Макраме",
     alt: "Макраме-брелок с бахромой — работа ученицы студии",
   },
+  {
+    src: "/images/works/blueberry-strawberry.jpg",
+    title: "Ягодки",
+    category: "Вязание крючком",
+    alt: "Вязаные брелоки-ягодки — черника и клубника, работа ученицы студии",
+  },
 ];
 
 export const reviews = [
