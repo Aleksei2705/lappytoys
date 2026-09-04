@@ -2,7 +2,6 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { LogIn, LogOut, UserPlus } from "lucide-react";
-import { site } from "@/data/site";
 import { getSupabase, isReviewsEnabled, type User } from "@/lib/supabase";
 import { ReviewForm } from "@/components/review-form";
 
@@ -82,23 +81,39 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
     }
 
     // Do not put #hash in redirectTo — OAuth tokens also use the URL hash.
-    const redirectTo =
-      typeof window !== "undefined" ? `${window.location.origin}/` : `${site.url}/`;
+    const redirectTo = `${window.location.origin}/`;
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo,
-        queryParams: {
-          prompt: "select_account",
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo,
+          skipBrowserRedirect: true,
+          queryParams: {
+            prompt: "select_account",
+          },
         },
-      },
-    });
+      });
 
-    if (error) {
+      if (error) {
+        setStatus("error");
+        setMessage(error.message || "Не удалось открыть вход через Google.");
+        return;
+      }
+
+      if (!data.url) {
+        setStatus("error");
+        setMessage(
+          "Google-вход не настроен в Supabase (Authentication → Providers → Google).",
+        );
+        return;
+      }
+
+      // Explicit navigation — more reliable than the client auto-redirect after await.
+      window.location.assign(data.url);
+    } catch (err) {
       setStatus("error");
-      setMessage(error.message || "Не удалось открыть вход через Google.");
-      return;
+      setMessage(err instanceof Error ? err.message : "Ошибка входа через Google.");
     }
   }
 
@@ -229,8 +244,18 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
         className="btn-secondary mt-6 h-11 w-full border-brand-100 bg-white"
       >
         <GoogleIcon className="size-5" />
-        Войти через Google
+        {status === "loading" ? "Открываем Google..." : "Войти через Google"}
       </button>
+
+      {message ? (
+        <p
+          className={`mt-3 text-center text-sm ${
+            status === "error" ? "text-red-600" : "text-brand-700"
+          }`}
+        >
+          {message}
+        </p>
+      ) : null}
 
       <div className="my-5 flex items-center gap-3">
         <div className="h-px flex-1 bg-cream-200" />
@@ -308,16 +333,6 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
               ? "Зарегистрироваться"
               : "Войти"}
         </button>
-
-        {message ? (
-          <p
-            className={`text-center text-sm ${
-              status === "error" ? "text-red-600" : "text-brand-700"
-            }`}
-          >
-            {message}
-          </p>
-        ) : null}
       </form>
     </div>
   );
