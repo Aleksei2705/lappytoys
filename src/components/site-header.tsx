@@ -38,9 +38,6 @@ export function SiteHeader() {
                 {link.label}
               </Link>
             ))}
-            <Link href="/#signup" className="btn-primary h-9 px-4 text-sm">
-              Записаться
-            </Link>
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
