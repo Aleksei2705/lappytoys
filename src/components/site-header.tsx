@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { HeaderAuth } from "@/components/header-auth";
 import { SiteLogo } from "@/components/site-logo";
 import { navLinks } from "@/data/site";
 
@@ -22,60 +23,63 @@ export function SiteHeader() {
   return (
     <>
       <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
-        <div className="container-main flex min-h-16 items-center justify-between py-2">
+        <div className="container-main flex min-h-16 items-center justify-between gap-3 py-2">
           <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
             <SiteLogo />
           </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm text-warm-500 transition-colors hover:text-brand-800"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Link href="/#signup" className="btn-primary h-9 px-4 text-sm">
-            Записаться
-          </Link>
-        </nav>
-
-        <button
-          type="button"
-          className="inline-flex size-9 items-center justify-center rounded-xl border border-cream-200 bg-white md:hidden"
-          aria-label="Открыть меню"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
-      </div>
-
-      {open && (
-        <nav className="border-t border-cream-200 bg-white/95 px-4 py-4 backdrop-blur-md md:hidden">
-          <div className="flex flex-col gap-3">
+          <nav className="hidden items-center gap-7 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-lg px-2 py-1.5 text-sm text-warm-500 hover:bg-brand-50 hover:text-brand-800"
-                onClick={() => setOpen(false)}
+                className="text-sm text-warm-500 transition-colors hover:text-brand-800"
               >
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/#signup"
-              className="btn-primary mt-1 h-10"
-              onClick={() => setOpen(false)}
-            >
+          </nav>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <HeaderAuth />
+            <Link href="/#signup" className="btn-primary hidden h-9 px-4 text-sm md:inline-flex">
               Записаться
             </Link>
+            <button
+              type="button"
+              className="inline-flex size-9 items-center justify-center rounded-xl border border-cream-200 bg-white md:hidden"
+              aria-label="Открыть меню"
+              aria-expanded={open}
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
           </div>
-        </nav>
-      )}
+        </div>
+
+        {open && (
+          <nav className="border-t border-cream-200 bg-white/95 px-4 py-4 backdrop-blur-md md:hidden">
+            <div className="flex flex-col gap-3">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-lg px-2 py-1.5 text-sm text-warm-500 hover:bg-brand-50 hover:text-brand-800"
+                  onClick={() => setOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <Link
+                href="/#signup"
+                className="btn-primary mt-1 h-10"
+                onClick={() => setOpen(false)}
+              >
+                Записаться
+              </Link>
+            </div>
+          </nav>
+        )}
       </header>
       <div className="site-header-spacer" aria-hidden />
     </>
