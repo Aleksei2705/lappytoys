@@ -11,44 +11,76 @@ export function WorksGallery() {
   const [lightbox, setLightbox] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const scrollingRef = useRef(false);
   const titleId = useId();
   const count = studentWorks.length;
 
-  const goTo = useCallback((next: number) => {
-    const bounded = ((next % count) + count) % count;
-    setIndex(bounded);
+  const scrollToSlide = useCallback((next: number) => {
     const scroller = scrollerRef.current;
-    const slide = scroller?.children[bounded] as HTMLElement | undefined;
-    slide?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  }, [count]);
+    const slide = scroller?.children[next] as HTMLElement | undefined;
+    if (!scroller || !slide) return;
+    scrollingRef.current = true;
+    const left = slide.offsetLeft - (scroller.clientWidth - slide.offsetWidth) / 2;
+    scroller.scrollTo({ left, behavior: "smooth" });
+    window.setTimeout(() => {
+      scrollingRef.current = false;
+    }, 450);
+  }, []);
+
+  const goTo = useCallback(
+    (next: number, options?: { scroll?: boolean }) => {
+      const bounded = ((next % count) + count) % count;
+      setIndex(bounded);
+      if (options?.scroll !== false && !lightbox) {
+        scrollToSlide(bounded);
+      }
+    },
+    [count, lightbox, scrollToSlide],
+  );
 
   const goPrev = useCallback(() => goTo(index - 1), [goTo, index]);
   const goNext = useCallback(() => goTo(index + 1), [goTo, index]);
+
+  const lightboxPrev = useCallback(() => {
+    setIndex((i) => (i - 1 + count) % count);
+  }, [count]);
+
+  const lightboxNext = useCallback(() => {
+    setIndex((i) => (i + 1) % count);
+  }, [count]);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
     if (!scroller) return;
 
+    let frame = 0;
     function onScroll() {
-      if (!scroller) return;
-      const center = scroller.scrollLeft + scroller.clientWidth / 2;
-      let best = 0;
-      let bestDist = Infinity;
-      Array.from(scroller.children).forEach((child, i) => {
-        const el = child as HTMLElement;
-        const mid = el.offsetLeft + el.offsetWidth / 2;
-        const dist = Math.abs(mid - center);
-        if (dist < bestDist) {
-          bestDist = dist;
-          best = i;
-        }
+      if (scrollingRef.current || lightbox) return;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (!scroller) return;
+        const center = scroller.scrollLeft + scroller.clientWidth / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        Array.from(scroller.children).forEach((child, i) => {
+          const el = child as HTMLElement;
+          const mid = el.offsetLeft + el.offsetWidth / 2;
+          const dist = Math.abs(mid - center);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+          }
+        });
+        setIndex(best);
       });
-      setIndex(best);
     }
 
     scroller.addEventListener("scroll", onScroll, { passive: true });
-    return () => scroller.removeEventListener("scroll", onScroll);
-  }, []);
+    return () => {
+      cancelAnimationFrame(frame);
+      scroller.removeEventListener("scroll", onScroll);
+    };
+  }, [lightbox]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -63,11 +95,13 @@ export function WorksGallery() {
         return;
       }
       if (event.key === "ArrowRight") {
-        goNext();
+        event.preventDefault();
+        lightboxNext();
         return;
       }
       if (event.key === "ArrowLeft") {
-        goPrev();
+        event.preventDefault();
+        lightboxPrev();
       }
     }
 
@@ -76,11 +110,19 @@ export function WorksGallery() {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", handleKey);
     };
-  }, [lightbox, goNext, goPrev]);
+  }, [lightbox, lightboxNext, lightboxPrev]);
+
+  // Keep carousel aligned when closing lightbox
+  useEffect(() => {
+    if (lightbox) return;
+    scrollToSlide(index);
+  }, [lightbox]); // eslint-disable-line react-hooks/exhaustive-deps -- only sync on close
 
   if (count === 0) return null;
 
   const current = studentWorks[index];
+  const prevWork = studentWorks[(index - 1 + count) % count];
+  const nextWork = studentWorks[(index + 1) % count];
 
   return (
     <section id="works" className="page-section">
@@ -98,7 +140,7 @@ export function WorksGallery() {
         <div className="relative mt-10 sm:mt-12">
           <div
             ref={scrollerRef}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-[8%] pb-2 [scrollbar-width:none] sm:gap-5 sm:px-[12%] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-[8%] pb-2 [scrollbar-width:none] sm:gap-5 sm:px-[12%] [&::-webkit-scrollbar]:hidden"
             aria-roledescription="карусель"
             aria-label="Работы учениц"
           >
@@ -164,9 +206,7 @@ export function WorksGallery() {
                 aria-label={`Слайд ${i + 1}: ${work.title}`}
                 onClick={() => goTo(i)}
                 className={`h-2 rounded-full transition-all duration-300 ${
-                  i === index
-                    ? "w-7 bg-brand-600"
-                    : "w-2 bg-brand-200 hover:bg-brand-300"
+                  i === index ? "w-7 bg-brand-600" : "w-2 bg-brand-200 hover:bg-brand-300"
                 }`}
               />
             ))}
@@ -204,7 +244,7 @@ export function WorksGallery() {
           <button
             ref={closeBtnRef}
             type="button"
-            className="absolute right-4 top-4 inline-flex size-10 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white"
+            className="absolute right-4 top-4 z-20 inline-flex size-10 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white"
             aria-label="Закрыть"
             onClick={() => setLightbox(false)}
           >
@@ -213,11 +253,11 @@ export function WorksGallery() {
 
           <button
             type="button"
-            className="absolute left-3 top-1/2 z-10 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white sm:left-6"
+            className="absolute left-3 top-1/2 z-20 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white sm:left-6"
             aria-label="Предыдущее фото"
             onClick={(e) => {
               e.stopPropagation();
-              goPrev();
+              lightboxPrev();
             }}
           >
             <ChevronLeft className="size-5" />
@@ -225,22 +265,28 @@ export function WorksGallery() {
 
           <button
             type="button"
-            className="absolute right-3 top-1/2 z-10 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white sm:right-6"
+            className="absolute right-3 top-1/2 z-20 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white sm:right-6"
             aria-label="Следующее фото"
             onClick={(e) => {
               e.stopPropagation();
-              goNext();
+              lightboxNext();
             }}
           >
             <ChevronRight className="size-5" />
           </button>
 
           <div
-            className="relative flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-cream shadow-2xl"
+            className="relative flex w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-cream shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative aspect-[4/5] w-full bg-brand-50 sm:aspect-[5/4]">
+            <div className="relative h-[min(70vh,32rem)] w-full shrink-0 bg-brand-50 sm:h-[min(72vh,28rem)]">
+              {/* Preload neighbors so swaps stay smooth */}
+              <div className="pointer-events-none absolute opacity-0" aria-hidden>
+                <Image src={prevWork.src} alt="" width={1} height={1} />
+                <Image src={nextWork.src} alt="" width={1} height={1} />
+              </div>
               <Image
+                key={current.src}
                 src={current.src}
                 alt={current.alt}
                 fill
