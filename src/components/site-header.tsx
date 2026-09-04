@@ -67,13 +67,6 @@ export function SiteHeader() {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                href="/#signup"
-                className="btn-primary mt-1 h-10"
-                onClick={() => setOpen(false)}
-              >
-                Записаться
-              </Link>
             </div>
           </nav>
         )}
