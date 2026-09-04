@@ -50,6 +50,7 @@ export async function notifySiteAuthorAboutReview(review: ReviewNotice) {
           course: review.course,
           rating: `${review.rating}/5`,
         }),
+        keepalive: true,
       });
       return;
     }
@@ -63,11 +64,13 @@ export async function notifySiteAuthorAboutReview(review: ReviewNotice) {
       body: JSON.stringify({
         _subject: subject,
         _template: "table",
+        _captcha: "false",
         Имя: review.name,
         Курс: review.course,
         Оценка: `${review.rating}/5`,
         Отзыв: review.text,
       }),
+      keepalive: true,
     });
   } catch {
     // Do not block the review flow if mail delivery fails.

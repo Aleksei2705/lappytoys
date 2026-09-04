@@ -50,11 +50,16 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
 
       if (insertError) {
         setStatus("error");
-        setError("Не удалось отправить отзыв. Попробуйте позже.");
+        setError(
+          insertError.message
+            ? `Не удалось отправить отзыв: ${insertError.message}`
+            : "Не удалось отправить отзыв. Попробуйте позже.",
+        );
         return;
       }
 
-      void notifySiteAuthorAboutReview({
+      // Wait for mail request so a list refresh does not cancel it.
+      await notifySiteAuthorAboutReview({
         name: authorName,
         course: course.trim(),
         text: text.trim(),
