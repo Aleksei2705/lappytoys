@@ -42,9 +42,6 @@ export function SiteHeader() {
 
           <div className="flex shrink-0 items-center gap-2">
             <HeaderAuth />
-            <Link href="/#signup" className="btn-primary hidden h-9 px-4 text-sm md:inline-flex">
-              Записаться
-            </Link>
             <button
               type="button"
               className="inline-flex size-9 items-center justify-center rounded-xl border border-cream-200 bg-white md:hidden"
