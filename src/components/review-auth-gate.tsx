@@ -54,6 +54,11 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
       setReady(true);
+      // After Google OAuth return, open reviews section
+      if (data.session && typeof window !== "undefined") {
+        const el = document.getElementById("reviews");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     });
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -76,10 +81,9 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
       return;
     }
 
+    // Do not put #hash in redirectTo — OAuth tokens also use the URL hash.
     const redirectTo =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/#reviews`
-        : `${site.url}/#reviews`;
+      typeof window !== "undefined" ? `${window.location.origin}/` : `${site.url}/`;
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -93,7 +97,8 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
 
     if (error) {
       setStatus("error");
-      setMessage("Не удалось открыть вход через Google. Проверьте настройки в Supabase.");
+      setMessage(error.message || "Не удалось открыть вход через Google.");
+      return;
     }
   }
 
@@ -117,11 +122,16 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
 
       if (error) {
         setStatus("error");
-        setMessage(
-          error.message.includes("already")
-            ? "Этот email уже зарегистрирован. Войдите."
-            : "Не удалось зарегистрироваться. Проверьте email и пароль.",
-        );
+        const msg = error.message.toLowerCase();
+        if (msg.includes("already") || msg.includes("registered")) {
+          setMessage("Этот email уже зарегистрирован. Нажмите «Вход».");
+        } else if (msg.includes("password")) {
+          setMessage("Пароль слишком простой. Минимум 6 символов.");
+        } else if (msg.includes("email")) {
+          setMessage("Проверьте правильность email.");
+        } else {
+          setMessage(error.message);
+        }
         return;
       }
 
@@ -131,8 +141,11 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
         return;
       }
 
+      // Email confirmation enabled in Supabase
       setStatus("success");
-      setMessage("Проверьте почту и подтвердите регистрацию, затем войдите.");
+      setMessage(
+        "Аккаунт создан. Если включено подтверждение почты — откройте письмо от Supabase, затем войдите. Или в Supabase отключите Confirm email.",
+      );
       setMode("login");
       return;
     }
@@ -144,7 +157,14 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
 
     if (error) {
       setStatus("error");
-      setMessage("Неверный email или пароль.");
+      const msg = error.message.toLowerCase();
+      if (msg.includes("confirm") || msg.includes("not confirmed")) {
+        setMessage("Сначала подтвердите email из письма, затем войдите.");
+      } else if (msg.includes("invalid")) {
+        setMessage("Неверный email или пароль.");
+      } else {
+        setMessage(error.message);
+      }
       return;
     }
 
