@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { LogIn, LogOut, User, UserPlus, X } from "lucide-react";
 import { getSupabase, isReviewsEnabled, type User as AuthUser } from "@/lib/supabase";
 
@@ -44,15 +45,23 @@ function initial(user: AuthUser) {
 }
 
 export function HeaderAuth() {
+  const emailId = useId();
+  const passwordId = useId();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [ready, setReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<Mode>("register");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-  const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isReviewsEnabled()) {
@@ -81,12 +90,6 @@ export function HeaderAuth() {
   }, []);
 
   useEffect(() => {
-    function onPointerDown(event: MouseEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") setOpen(false);
     }
@@ -95,12 +98,20 @@ export function HeaderAuth() {
       setOpen(true);
     }
 
-    document.addEventListener("mousedown", onPointerDown);
+    function onPointerDown(event: MouseEvent) {
+      const target = event.target as Node;
+      if (buttonRef.current?.contains(target) || panelRef.current?.contains(target)) {
+        return;
+      }
+      setOpen(false);
+    }
+
     document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointerDown);
     window.addEventListener("open-header-auth", onOpenAuth);
     return () => {
-      document.removeEventListener("mousedown", onPointerDown);
       document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointerDown);
       window.removeEventListener("open-header-auth", onOpenAuth);
     };
   }, []);
@@ -129,13 +140,11 @@ export function HeaderAuth() {
       return;
     }
 
-    const redirectTo = `${window.location.origin}/`;
-
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo,
+          redirectTo: `${window.location.origin}/`,
           skipBrowserRedirect: true,
           queryParams: {
             prompt: "select_account",
@@ -241,44 +250,18 @@ export function HeaderAuth() {
     setOpen(false);
   }
 
-  return (
-    <div ref={rootRef} className="relative">
-      {user ? (
-        <button
-          type="button"
-          onClick={() => setOpen((value) => !value)}
-          className="inline-flex h-9 max-w-[10rem] items-center gap-2 rounded-xl border border-cream-200 bg-white px-2.5 text-sm text-warm-700 transition-colors hover:border-brand-200 hover:text-brand-800"
-          aria-expanded={open}
-          aria-haspopup="dialog"
-        >
-          <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-800">
-            {initial(user)}
-          </span>
-          <span className="truncate">{displayName(user)}</span>
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setOpen((value) => !value)}
-          className="btn-secondary h-9 px-3 text-sm"
-          aria-expanded={open}
-          aria-haspopup="dialog"
-        >
-          <User className="size-4" />
-          <span className="hidden sm:inline">Войти</span>
-        </button>
-      )}
-
-      {open ? (
-        <>
+  const panel = open && mounted
+    ? createPortal(
+        <div className="auth-sheet-root" data-auth-sheet="1">
           <button
             type="button"
-            className="fixed inset-0 z-[60] bg-warm-900/35 md:hidden"
+            className="auth-sheet-backdrop"
             aria-label="Закрыть"
             onClick={() => setOpen(false)}
           />
           <div
-            className="fixed inset-x-3 z-[70] max-h-[min(34rem,calc(100dvh-5.5rem-env(safe-area-inset-top,0px)))] overflow-y-auto overscroll-contain rounded-2xl border border-cream-200 bg-white p-4 shadow-xl top-[calc(4.25rem+env(safe-area-inset-top,0px))] md:absolute md:inset-x-auto md:right-0 md:top-[calc(100%+0.5rem)] md:z-[60] md:max-h-none md:w-[20.5rem] md:overflow-visible"
+            ref={panelRef}
+            className="auth-sheet-panel"
             role="dialog"
             aria-modal="true"
             aria-label="Профиль"
@@ -307,7 +290,7 @@ export function HeaderAuth() {
             ) : (
               <div>
                 <div className="mb-3 flex items-start justify-between gap-2">
-                  <div className="min-w-0">
+                  <div className="min-w-0 pr-2">
                     <p className="font-heading text-base font-semibold text-warm-900">Профиль</p>
                     <p className="mt-0.5 text-xs text-warm-500">Вход нужен, чтобы оставить отзыв</p>
                   </div>
@@ -325,7 +308,7 @@ export function HeaderAuth() {
                   type="button"
                   onClick={handleGoogle}
                   disabled={status === "loading"}
-                  className="btn-secondary h-10 w-full border-brand-100 bg-white text-sm"
+                  className="btn-secondary h-11 w-full max-w-full border-brand-100 bg-white text-sm"
                 >
                   <GoogleIcon className="size-4 shrink-0" />
                   <span className="truncate">
@@ -339,7 +322,7 @@ export function HeaderAuth() {
                   <div className="h-px flex-1 bg-cream-200" />
                 </div>
 
-                <div className="flex gap-1.5">
+                <div className="grid grid-cols-2 gap-1.5">
                   <button
                     type="button"
                     onClick={() => {
@@ -347,7 +330,7 @@ export function HeaderAuth() {
                       setStatus("idle");
                       setMessage("");
                     }}
-                    className={`btn h-9 min-w-0 flex-1 px-2 text-xs ${
+                    className={`btn h-9 min-w-0 px-2 text-xs ${
                       mode === "register" ? "btn-primary" : "btn-secondary"
                     }`}
                   >
@@ -361,7 +344,7 @@ export function HeaderAuth() {
                       setStatus("idle");
                       setMessage("");
                     }}
-                    className={`btn h-9 min-w-0 flex-1 px-2 text-xs ${
+                    className={`btn h-9 min-w-0 px-2 text-xs ${
                       mode === "login" ? "btn-primary" : "btn-secondary"
                     }`}
                   >
@@ -372,32 +355,30 @@ export function HeaderAuth() {
 
                 <form className="mt-3 space-y-3" onSubmit={handleAuth}>
                   <div>
-                    <label
-                      htmlFor="header-auth-email"
-                      className="mb-1.5 block text-xs font-medium text-warm-700"
-                    >
+                    <label htmlFor={emailId} className="mb-1.5 block text-xs font-medium text-warm-700">
                       Email
                     </label>
                     <input
-                      id="header-auth-email"
+                      id={emailId}
                       type="email"
                       required
                       autoComplete="email"
+                      inputMode="email"
                       placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="input-field h-10 w-full max-w-full text-sm"
+                      className="input-field h-11 w-full max-w-full text-base sm:text-sm"
                     />
                   </div>
                   <div>
                     <label
-                      htmlFor="header-auth-password"
+                      htmlFor={passwordId}
                       className="mb-1.5 block text-xs font-medium text-warm-700"
                     >
                       Пароль
                     </label>
                     <input
-                      id="header-auth-password"
+                      id={passwordId}
                       type="password"
                       required
                       minLength={6}
@@ -405,12 +386,12 @@ export function HeaderAuth() {
                       placeholder="Не менее 6 символов"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="input-field h-10 w-full max-w-full text-sm"
+                      className="input-field h-11 w-full max-w-full text-base sm:text-sm"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="btn-primary h-10 w-full text-sm"
+                    className="btn-primary h-11 w-full text-sm"
                     disabled={status === "loading"}
                   >
                     {status === "loading"
@@ -433,8 +414,41 @@ export function HeaderAuth() {
               </div>
             )}
           </div>
-        </>
-      ) : null}
-    </div>
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <>
+      {user ? (
+        <button
+          ref={buttonRef}
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          className="inline-flex h-9 max-w-[9rem] items-center gap-2 rounded-xl border border-cream-200 bg-white px-2.5 text-sm text-warm-700 transition-colors hover:border-brand-200 hover:text-brand-800"
+          aria-expanded={open}
+          aria-haspopup="dialog"
+        >
+          <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-800">
+            {initial(user)}
+          </span>
+          <span className="truncate">{displayName(user)}</span>
+        </button>
+      ) : (
+        <button
+          ref={buttonRef}
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          className="btn-secondary h-9 px-3 text-sm"
+          aria-expanded={open}
+          aria-haspopup="dialog"
+        >
+          <User className="size-4" />
+          <span className="hidden sm:inline">Войти</span>
+        </button>
+      )}
+      {panel}
+    </>
   );
 }
