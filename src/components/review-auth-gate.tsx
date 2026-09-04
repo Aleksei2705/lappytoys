@@ -1,0 +1,224 @@
+"use client";
+
+import { FormEvent, useEffect, useState } from "react";
+import { LogIn, LogOut, UserPlus } from "lucide-react";
+import { getSupabase, isReviewsEnabled, type User } from "@/lib/supabase";
+import { ReviewForm } from "@/components/review-form";
+
+type Mode = "login" | "register";
+
+type ReviewAuthGateProps = {
+  onSubmitted?: () => void;
+};
+
+export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [ready, setReady] = useState(false);
+  const [mode, setMode] = useState<Mode>("register");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const supabase = getSupabase();
+    if (!supabase) {
+      setReady(true);
+      return;
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+      setReady(true);
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  async function handleAuth(e: FormEvent) {
+    e.preventDefault();
+    setMessage("");
+    setStatus("loading");
+
+    const supabase = getSupabase();
+    if (!supabase) {
+      setStatus("error");
+      setMessage("Регистрация временно недоступна.");
+      return;
+    }
+
+    if (mode === "register") {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) {
+        setStatus("error");
+        setMessage(error.message.includes("already") ? "Этот email уже зарегистрирован. Войдите." : "Не удалось зарегистрироваться. Проверьте email и пароль.");
+        return;
+      }
+
+      if (data.session) {
+        setStatus("success");
+        setMessage("Готово! Теперь можно оставить отзыв.");
+        return;
+      }
+
+      setStatus("success");
+      setMessage("Проверьте почту и подтвердите регистрацию, затем войдите.");
+      setMode("login");
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    if (error) {
+      setStatus("error");
+      setMessage("Неверный email или пароль.");
+      return;
+    }
+
+    setStatus("success");
+    setMessage("Вы вошли. Можно оставить отзыв.");
+  }
+
+  async function handleLogout() {
+    const supabase = getSupabase();
+    await supabase?.auth.signOut();
+    setEmail("");
+    setPassword("");
+    setStatus("idle");
+    setMessage("");
+  }
+
+  if (!ready) {
+    return (
+      <div className="card-soft mt-10 px-5 py-6 text-center text-sm text-warm-500 shadow-lg sm:px-7">
+        Загрузка...
+      </div>
+    );
+  }
+
+  // Without Supabase — keep WhatsApp fallback form
+  if (!isReviewsEnabled()) {
+    return <ReviewForm onSubmitted={onSubmitted} />;
+  }
+
+  if (user) {
+    return (
+      <div className="mt-10 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand-100/80 bg-white/70 px-4 py-3 text-sm text-warm-600">
+          <p>
+            Вы вошли как <span className="font-medium text-warm-900">{user.email}</span>
+          </p>
+          <button type="button" onClick={handleLogout} className="btn-ghost h-9 px-3 text-xs">
+            <LogOut className="size-3.5" />
+            Выйти
+          </button>
+        </div>
+        <ReviewForm onSubmitted={onSubmitted} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5">
+      <h3 className="font-heading text-xl font-semibold text-warm-900">Оставить отзыв</h3>
+      <p className="mt-2 text-sm leading-relaxed text-warm-500">
+        Чтобы оставить отзыв, нужно зарегистрироваться или войти.
+      </p>
+
+      <div className="mt-5 flex gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setMode("register");
+            setStatus("idle");
+            setMessage("");
+          }}
+          className={`btn h-10 flex-1 px-3 ${
+            mode === "register" ? "btn-primary" : "btn-secondary"
+          }`}
+        >
+          <UserPlus className="size-4" />
+          Регистрация
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setMode("login");
+            setStatus("idle");
+            setMessage("");
+          }}
+          className={`btn h-10 flex-1 px-3 ${mode === "login" ? "btn-primary" : "btn-secondary"}`}
+        >
+          <LogIn className="size-4" />
+          Вход
+        </button>
+      </div>
+
+      <form className="mt-6 space-y-5" onSubmit={handleAuth}>
+        <div>
+          <label htmlFor="auth-email" className="mb-2 block text-sm font-medium text-warm-700">
+            Email
+          </label>
+          <input
+            id="auth-email"
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input-field"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="auth-password" className="mb-2 block text-sm font-medium text-warm-700">
+            Пароль
+          </label>
+          <input
+            id="auth-password"
+            type="password"
+            required
+            minLength={6}
+            autoComplete={mode === "register" ? "new-password" : "current-password"}
+            placeholder="Не менее 6 символов"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field"
+          />
+        </div>
+
+        <button type="submit" className="btn-primary h-11 w-full" disabled={status === "loading"}>
+          {status === "loading"
+            ? "Подождите..."
+            : mode === "register"
+              ? "Зарегистрироваться"
+              : "Войти"}
+        </button>
+
+        {message ? (
+          <p
+            className={`text-center text-sm ${
+              status === "error" ? "text-red-600" : "text-brand-700"
+            }`}
+          >
+            {message}
+          </p>
+        ) : null}
+      </form>
+    </div>
+  );
+}

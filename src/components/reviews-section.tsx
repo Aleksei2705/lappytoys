@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { ReviewCard } from "@/components/review-card";
-import { ReviewForm } from "@/components/review-form";
+import { ReviewAuthGate } from "@/components/review-auth-gate";
 import { reviews as staticReviews } from "@/data/site";
 import { getSupabase, type StoredReview } from "@/lib/supabase";
 
@@ -119,7 +119,7 @@ export function ReviewsSection() {
         ) : null}
 
         <div className="mx-auto max-w-xl">
-          <ReviewForm onSubmitted={loadReviews} />
+          <ReviewAuthGate onSubmitted={loadReviews} />
         </div>
       </div>
     </section>

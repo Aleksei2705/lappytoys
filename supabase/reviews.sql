@@ -19,7 +19,11 @@ create policy "Anyone can read reviews"
   for select
   using (true);
 
-create policy "Anyone can add reviews"
+-- Старая политика открытой записи (если есть) — удалить:
+-- drop policy if exists "Anyone can add reviews" on public.reviews;
+
+create policy "Authenticated users can add reviews"
   on public.reviews
   for insert
+  to authenticated
   with check (true);
