@@ -38,13 +38,13 @@ export function SiteHeader() {
                 {link.label}
               </Link>
             ))}
+            <Link href="/#signup" className="btn-primary h-9 px-4 text-sm">
+              Записаться
+            </Link>
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
             <HeaderAuth />
-            <Link href="/#signup" className="btn-primary h-9 px-3 text-sm sm:px-4">
-              Записаться
-            </Link>
             <button
               type="button"
               className="inline-flex size-9 items-center justify-center rounded-xl border border-cream-200 bg-white md:hidden"
@@ -70,6 +70,13 @@ export function SiteHeader() {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/#signup"
+                className="btn-primary mt-1 h-10"
+                onClick={() => setOpen(false)}
+              >
+                Записаться
+              </Link>
             </div>
           </nav>
         )}
