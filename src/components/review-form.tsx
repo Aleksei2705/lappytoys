@@ -3,7 +3,6 @@
 import { FormEvent, useState } from "react";
 import { Send, Star } from "lucide-react";
 import { courses, site } from "@/data/site";
-import { notifySiteAuthorAboutReview } from "@/lib/notify-review";
 import { getSupabase, isReviewsEnabled } from "@/lib/supabase";
 
 type ReviewFormProps = {
@@ -53,13 +52,6 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
         setError("Не удалось отправить отзыв. Попробуйте позже.");
         return;
       }
-
-      void notifySiteAuthorAboutReview({
-        name: authorName,
-        course: course.trim(),
-        text: text.trim(),
-        rating,
-      });
 
       if (!lockedName) setName("");
       setText("");
