@@ -54,7 +54,8 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
         return;
       }
 
-      await notifySiteAuthorAboutReview({
+      // Fire email via hidden iframe first — must not be cancelled by UI refresh.
+      notifySiteAuthorAboutReview({
         name: authorName,
         course: course.trim(),
         text: text.trim(),
@@ -62,7 +63,10 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
       });
 
       setStatus("success");
-      onSubmitted?.();
+      // Delay list refresh slightly so the mail POST can leave the browser first.
+      window.setTimeout(() => {
+        onSubmitted?.();
+      }, 400);
       return;
     }
 
