@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+
+Host: https://lappytoys.kz
+Sitemap: https://lappytoys.kz/sitemap.xml
