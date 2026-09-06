@@ -308,9 +308,9 @@ export default function HomePage() {
                   href={site.mapLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full text-center font-heading text-lg font-semibold leading-snug text-brand-700 transition-colors hover:text-brand-800 sm:text-xl"
+                  className="block w-full whitespace-nowrap text-center font-heading text-base font-semibold leading-none text-brand-700 transition-colors hover:text-brand-800 sm:text-lg md:text-xl"
                 >
-                  {site.address}
+                  {site.addressShort}
                 </a>
               </div>
             </div>
