@@ -96,7 +96,13 @@ export function SiteFooter() {
         <div className="flex flex-col items-center gap-5">
           <MetrikaInformer />
           <p className="text-center text-sm text-warm-500">
-            © {new Date().getFullYear()} {site.name}. Семей, Казахстан.
+            © {new Date().getFullYear()} {site.name}. Семей, Казахстан.{" "}
+            <Link
+              href="/privacy/"
+              className="underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+            >
+              Политика данных
+            </Link>
           </p>
         </div>
       </div>

@@ -24,6 +24,8 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_TELEGRAM_BOT_TOKEN: ${{ secrets.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN }}
+          NEXT_PUBLIC_TELEGRAM_CHAT_ID: ${{ secrets.NEXT_PUBLIC_TELEGRAM_CHAT_ID }}
 
       - name: Publish static site to deploy branch
         run: |
@@ -37,3 +39,14 @@ jobs:
           git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger Plesk pull webhook (optional)
+        env:
+          PLESK_DEPLOY_WEBHOOK_URL: ${{ secrets.PLESK_DEPLOY_WEBHOOK_URL }}
+        run: |
+          if [ -n "$PLESK_DEPLOY_WEBHOOK_URL" ]; then
+            curl -fsS -X POST "$PLESK_DEPLOY_WEBHOOK_URL"
+          else
+            echo "PLESK_DEPLOY_WEBHOOK_URL not set — skip auto pull"
+          fi
+        continue-on-error: true

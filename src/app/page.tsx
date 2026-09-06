@@ -1,13 +1,11 @@
 ﻿import Link from "next/link";
 import Image from "next/image";
 import {
-  ArrowRight,
   ArrowUp,
   ArrowUpRight,
   BookOpen,
   Clock,
   Heart,
-  Sparkles,
   Users,
 } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
@@ -17,14 +15,18 @@ import { SignupForm } from "@/components/signup-form";
 import { ReviewsSection } from "@/components/reviews-section";
 import { WorksGallery } from "@/components/works-gallery";
 import { MasterClassesCarousel } from "@/components/master-classes-carousel";
+import { ScheduleSection } from "@/components/schedule-section";
+import { FaqSection } from "@/components/faq-section";
+import { HeroCopy } from "@/components/hero-copy";
+import { AboutVideo } from "@/components/about-video";
 import { PriceText } from "@/components/price-text";
 import {
   ContactIconFrame,
   InstagramContactIcon,
   PhoneContactIcon,
   TelegramContactIcon,
-  WhatsAppContactIcon,
 } from "@/components/contact-icons";
+import { WhatsAppContactCard } from "@/components/whatsapp-contact-card";
 import {
   aboutParagraphs,
   benefits,
@@ -71,29 +73,7 @@ export default function HomePage() {
           <div className="glow-accent -bottom-32 -left-24 size-80 opacity-40" />
 
           <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center py-4 text-center sm:py-8 md:flex-none md:py-12">
-            <div className="badge-soft shrink-0 inline-flex gap-2 px-4 py-2 md:mb-10">
-              <Sparkles className="size-4" />
-              Создаём руками вместе
-            </div>
-
-            <div className="flex w-full flex-1 flex-col items-center justify-center space-y-6 py-4 sm:space-y-8 md:flex-none md:py-0">
-              <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-warm-900 sm:text-5xl lg:text-6xl">
-                Любимое ваше <span className="text-gradient">занятие</span>
-              </h1>
-              <p className="mx-auto max-w-lg text-lg leading-relaxed text-warm-500">
-                Приходите в студию на занятия по вязанию, макраме, вышивке и откройте для себя новое увлечение —
-                спокойно, пошагово и с поддержкой на каждом этапе.
-              </p>
-              <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Link href="#courses" className="btn-primary h-11 px-6">
-                  Выбрать курс
-                  <ArrowRight className="size-4" />
-                </Link>
-                <Link href="#master-classes" className="btn-secondary h-11 px-6">
-                  Мастер-классы
-                </Link>
-              </div>
-            </div>
+            <HeroCopy />
 
             <dl className="mt-auto mb-3 grid w-full shrink-0 grid-cols-3 gap-4 border-t border-cream-200/70 pt-5 text-center sm:mb-4 sm:pt-6 md:mt-8 md:mb-0 md:pt-8">
               {stats.map((stat) => {
@@ -148,6 +128,9 @@ export default function HomePage() {
                   <p className="font-heading text-lg font-semibold text-warm-900">Ольга Лаптева</p>
                   <p className="text-sm text-warm-500">Преподаватель вязания · Семей</p>
                 </div>
+                <div className="mt-6">
+                  <AboutVideo />
+                </div>
               </div>
               <div className="space-y-6">
                 <SectionHeader
@@ -194,6 +177,10 @@ export default function HomePage() {
                       {course.title}
                     </h3>
                     <p className="text-base leading-relaxed text-warm-500">{course.description}</p>
+                    <div className="mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-3 text-sm font-medium text-brand-800">
+                      <PriceText>{course.price}</PriceText>
+                      <span className="text-warm-500">{course.duration}</span>
+                    </div>
                   </div>
                   <div className="border-t border-warm-900/5 bg-white/60 p-4">
                     <Link href={`/courses/${course.id}`} className="btn-ghost h-10 w-full">
@@ -209,6 +196,8 @@ export default function HomePage() {
 
         {/* Master classes */}
         <MasterClassesCarousel />
+
+        <ScheduleSection />
 
         <WorksGallery />
 
@@ -236,6 +225,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <FaqSection />
 
         {/* Contacts */}
         <section id="contacts" className="page-section section-stitch">
@@ -265,15 +256,7 @@ export default function HomePage() {
                     <p className="font-semibold text-warm-900">{site.telegramHandle}</p>
                   </div>
                 </a>
-                <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" className="contact-card">
-                  <ContactIconFrame>
-                    <WhatsAppContactIcon />
-                  </ContactIconFrame>
-                  <div>
-                    <p className="text-sm text-warm-500">WhatsApp</p>
-                    <p className="font-semibold text-warm-900">{site.phoneDisplay}</p>
-                  </div>
-                </a>
+                <WhatsAppContactCard />
                 <a href={site.instagram} target="_blank" rel="noopener noreferrer" className="contact-card">
                   <ContactIconFrame>
                     <InstagramContactIcon />
@@ -283,6 +266,32 @@ export default function HomePage() {
                     <p className="font-semibold text-warm-900">{site.instagramHandle}</p>
                   </div>
                 </a>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <a
+                    href={site.map2gis}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary h-10 px-4 text-sm"
+                  >
+                    Открыть в 2ГИС
+                  </a>
+                  <a
+                    href={site.mapGoogle}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary h-10 px-4 text-sm"
+                  >
+                    Google Maps
+                  </a>
+                  <a
+                    href={site.mapLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary h-10 px-4 text-sm"
+                  >
+                    Яндекс Карты
+                  </a>
+                </div>
               </div>
               <div className="space-y-3">
                 <div className="relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 lg:aspect-[4/3]">

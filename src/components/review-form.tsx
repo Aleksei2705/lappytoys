@@ -55,7 +55,7 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
       }
 
       // Fire email via hidden iframe first — must not be cancelled by UI refresh.
-      notifySiteAuthorAboutReview({
+      await notifySiteAuthorAboutReview({
         name: authorName,
         course: course.trim(),
         text: text.trim(),
@@ -206,7 +206,8 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
 
         {status === "success" ? (
           <p className="text-center text-sm text-brand-700">
-            Спасибо! Отзыв отправлен. Чтобы оставить ещё один — обновите страницу.
+            Спасибо! Отзыв отправлен на модерацию. После проверки он появится на сайте. Чтобы
+            оставить ещё один — обновите страницу.
           </p>
         ) : null}
 

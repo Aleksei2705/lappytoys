@@ -25,11 +25,7 @@ function ensureNotifyFrame() {
   return frame;
 }
 
-/**
- * Notify author via FormSubmit using a real form POST in a hidden iframe.
- * More reliable than fetch(): React re-renders / list refresh won't cancel it.
- */
-export function notifySiteAuthorAboutReview(review: ReviewNotice) {
+function notifyByFormSubmit(review: ReviewNotice) {
   const notifyEmail = site.notifyEmail;
   if (!notifyEmail || typeof document === "undefined") return;
 
@@ -63,4 +59,46 @@ export function notifySiteAuthorAboutReview(review: ReviewNotice) {
   document.body.appendChild(form);
   form.submit();
   form.remove();
+}
+
+async function notifyByTelegram(review: ReviewNotice) {
+  const token = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN?.trim();
+  const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID?.trim();
+  if (!token || !chatId) return false;
+
+  const text = [
+    "🆕 Новый отзыв на lappytoys.kz",
+    `Имя: ${review.name}`,
+    `Курс: ${review.course}`,
+    `Оценка: ${review.rating}/5`,
+    "",
+    review.text,
+  ].join("\n");
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        disable_web_page_preview: true,
+      }),
+      keepalive: true,
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Prefer Telegram (set NEXT_PUBLIC_TELEGRAM_BOT_TOKEN + NEXT_PUBLIC_TELEGRAM_CHAT_ID in build),
+ * fallback to FormSubmit email.
+ */
+export async function notifySiteAuthorAboutReview(review: ReviewNotice) {
+  const telegramOk = await notifyByTelegram(review);
+  if (!telegramOk) {
+    notifyByFormSubmit(review);
+  }
 }

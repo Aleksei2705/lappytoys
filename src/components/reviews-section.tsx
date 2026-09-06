@@ -34,11 +34,21 @@ export function ReviewsSection() {
 
     const { data, error } = await supabase
       .from("reviews")
-      .select("id,name,text,course,rating,created_at")
+      .select("id,name,text,course,rating,created_at,approved")
+      .eq("approved", true)
       .order("created_at", { ascending: false });
 
     if (!error && data) {
       setDynamicReviews(data);
+    } else if (error) {
+      // Fallback if approved column is not migrated yet
+      const legacy = await supabase
+        .from("reviews")
+        .select("id,name,text,course,rating,created_at")
+        .order("created_at", { ascending: false });
+      if (!legacy.error && legacy.data) {
+        setDynamicReviews(legacy.data);
+      }
     }
 
     setLoading(false);

@@ -21,12 +21,19 @@ export const site = {
     "https://yandex.ru/map-widget/v1/?ll=80.259144%2C50.412858&z=17&pt=80.259144%2C50.412858%2Cpm2rdm&l=map&lang=ru_RU",
   mapLink:
     "https://yandex.kz/maps/165/semey/?ll=80.259144%2C50.412858&z=17&pt=80.259144%2C50.412858",
+  map2gis: "https://2gis.kz/semey/search/%D0%A8%D1%83%D0%B3%D0%B0%D0%B5%D0%B2%D0%B0%204",
+  mapGoogle:
+    "https://www.google.com/maps/search/?api=1&query=%D0%A8%D1%83%D0%B3%D0%B0%D0%B5%D0%B2%D0%B0%204%2C%20%D0%A1%D0%B5%D0%BC%D0%B5%D0%B9",
+  /** Optional studio video (mp4 in /public or YouTube/VK embed URL). Empty = poster placeholder. */
+  aboutVideoSrc: "" as string,
+  aboutVideoPoster: "/images/hero-bg.jpg",
 } as const;
 
 export const navLinks = [
   { href: "/#about", label: "Обо мне" },
   { href: "/#courses", label: "Уроки" },
   { href: "/#master-classes", label: "Мастер-классы" },
+  { href: "/#schedule", label: "Расписание" },
   { href: "/#works", label: "Работы" },
   { href: "/#reviews", label: "Отзывы" },
   { href: "/#contacts", label: "Контакты" },
@@ -411,6 +418,66 @@ export const benefits = [
     title: "Индивидуально",
     description: "Занятия только для вас — в своём темпе, без спешки и суеты",
     icon: "clock" as const,
+  },
+] as const;
+
+/** Editable schedule — update dates/times as needed. */
+export const scheduleSlots = [
+  {
+    id: "slot-1",
+    weekday: "Вторник",
+    time: "16:00–17:30",
+    title: "Вязание крючком",
+    note: "Индивидуально / мини-группа",
+  },
+  {
+    id: "slot-2",
+    weekday: "Среда",
+    time: "17:00–18:30",
+    title: "Макраме",
+    note: "Мастер-класс или курс",
+  },
+  {
+    id: "slot-3",
+    weekday: "Четверг",
+    time: "16:00–17:30",
+    title: "Вязание спицами",
+    note: "С нуля",
+  },
+  {
+    id: "slot-4",
+    weekday: "Суббота",
+    time: "11:00–12:30",
+    title: "Пробный урок",
+    note: "Знакомство со студией",
+  },
+] as const;
+
+export const faqItems = [
+  {
+    question: "С какого возраста можно заниматься?",
+    answer:
+      "Обычно с 7–8 лет — зависит от внимания ребёнка. Взрослые тоже приходят с нуля. На пробном уроке подберём комфортный формат.",
+  },
+  {
+    question: "Нужно ли покупать материалы заранее?",
+    answer:
+      "На первом занятии материалы можно взять в студии. Для курса подскажем, какую пряжу и инструменты купить — без лишних трат.",
+  },
+  {
+    question: "Сколько длится одно занятие?",
+    answer:
+      "Обычно 1–1,5 часа. Пробный урок — 30 минут бесплатно или 1,5 часа с изготовлением игрушки.",
+  },
+  {
+    question: "Это индивидуально или в группе?",
+    answer:
+      "Основной формат — спокойные занятия с вниманием к каждому. Возможны мини-группы — уточните при записи.",
+  },
+  {
+    question: "Как записаться и есть ли скидки?",
+    answer:
+      "Оставьте заявку на сайте или напишите в WhatsApp/Telegram. Актуальные акции и свободные окна подскажу при ответе.",
   },
 ] as const;
 

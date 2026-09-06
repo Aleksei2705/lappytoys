@@ -2,6 +2,7 @@
 import { Manrope, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { SiteBackground } from "@/components/site-background";
+import { I18nProvider } from "@/components/i18n-provider";
 import { site } from "@/data/site";
 import "./globals.css";
 
@@ -56,10 +57,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon-48.png", type: "image/png", sizes: "48x48" },
       { url: "/images/logo.png", type: "image/png", sizes: "512x512" },
     ],
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon-32.png",
     apple: "/images/logo.png",
   },
   openGraph: {
@@ -149,16 +151,18 @@ export default function RootLayout({
       </head>
       <body className="min-h-full font-sans">
         <SiteBackground />
-        <noscript>
-          <div>
-            <img
-              src={`https://mc.yandex.ru/watch/${site.yandexMetricaId}`}
-              style={{ position: "absolute", left: "-9999px" }}
-              alt=""
-            />
-          </div>
-        </noscript>
-        {children}
+        <I18nProvider>
+          <noscript>
+            <div>
+              <img
+                src={`https://mc.yandex.ru/watch/${site.yandexMetricaId}`}
+                style={{ position: "absolute", left: "-9999px" }}
+                alt=""
+              />
+            </div>
+          </noscript>
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

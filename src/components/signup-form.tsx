@@ -1,13 +1,23 @@
 ﻿"use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
+import Link from "next/link";
 import { Send } from "lucide-react";
-import { site } from "@/data/site";
+import { courses, masterClasses, site } from "@/data/site";
+import { trackGoal } from "@/lib/metrika";
 
 export function SignupForm() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [direction, setDirection] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
   const [message, setMessage] = useState("");
+
+  const directionOptions = useMemo(() => {
+    const courseTitles = courses.map((c) => c.title);
+    const mcTitles = masterClasses.map((m) => `Мастер-класс: ${m.title}`);
+    return [...courseTitles, ...mcTitles, "Пока не определился(ась)"];
+  }, []);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -15,11 +25,16 @@ export function SignupForm() {
       "Здравствуйте! Хочу записаться на урок/мастер-класс.",
       name && `Имя: ${name}`,
       phone && `Телефон: ${phone}`,
+      direction && `Направление: ${direction}`,
+      preferredDate && `Желаемая дата: ${preferredDate}`,
       message && `Сообщение: ${message}`,
+      "",
+      "Заявка с сайта lappytoys.kz",
     ]
       .filter(Boolean)
       .join("\n");
 
+    trackGoal("signup_whatsapp");
     const url = `${site.whatsapp}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -55,14 +70,49 @@ export function SignupForm() {
         />
       </div>
       <div>
+        <label htmlFor="direction" className="mb-2 block text-sm font-medium text-warm-700">
+          Направление
+        </label>
+        <select
+          id="direction"
+          name="direction"
+          required
+          value={direction}
+          onChange={(e) => setDirection(e.target.value)}
+          className="input-field"
+        >
+          <option value="" disabled>
+            Выберите курс или мастер-класс
+          </option>
+          {directionOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="preferred-date" className="mb-2 block text-sm font-medium text-warm-700">
+          Желаемая дата
+        </label>
+        <input
+          id="preferred-date"
+          name="preferredDate"
+          type="date"
+          value={preferredDate}
+          onChange={(e) => setPreferredDate(e.target.value)}
+          className="input-field"
+        />
+      </div>
+      <div>
         <label htmlFor="message" className="mb-2 block text-sm font-medium text-warm-700">
           Сообщение
         </label>
         <textarea
           id="message"
           name="message"
-          rows={4}
-          placeholder="Расскажите, какой курс интересует"
+          rows={3}
+          placeholder="Удобное время, возраст ученика, вопросы"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="textarea-field"
@@ -73,8 +123,11 @@ export function SignupForm() {
         Отправить заявку
       </button>
       <p className="text-center text-xs leading-relaxed text-warm-500">
-        Заявка откроется в WhatsApp для отправки Ольге. Нажимая кнопку, вы соглашаетесь на
-        обработку контактных данных.
+        Заявка откроется в WhatsApp для отправки Ольге. Нажимая кнопку, вы соглашаетесь с{" "}
+        <Link href="/privacy/" className="underline decoration-brand-300 underline-offset-2 hover:text-brand-800">
+          политикой обработки данных
+        </Link>
+        .
       </p>
     </form>
   );

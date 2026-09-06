@@ -108,6 +108,14 @@ export function MasterClassesCarousel() {
                   <a href="#signup" className="btn-primary mt-auto h-10 w-full">
                     Записаться
                   </a>
+                  <a
+                    href={`https://www.instagram.com/lappy.art/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-ghost mt-2 h-9 w-full text-xs"
+                  >
+                    Смотреть в Instagram
+                  </a>
                 </div>
               </article>
             ))}
