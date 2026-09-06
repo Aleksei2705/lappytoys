@@ -36,6 +36,7 @@ export const navLinks = [
   { href: "/#schedule", label: "Расписание" },
   { href: "/#works", label: "Работы" },
   { href: "/#reviews", label: "Отзывы" },
+  { href: "/#faq", label: "Вопросы" },
   { href: "/#contacts", label: "Контакты" },
 ] as const;
 
