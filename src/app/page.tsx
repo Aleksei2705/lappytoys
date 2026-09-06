@@ -23,6 +23,9 @@ import { PriceText } from "@/components/price-text";
 import {
   ContactIconFrame,
   InstagramContactIcon,
+  Map2GisIcon,
+  MapGoogleIcon,
+  MapYandexIcon,
   PhoneContactIcon,
   TelegramContactIcon,
 } from "@/components/contact-icons";
@@ -273,24 +276,27 @@ export default function HomePage() {
                     href={site.map2gis}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-secondary h-10 px-1 text-center text-xs sm:px-2 sm:text-sm"
+                    className="btn-secondary h-10 gap-1.5 px-1 text-xs sm:px-2 sm:text-sm"
                   >
+                    <Map2GisIcon />
                     2ГИС
                   </a>
                   <a
                     href={site.mapGoogle}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-secondary h-10 px-1 text-center text-xs sm:px-2 sm:text-sm"
+                    className="btn-secondary h-10 gap-1.5 px-1 text-xs sm:px-2 sm:text-sm"
                   >
+                    <MapGoogleIcon />
                     Google
                   </a>
                   <a
                     href={site.mapLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-secondary h-10 px-1 text-center text-xs sm:px-2 sm:text-sm"
+                    className="btn-secondary h-10 gap-1.5 px-1 text-xs sm:px-2 sm:text-sm"
                   >
+                    <MapYandexIcon />
                     Яндекс
                   </a>
                 </div>
