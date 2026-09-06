@@ -43,7 +43,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scroll-padding-top: calc(5rem + env(safe-area-inset-top, 0px));
 }
 

@@ -140,7 +140,7 @@ export default function RootLayout({
   return (
     <html
       lang="ru"
-      className={`${manrope.variable} ${playfair.variable} h-full scroll-smooth antialiased`}
+      className={`${manrope.variable} ${playfair.variable} h-full antialiased`}
     >
       <head>
         <Script src="/metrica.js" strategy="beforeInteractive" />
