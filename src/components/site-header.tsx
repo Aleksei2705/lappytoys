@@ -46,9 +46,11 @@ export function SiteHeader() {
           <div className="flex shrink-0 items-center gap-2">
             <LanguageToggle />
             <HeaderAuth />
-            <Link href="/#signup" className="btn-primary hidden h-9 px-4 text-sm md:inline-flex">
-              {t("cta.signup")}
-            </Link>
+            <div className="hidden md:block">
+              <Link href="/#signup" className="btn-primary h-9 px-4 text-sm">
+                {t("cta.signup")}
+              </Link>
+            </div>
             <button
               type="button"
               className="inline-flex size-9 items-center justify-center rounded-xl border border-cream-200 bg-white md:hidden"
