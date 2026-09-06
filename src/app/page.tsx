@@ -266,34 +266,34 @@ export default function HomePage() {
                     <p className="font-semibold text-warm-900">{site.instagramHandle}</p>
                   </div>
                 </a>
-                <div className="flex flex-wrap gap-2 pt-2">
+              </div>
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-2">
                   <a
                     href={site.map2gis}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-secondary h-10 px-4 text-sm"
+                    className="btn-secondary h-10 px-1 text-center text-xs sm:px-2 sm:text-sm"
                   >
-                    Открыть в 2ГИС
+                    2ГИС
                   </a>
                   <a
                     href={site.mapGoogle}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-secondary h-10 px-4 text-sm"
+                    className="btn-secondary h-10 px-1 text-center text-xs sm:px-2 sm:text-sm"
                   >
-                    Google Maps
+                    Google
                   </a>
                   <a
                     href={site.mapLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-secondary h-10 px-4 text-sm"
+                    className="btn-secondary h-10 px-1 text-center text-xs sm:px-2 sm:text-sm"
                   >
-                    Яндекс Карты
+                    Яндекс
                   </a>
                 </div>
-              </div>
-              <div className="space-y-3">
                 <div className="relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 lg:aspect-[4/3]">
                   <iframe
                     title="Карта: творческая студия lappy.art"
@@ -308,7 +308,7 @@ export default function HomePage() {
                   href={site.mapLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-center font-heading text-sm font-semibold leading-relaxed text-brand-700 transition-colors hover:text-brand-800 sm:text-base"
+                  className="block w-full text-center font-heading text-lg font-semibold leading-snug text-brand-700 transition-colors hover:text-brand-800 sm:text-xl"
                 >
                   {site.address}
                 </a>
