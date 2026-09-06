@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeaderAuth } from "@/components/header-auth";
 import { LanguageToggle } from "@/components/language-toggle";
 import { SiteLogo } from "@/components/site-logo";
@@ -13,7 +13,6 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { t } = useI18n();
-  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     function onScroll() {
@@ -27,30 +26,28 @@ export function SiteHeader() {
   useEffect(() => {
     if (!open) return;
 
-    function onPointerDown(event: PointerEvent) {
-      const target = event.target as Node | null;
-      if (target && headerRef.current?.contains(target)) return;
-      setOpen(false);
-    }
-
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") setOpen(false);
     }
 
-    document.addEventListener("pointerdown", onPointerDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     document.addEventListener("keydown", onKey);
     return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
+      document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKey);
     };
   }, [open]);
 
+  function closeMenu(event: React.SyntheticEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    setOpen(false);
+  }
+
   return (
     <>
-      <header
-        ref={headerRef}
-        className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}
-      >
+      <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
         <div className="container-main flex min-h-16 items-center justify-between gap-3 py-2">
           <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
             <SiteLogo />
@@ -114,11 +111,12 @@ export function SiteHeader() {
       </header>
 
       {open ? (
-        <button
-          type="button"
-          className="fixed inset-0 z-40 bg-warm-900/25 md:hidden"
-          aria-label="Закрыть меню"
-          onClick={() => setOpen(false)}
+        <div
+          role="presentation"
+          className="fixed inset-0 z-40 touch-none bg-warm-900/30 md:hidden"
+          aria-hidden
+          onPointerDown={closeMenu}
+          onClick={closeMenu}
         />
       ) : null}
 
