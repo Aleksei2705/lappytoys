@@ -64,7 +64,7 @@ function notifyByFormSubmit(review: ReviewNotice) {
 async function notifyByTelegram(review: ReviewNotice) {
   const token = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN?.trim();
   const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID?.trim();
-  if (!token || !chatId) return false;
+  if (!token || !chatId || typeof document === "undefined") return false;
 
   const text = [
     "🆕 Новый отзыв на lappytoys.kz",
@@ -75,30 +75,32 @@ async function notifyByTelegram(review: ReviewNotice) {
     review.text,
   ].join("\n");
 
+  // Static site: call Telegram via GET in a hidden iframe (browser fetch is blocked by CORS).
   try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text,
-        disable_web_page_preview: true,
-      }),
-      keepalive: true,
+    ensureNotifyFrame();
+    const params = new URLSearchParams({
+      chat_id: chatId,
+      text,
+      disable_web_page_preview: "true",
     });
-    return res.ok;
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("aria-hidden", "true");
+    iframe.tabIndex = -1;
+    iframe.style.cssText = "position:absolute;width:0;height:0;border:0;visibility:hidden";
+    iframe.src = `https://api.telegram.org/bot${token}/sendMessage?${params.toString()}`;
+    document.body.appendChild(iframe);
+    window.setTimeout(() => iframe.remove(), 8000);
+    return true;
   } catch {
     return false;
   }
 }
 
 /**
- * Prefer Telegram (set NEXT_PUBLIC_TELEGRAM_BOT_TOKEN + NEXT_PUBLIC_TELEGRAM_CHAT_ID in build),
- * fallback to FormSubmit email.
+ * Try Telegram when secrets were baked into the static build;
+ * always also send FormSubmit email as a reliable backup.
  */
 export async function notifySiteAuthorAboutReview(review: ReviewNotice) {
-  const telegramOk = await notifyByTelegram(review);
-  if (!telegramOk) {
-    notifyByFormSubmit(review);
-  }
+  await notifyByTelegram(review);
+  notifyByFormSubmit(review);
 }
