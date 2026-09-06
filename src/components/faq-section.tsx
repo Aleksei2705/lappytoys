@@ -6,7 +6,7 @@ import { SectionHeader } from "@/components/section-header";
 import { faqItems } from "@/data/site";
 
 export function FaqSection() {
-  const [openId, setOpenId] = useState<number | null>(0);
+  const [openId, setOpenId] = useState<number | null>(null);
 
   return (
     <section id="faq" className="page-section">
