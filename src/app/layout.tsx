@@ -19,12 +19,21 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — уроки вязания, макраме и рукоделия в Семее`,
+    default: `${site.name} — творчество, уроки вязания и рукоделия в Семее`,
     template: `%s — ${site.name}`,
   },
   description:
-    "Творческая студия lappy.art в Семее: уроки вязания крючком и спицами, макраме, вышивка, бисероплетение, шитьё игрушек. Занятия с Ольгой — с нуля, спокойно и с поддержкой. Пробный урок и мастер-классы.",
+    "Творчество в Семее: творческая студия lappy.art — уроки вязания крючком и спицами, макраме, вышивка, бисероплетение, шитьё игрушек. Занятия с Ольгой с нуля, пробный урок и мастер-классы.",
   keywords: [
+    "творчество",
+    "творчество Семей",
+    "творческие занятия Семей",
+    "творческая студия Семей",
+    "творческий кружок Семей",
+    "рукоделие и творчество",
+    "занятия творчеством",
+    "хобби творчество",
+    "handmade Семей",
     "Вязание крючком",
     "Вязание спицами",
     "Амигуруми",
@@ -39,18 +48,25 @@ export const metadata: Metadata = {
     "бисероплетение Семей",
     "шитьё игрушек Семей",
     "рукоделие Семей",
-    "творческая студия Семей",
     "lappy.art",
     "lappytoys",
     "мастер-класс вязание",
     "уроки рукоделия Казахстан",
     "амигуруми Семей",
+    "творчество Казахстан",
   ],
   authors: [{ name: "Ольга Лаптева" }],
   creator: "lappy.art",
+  category: "Творчество и рукоделие",
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   alternates: {
     canonical: "/",
@@ -65,9 +81,9 @@ export const metadata: Metadata = {
     apple: "/images/logo.png",
   },
   openGraph: {
-    title: `${site.name} — уроки вязания и рукоделия в Семее`,
+    title: `${site.name} — творчество и рукоделие в Семее`,
     description:
-      "Научитесь вязать, плести макраме и создавать игрушки с Ольгой. Занятия в Семее — с нуля и с удовольствием.",
+      "Творческие занятия в Семее: вязание, макраме, вышивка и игрушки своими руками. Студия lappy.art — с нуля и с удовольствием.",
     url: site.url,
     siteName: site.name,
     locale: "ru_KZ",
@@ -77,15 +93,15 @@ export const metadata: Metadata = {
         url: "/images/logo.png",
         width: 512,
         height: 512,
-        alt: site.name,
+        alt: `${site.name} — творчество в Семее`,
       },
     ],
   },
   twitter: {
     card: "summary",
-    title: `${site.name} — уроки вязания и рукоделия в Семее`,
+    title: `${site.name} — творчество и рукоделие в Семее`,
     description:
-      "Вязание, макраме, вышивка и шитьё игрушек в Семее. Запись на занятия с Ольгой.",
+      "Творческие занятия: вязание, макраме, вышивка и шитьё игрушек в Семее. Запись к Ольге.",
   },
 };
 
@@ -97,10 +113,11 @@ export const viewport: Viewport = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": ["LocalBusiness", "EducationalOrganization"],
   name: site.name,
-  alternateName: "lappy.art",
-  description: site.tagline,
+  alternateName: ["lappy.art", "lappytoys", "Творческая студия lappy.art"],
+  description:
+    "Творческая студия в Семее: творчество и рукоделие — вязание, макраме, вышивка, бисероплетение, шитьё игрушек. Занятия с нуля для детей и взрослых.",
   url: site.url,
   telephone: site.phone,
   image: `${site.url}/images/logo.png`,
@@ -122,7 +139,21 @@ const jsonLd = {
   },
   sameAs: [site.instagram, site.telegram],
   priceRange: "$$",
+  category: "Творчество и рукоделие",
+  knowsAbout: [
+    "Творчество",
+    "Рукоделие",
+    "Вязание крючком",
+    "Вязание спицами",
+    "Макраме",
+    "Вышивка",
+    "Бисероплетение",
+    "Шитьё игрушек",
+    "Амигуруми",
+    "Мастер-классы",
+  ],
   teaches: [
+    "Творчество",
     "Вязание крючком",
     "Вязание спицами",
     "Макраме",
