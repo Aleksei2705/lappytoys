@@ -308,9 +308,10 @@ export default function HomePage() {
                   href={site.mapLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full whitespace-nowrap text-center font-heading text-base font-semibold leading-none text-brand-700 transition-colors hover:text-brand-800 sm:text-lg md:text-xl"
+                  className="block w-full overflow-hidden whitespace-nowrap text-center font-heading font-semibold leading-none text-brand-700 transition-colors hover:text-brand-800"
+                  style={{ fontSize: "clamp(0.72rem, 3.4vw, 1.25rem)" }}
                 >
-                  {site.addressShort}
+                  {site.address}
                 </a>
               </div>
             </div>
