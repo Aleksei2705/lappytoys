@@ -262,23 +262,23 @@ body {
 
 .hero-bg-media {
   /* Lower % = higher in photo; higher % = lower (toward trunk / cords). */
-  object-position: center 42%;
-  transform-origin: center 42%;
+  object-position: center 18%;
+  transform-origin: center 18%;
   animation: hero-ken 28s ease-out forwards;
   will-change: transform;
 }
 
 @media (min-width: 768px) {
   .hero-bg-media {
-    object-position: center 48%;
-    transform-origin: center 48%;
+    object-position: center 24%;
+    transform-origin: center 24%;
   }
 }
 
 @media (min-width: 1024px) {
   .hero-bg-media {
-    object-position: center 52%;
-    transform-origin: center 52%;
+    object-position: center 28%;
+    transform-origin: center 28%;
   }
 }
 
