@@ -312,11 +312,42 @@ body {
   }
 }
 
-.hero-bg-media {
-  object-position: center center;
-  transform-origin: center center;
-  animation: hero-ken 28s ease-out forwards;
-  will-change: transform;
+.hero-parallax-layer {
+  transition: none;
+}
+
+.hero-shimmer {
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.12) 48%,
+    transparent 66%
+  );
+  background-size: 220% 100%;
+  animation: hero-shimmer 9s ease-in-out infinite;
+}
+
+@keyframes hero-shimmer {
+  0%,
+  100% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0% 0;
+  }
+}
+
+.reveal-block {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+.reveal-block-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
 }
 
 .hero-copy > *:nth-child(1) {
@@ -346,19 +377,16 @@ body {
   }
 }
 
-@keyframes hero-ken {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.06);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .hero-bg-media,
+  .hero-shimmer,
   .hero-copy > * {
     animation: none;
+  }
+
+  .reveal-block {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

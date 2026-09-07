@@ -15,16 +15,20 @@ const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("ru");
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("lappy-locale");
-    if (saved === "ru" || saved === "kk") setLocaleState(saved);
+    if (saved === "kk") setLocaleState("kk");
+    else setLocaleState("ru");
+    setReady(true);
   }, []);
 
   useEffect(() => {
+    if (!ready) return;
     document.documentElement.lang = locale === "kk" ? "kk" : "ru";
     window.localStorage.setItem("lappy-locale", locale);
-  }, [locale]);
+  }, [locale, ready]);
 
   const value = useMemo<I18nContextValue>(
     () => ({

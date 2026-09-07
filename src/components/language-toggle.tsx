@@ -10,22 +10,22 @@ export function LanguageToggle() {
       <button
         type="button"
         className={`rounded-lg px-2 py-1.5 transition-colors ${
-          locale === "ru" ? "bg-brand-100 text-brand-800" : "text-warm-500 hover:text-brand-800"
-        }`}
-        onClick={() => setLocale("ru")}
-        aria-pressed={locale === "ru"}
-      >
-        RU
-      </button>
-      <button
-        type="button"
-        className={`rounded-lg px-2 py-1.5 transition-colors ${
           locale === "kk" ? "bg-brand-100 text-brand-800" : "text-warm-500 hover:text-brand-800"
         }`}
         onClick={() => setLocale("kk")}
         aria-pressed={locale === "kk"}
       >
         KZ
+      </button>
+      <button
+        type="button"
+        className={`rounded-lg px-2 py-1.5 transition-colors ${
+          locale === "ru" ? "bg-brand-100 text-brand-800" : "text-warm-500 hover:text-brand-800"
+        }`}
+        onClick={() => setLocale("ru")}
+        aria-pressed={locale === "ru"}
+      >
+        RU
       </button>
     </div>
   );
