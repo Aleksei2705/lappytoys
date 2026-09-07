@@ -433,7 +433,43 @@ body {
 }
 
 .hero-parallax-layer {
+  transform: translate3d(0, 0, 0) scale(1.12);
   transition: none;
+  will-change: transform;
+}
+
+/* Mobile: slow constant-speed drift in shifting directions, looping */
+@media (max-width: 767px) {
+  .hero-parallax-layer {
+    animation: hero-mobile-drift 56s linear infinite;
+  }
+}
+
+@keyframes hero-mobile-drift {
+  0% {
+    transform: translate3d(0%, 0%, 0) scale(1.16);
+  }
+  14% {
+    transform: translate3d(3.4%, -2.6%, 0) scale(1.16);
+  }
+  28% {
+    transform: translate3d(-1.2%, -3.5%, 0) scale(1.16);
+  }
+  42% {
+    transform: translate3d(-3.6%, 1.4%, 0) scale(1.16);
+  }
+  57% {
+    transform: translate3d(1.8%, 3.3%, 0) scale(1.16);
+  }
+  71% {
+    transform: translate3d(3.2%, 0.6%, 0) scale(1.16);
+  }
+  85% {
+    transform: translate3d(-2.4%, 2.8%, 0) scale(1.16);
+  }
+  100% {
+    transform: translate3d(0%, 0%, 0) scale(1.16);
+  }
 }
 
 .hero-shimmer {
@@ -502,6 +538,10 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-shimmer,
   .hero-copy > * {
+    animation: none;
+  }
+
+  .hero-parallax-layer {
     animation: none;
   }
 

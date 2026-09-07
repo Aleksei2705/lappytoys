@@ -9,7 +9,7 @@ type HeroBackdropProps = {
 
 const SCALE = 1.12;
 
-/** Full-bleed hero background with soft cursor parallax (desktop, motion OK). */
+/** Full-bleed hero: cursor parallax on desktop, slow drift on mobile. */
 export function HeroBackdrop({ src }: HeroBackdropProps) {
   const layerRef = useRef<HTMLDivElement>(null);
   const target = useRef({ x: 0, y: 0 });
@@ -20,7 +20,8 @@ export function HeroBackdrop({ src }: HeroBackdropProps) {
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const finePointer = window.matchMedia("(pointer: fine)").matches;
-    if (reduce || !finePointer) return;
+    const desktop = window.matchMedia("(min-width: 768px)").matches;
+    if (reduce || !finePointer || !desktop) return;
 
     function apply() {
       if (!layerRef.current) return;
@@ -66,11 +67,8 @@ export function HeroBackdrop({ src }: HeroBackdropProps) {
     <div className="absolute inset-0 overflow-hidden bg-warm-900">
       <div
         ref={layerRef}
-        className="hero-parallax-layer absolute -inset-[6%] bg-cover bg-center"
-        style={{
-          transform: `translate3d(0,0,0) scale(${SCALE})`,
-          backgroundImage: `url(${src})`,
-        }}
+        className="hero-parallax-layer absolute -inset-[8%] bg-cover bg-center"
+        style={{ backgroundImage: `url(${src})` }}
       >
         {/* Same frame as CSS bg — keeps LCP/priority without a visible swap */}
         <Image
