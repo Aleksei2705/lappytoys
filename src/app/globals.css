@@ -261,25 +261,10 @@ body {
 }
 
 .hero-bg-media {
-  /* Lower % = higher in photo; higher % = lower (toward trunk / cords). */
-  object-position: center 18%;
-  transform-origin: center 18%;
+  object-position: center top;
+  transform-origin: center top;
   animation: hero-ken 28s ease-out forwards;
   will-change: transform;
-}
-
-@media (min-width: 768px) {
-  .hero-bg-media {
-    object-position: center 24%;
-    transform-origin: center 24%;
-  }
-}
-
-@media (min-width: 1024px) {
-  .hero-bg-media {
-    object-position: center 28%;
-    transform-origin: center 28%;
-  }
 }
 
 .hero-copy > *:nth-child(1) {
