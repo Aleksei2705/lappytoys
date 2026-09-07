@@ -76,12 +76,12 @@ export function MasterClassesCarousel() {
                 className="flex w-[78%] max-w-md shrink-0 snap-center flex-col overflow-hidden rounded-3xl bg-white ring-1 ring-brand-100/60 sm:w-[55%] lg:w-[42%]"
                 aria-current={i === index ? "true" : undefined}
               >
-                <div className="relative aspect-[3/4] overflow-hidden">
+                <div className="relative aspect-[3/4] overflow-hidden bg-cream-100">
                   <Image
                     src={mc.image}
                     alt={t(`mc.${i}.title`)}
                     fill
-                    className="object-cover"
+                    className="object-contain object-center p-3 sm:p-4"
                     sizes="(max-width: 640px) 78vw, (max-width: 1024px) 55vw, 42vw"
                     priority={i < 2}
                   />
