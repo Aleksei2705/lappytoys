@@ -49,9 +49,9 @@ export function SiteHeader() {
     <>
       <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
         <div className="container-header flex min-h-16 w-full items-center gap-3 py-2 md:gap-4 lg:gap-5">
-          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
             <SiteLogo
-              subtitleClassName="hidden text-[11px] text-warm-500 xl:block xl:text-sm"
+              subtitleClassName="truncate text-[11px] leading-tight text-warm-500 sm:text-xs xl:text-sm"
               titleClassName="font-heading text-base font-semibold tracking-tight text-brand-800 whitespace-nowrap sm:text-lg lg:text-xl"
             />
           </Link>
