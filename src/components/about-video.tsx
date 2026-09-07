@@ -23,7 +23,6 @@ export function AboutVideo({ className = "" }: AboutVideoProps) {
             className="absolute inset-0 h-full w-full object-contain"
             controls
             playsInline
-            poster={site.aboutVideoPoster}
             preload="metadata"
           >
             <source src={site.aboutVideoSrc} type="video/mp4" />

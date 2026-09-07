@@ -444,7 +444,9 @@ body {
     transparent 66%
   );
   background-size: 220% 100%;
-  animation: hero-shimmer 9s ease-in-out infinite;
+  background-position: 100% 0;
+  /* Start after first paint so refresh does not flash a mid-sweep frame */
+  animation: hero-shimmer 9s ease-in-out 1.5s infinite;
 }
 
 @keyframes hero-shimmer {
