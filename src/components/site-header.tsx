@@ -48,12 +48,15 @@ export function SiteHeader() {
   return (
     <>
       <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
-        <div className="container-main flex min-h-16 items-center gap-3 py-2 md:gap-5 lg:gap-8">
-          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3">
+        <div className="container-main flex min-h-16 items-center gap-3 py-2 md:gap-0">
+          <Link
+            href="/"
+            className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3 md:pr-5 lg:pr-7"
+          >
             <SiteLogo />
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-3 md:flex lg:gap-x-5 xl:gap-x-6">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-3 border-x border-brand-100/80 px-4 md:flex lg:gap-x-5 lg:px-6 xl:gap-x-6 xl:px-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -65,7 +68,7 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2 md:ml-2 md:border-l md:border-brand-100/80 md:pl-5 lg:ml-3 lg:pl-7">
+          <div className="flex shrink-0 items-center gap-2 md:pl-5 lg:pl-7">
             <LanguageToggle />
             <HeaderAuth />
             <div className="hidden md:block">
