@@ -184,6 +184,7 @@ const jsonLd = {
           { "@type": "Course", name: "Макраме", url: `${site.url}/courses/macrame/` },
           { "@type": "Course", name: "Вышивка", url: `${site.url}/courses/embroidery/` },
           { "@type": "Course", name: "Бисероплетение", url: `${site.url}/courses/beadwork/` },
+          { "@type": "Course", name: "Пробный урок", url: `${site.url}/courses/trial/` },
         ],
       },
     ],

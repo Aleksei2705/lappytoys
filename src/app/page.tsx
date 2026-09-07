@@ -186,7 +186,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="border-t border-warm-900/5 bg-white/60 p-4">
-                    <Link href={`/courses/${course.id}`} className="btn-ghost h-10 w-full">
+                    <Link href={`/courses/${course.id}/`} className="btn-ghost h-10 w-full">
                       Подробнее
                       <ArrowUpRight className="size-4" />
                     </Link>
