@@ -115,7 +115,7 @@ export default function HomePage() {
         {/* About */}
         <section id="about" className="page-section section-alt section-stitch">
           <div className="container-main">
-            <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-14">
+            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
               <div className="relative">
                 <div className="absolute -bottom-4 -right-4 h-full w-full rounded-3xl bg-brand-100/60" />
                 <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5">
@@ -147,10 +147,14 @@ export default function HomePage() {
                     <p key={p.slice(0, 30)}>{p}</p>
                   ))}
                 </div>
-                <div className="pt-2">
-                  <AboutVideo />
-                </div>
               </div>
+            </div>
+
+            <div className="mt-12 lg:mt-16">
+              <p className="mb-5 text-center font-heading text-lg font-semibold text-warm-900 sm:text-xl">
+                Видео из студии
+              </p>
+              <AboutVideo />
             </div>
           </div>
         </section>

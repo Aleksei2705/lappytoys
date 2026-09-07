@@ -4,14 +4,20 @@ import Image from "next/image";
 import { Play } from "lucide-react";
 import { site } from "@/data/site";
 
-export function AboutVideo() {
+type AboutVideoProps = {
+  className?: string;
+};
+
+export function AboutVideo({ className = "" }: AboutVideoProps) {
   if (site.aboutVideoSrc) {
     const isFile = site.aboutVideoSrc.endsWith(".mp4") || site.aboutVideoSrc.startsWith("/");
     if (isFile) {
       return (
-        <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 sm:aspect-[3/4]">
+        <div
+          className={`relative mx-auto aspect-[9/16] w-full max-w-sm overflow-hidden rounded-3xl bg-warm-900/5 shadow-xl ring-1 ring-warm-900/5 sm:max-w-md ${className}`}
+        >
           <video
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-contain"
             controls
             playsInline
             poster={site.aboutVideoPoster}
@@ -24,7 +30,9 @@ export function AboutVideo() {
     }
 
     return (
-      <div className="relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5">
+      <div
+        className={`relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 ${className}`}
+      >
         <iframe
           title="Видео студии lappy.art"
           src={site.aboutVideoSrc}
@@ -42,14 +50,14 @@ export function AboutVideo() {
       href={site.instagram}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative block aspect-[4/5] overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 sm:aspect-[3/4]"
+      className={`group relative mx-auto block aspect-[9/16] w-full max-w-sm overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 sm:max-w-md ${className}`}
     >
       <Image
         src={site.aboutVideoPoster}
         alt="Атмосфера студии lappy.art"
         fill
         className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-        sizes="(max-width: 768px) 100vw, 40vw"
+        sizes="(max-width: 768px) 100vw, 28rem"
       />
       <div className="absolute inset-0 bg-warm-900/35" />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center text-white">
