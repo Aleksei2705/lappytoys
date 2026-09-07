@@ -64,7 +64,7 @@ export default function HomePage() {
               alt=""
               fill
               priority
-              className="hero-bg-media object-cover object-center"
+              className="hero-bg-media object-cover object-[center_28%] md:object-[center_36%] lg:object-[center_40%]"
               sizes="100vw"
               quality={85}
             />
