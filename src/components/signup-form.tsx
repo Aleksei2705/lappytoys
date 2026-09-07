@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Send } from "lucide-react";
 import { courses, masterClasses, site } from "@/data/site";
 import { trackGoal } from "@/lib/metrika";
+import { useI18n } from "@/components/i18n-provider";
 
 export function SignupForm() {
+  const { t } = useI18n();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [direction, setDirection] = useState("");
@@ -14,22 +16,22 @@ export function SignupForm() {
   const [message, setMessage] = useState("");
 
   const directionOptions = useMemo(() => {
-    const courseTitles = courses.map((c) => c.title);
-    const mcTitles = masterClasses.map((m) => `Мастер-класс: ${m.title}`);
-    return [...courseTitles, ...mcTitles, "Пока не определился(ась)"];
-  }, []);
+    const courseTitles = courses.map((c) => t(`course.${c.id}.title`));
+    const mcTitles = masterClasses.map((_, i) => `${t("signup.mcPrefix")} ${t(`mc.${i}.title`)}`);
+    return [...courseTitles, ...mcTitles, t("signup.undecided")];
+  }, [t]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const text = [
-      "Здравствуйте! Хочу записаться на урок/мастер-класс.",
-      name && `Имя: ${name}`,
-      phone && `Телефон: ${phone}`,
-      direction && `Направление: ${direction}`,
-      preferredDate && `Желаемая дата: ${preferredDate}`,
-      message && `Сообщение: ${message}`,
+      t("signup.waHello"),
+      name && `${t("signup.waName")} ${name}`,
+      phone && `${t("signup.waPhone")} ${phone}`,
+      direction && `${t("signup.waDirection")} ${direction}`,
+      preferredDate && `${t("signup.waDate")} ${preferredDate}`,
+      message && `${t("signup.waMessage")} ${message}`,
       "",
-      "Заявка с сайта lappytoys.kz",
+      t("signup.waFooter"),
     ]
       .filter(Boolean)
       .join("\n");
@@ -43,13 +45,13 @@ export function SignupForm() {
     <form className="space-y-5" onSubmit={handleSubmit}>
       <div>
         <label htmlFor="name" className="mb-2 block text-sm font-medium text-warm-700">
-          Ваше имя
+          {t("signup.name")}
         </label>
         <input
           id="name"
           name="name"
           required
-          placeholder="Как к вам обращаться?"
+          placeholder={t("signup.namePh")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="input-field"
@@ -57,7 +59,7 @@ export function SignupForm() {
       </div>
       <div>
         <label htmlFor="phone" className="mb-2 block text-sm font-medium text-warm-700">
-          Телефон
+          {t("signup.phone")}
         </label>
         <input
           id="phone"
@@ -71,7 +73,7 @@ export function SignupForm() {
       </div>
       <div>
         <label htmlFor="direction" className="mb-2 block text-sm font-medium text-warm-700">
-          Направление
+          {t("signup.direction")}
         </label>
         <select
           id="direction"
@@ -82,7 +84,7 @@ export function SignupForm() {
           className="input-field"
         >
           <option value="" disabled>
-            Выберите курс или мастер-класс
+            {t("signup.directionPh")}
           </option>
           {directionOptions.map((option) => (
             <option key={option} value={option}>
@@ -93,7 +95,7 @@ export function SignupForm() {
       </div>
       <div>
         <label htmlFor="preferred-date" className="mb-2 block text-sm font-medium text-warm-700">
-          Желаемая дата
+          {t("signup.date")}
         </label>
         <input
           id="preferred-date"
@@ -106,13 +108,13 @@ export function SignupForm() {
       </div>
       <div>
         <label htmlFor="message" className="mb-2 block text-sm font-medium text-warm-700">
-          Сообщение
+          {t("signup.message")}
         </label>
         <textarea
           id="message"
           name="message"
           rows={3}
-          placeholder="Удобное время, возраст ученика, вопросы"
+          placeholder={t("signup.messagePh")}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="textarea-field"
@@ -120,12 +122,12 @@ export function SignupForm() {
       </div>
       <button type="submit" className="btn-primary h-11 w-full">
         <Send className="size-4" />
-        Отправить заявку
+        {t("cta.submit")}
       </button>
       <p className="text-center text-xs leading-relaxed text-warm-500">
-        Заявка откроется в WhatsApp для отправки Ольге. Нажимая кнопку, вы соглашаетесь с{" "}
+        {t("signup.legal")}{" "}
         <Link href="/privacy/" className="underline decoration-brand-300 underline-offset-2 hover:text-brand-800">
-          политикой обработки данных
+          {t("signup.privacy")}
         </Link>
         .
       </p>

@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowUp } from "lucide-react";
 import { MetrikaInformer } from "@/components/metrika-informer";
 import { SiteLogo } from "@/components/site-logo";
 import { TelegramIcon } from "@/components/telegram-icon";
+import { useI18n } from "@/components/i18n-provider";
 import { navLinks, site } from "@/data/site";
 
 function WhatsAppIcon() {
@@ -24,6 +27,8 @@ function InstagramIcon() {
 }
 
 export function SiteFooter() {
+  const { t } = useI18n();
+
   return (
     <footer className="border-t border-brand-100/80 bg-white/50 py-14 backdrop-blur-md">
       <div className="container-main">
@@ -32,7 +37,7 @@ export function SiteFooter() {
             <Link href="/" className="inline-flex min-w-0 items-center gap-2.5 sm:gap-3">
               <SiteLogo />
             </Link>
-            <p className="mt-2 max-w-xs text-sm leading-relaxed text-warm-500">{site.tagline}</p>
+            <p className="mt-2 max-w-xs text-sm leading-relaxed text-warm-500">{t("footer.tagline")}</p>
             <a
               href={`tel:${site.phone}`}
               className="mt-4 inline-block font-semibold text-brand-700 transition-colors hover:text-brand-800"
@@ -77,7 +82,7 @@ export function SiteFooter() {
                 href={link.href}
                 className="text-sm text-warm-500 transition-colors hover:text-brand-800"
               >
-                {link.label}
+                {t(`nav.${link.href}`)}
               </Link>
             ))}
           </nav>
@@ -85,7 +90,7 @@ export function SiteFooter() {
           <Link
             href="/#top"
             className="flex size-11 items-center justify-center self-start rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-brand-50"
-            aria-label="Наверх"
+            aria-label={t("cta.toTop")}
           >
             <ArrowUp className="size-4 text-brand-700" />
           </Link>
@@ -96,12 +101,12 @@ export function SiteFooter() {
         <div className="flex flex-col items-center gap-5">
           <MetrikaInformer />
           <p className="text-center text-sm text-warm-500">
-            © {new Date().getFullYear()} {site.name}. Семей, Казахстан.{" "}
+            © {new Date().getFullYear()} {site.name}. {t("footer.city")}{" "}
             <Link
               href="/privacy/"
               className="underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
             >
-              Политика данных
+              {t("footer.privacy")}
             </Link>
           </p>
         </div>

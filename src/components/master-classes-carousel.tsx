@@ -6,8 +6,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { PriceText } from "@/components/price-text";
 import { masterClasses } from "@/data/site";
+import { useI18n } from "@/components/i18n-provider";
 
 export function MasterClassesCarousel() {
+  const { t } = useI18n();
   const [index, setIndex] = useState(0);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const count = masterClasses.length;
@@ -51,24 +53,22 @@ export function MasterClassesCarousel() {
     return () => scroller.removeEventListener("scroll", onScroll);
   }, []);
 
-  const current = masterClasses[index];
-
   return (
     <section id="master-classes" className="page-section section-alt">
       <div className="container-main">
         <SectionHeader
           align="left"
-          eyebrow="Готовые проекты"
-          title="Мастер-классы"
-          description="Листайте влево и вправо — и записывайтесь на понравившийся проект."
+          eyebrow={t("masters.eyebrow")}
+          title={t("masters.title")}
+          description={t("masters.desc")}
         />
 
         <div className="relative mt-10 sm:mt-12">
           <div
             ref={scrollerRef}
             className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-[8%] pb-2 [scrollbar-width:none] sm:gap-5 sm:px-[12%] [&::-webkit-scrollbar]:hidden"
-            aria-roledescription="карусель"
-            aria-label="Мастер-классы"
+            aria-roledescription="carousel"
+            aria-label={t("masters.title")}
           >
             {masterClasses.map((mc, i) => (
               <article
@@ -79,7 +79,7 @@ export function MasterClassesCarousel() {
                 <div className="relative aspect-[3/4] overflow-hidden">
                   <Image
                     src={mc.image}
-                    alt={mc.title}
+                    alt={t(`mc.${i}.title`)}
                     fill
                     className="object-cover"
                     sizes="(max-width: 640px) 78vw, (max-width: 1024px) 55vw, 42vw"
@@ -87,16 +87,16 @@ export function MasterClassesCarousel() {
                   />
                   {"category" in mc && mc.category ? (
                     <span className="badge-soft absolute left-3 top-3 bg-white/95 px-4 py-1.5 !text-sm shadow-sm">
-                      {mc.category}
+                      {t(`mc.${i}.category`)}
                     </span>
                   ) : null}
-                  <span className="badge-solid absolute right-3 top-3">{mc.badge}</span>
+                  <span className="badge-solid absolute right-3 top-3">{t("masters.promo")}</span>
                 </div>
                 <div className="flex flex-1 flex-col gap-2 px-4 pb-4 pt-2">
                   <h3 className="font-heading text-xl font-semibold leading-snug text-warm-900">
-                    {mc.title}
+                    {t(`mc.${i}.title`)}
                   </h3>
-                  <p className="text-sm leading-relaxed text-warm-500">{mc.description}</p>
+                  <p className="text-sm leading-relaxed text-warm-500">{t(`mc.${i}.desc`)}</p>
                   <div className="flex items-baseline gap-3">
                     <PriceText className="font-heading text-2xl font-bold text-brand-700" as="p">
                       {mc.price}
@@ -106,7 +106,7 @@ export function MasterClassesCarousel() {
                     </PriceText>
                   </div>
                   <a href="#signup" className="btn-primary mt-auto h-10 w-full">
-                    Записаться
+                    {t("masters.signup")}
                   </a>
                   <a
                     href={`https://www.instagram.com/lappy.art/`}
@@ -114,7 +114,7 @@ export function MasterClassesCarousel() {
                     rel="noopener noreferrer"
                     className="btn-ghost mt-2 h-9 w-full text-xs"
                   >
-                    Смотреть в Instagram
+                    {t("masters.instagram")}
                   </a>
                 </div>
               </article>
@@ -125,7 +125,7 @@ export function MasterClassesCarousel() {
             type="button"
             onClick={goPrev}
             className="absolute left-0 top-[38%] z-10 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-brand-100 bg-white/95 text-warm-900 shadow-md transition hover:bg-brand-50 sm:left-1 sm:size-11"
-            aria-label="Предыдущий мастер-класс"
+            aria-label={t("aria.prevMc")}
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -133,21 +133,25 @@ export function MasterClassesCarousel() {
             type="button"
             onClick={goNext}
             className="absolute right-0 top-[38%] z-10 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-brand-100 bg-white/95 text-warm-900 shadow-md transition hover:bg-brand-50 sm:right-1 sm:size-11"
-            aria-label="Следующий мастер-класс"
+            aria-label={t("aria.nextMc")}
           >
             <ChevronRight className="size-5" />
           </button>
         </div>
 
         <div className="mt-5 flex flex-col items-center gap-3">
-          <div className="flex flex-wrap items-center justify-center gap-2" role="tablist" aria-label="Слайды">
+          <div
+            className="flex flex-wrap items-center justify-center gap-2"
+            role="tablist"
+            aria-label={t("aria.slides")}
+          >
             {masterClasses.map((mc, i) => (
               <button
                 key={mc.title}
                 type="button"
                 role="tab"
                 aria-selected={i === index}
-                aria-label={`Слайд ${i + 1}: ${mc.title}`}
+                aria-label={`${t("aria.slideN")} ${i + 1}: ${t(`mc.${i}.title`)}`}
                 onClick={() => goTo(i)}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   i === index ? "w-7 bg-brand-600" : "w-2 bg-brand-200 hover:bg-brand-300"
@@ -160,7 +164,7 @@ export function MasterClassesCarousel() {
             {" / "}
             {count}
             <span className="mx-2 text-brand-200">·</span>
-            {current.title}
+            {t(`mc.${index}.title`)}
           </p>
         </div>
       </div>

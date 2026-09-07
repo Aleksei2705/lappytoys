@@ -1,4 +1,6 @@
-﻿import Link from "next/link";
+﻿"use client";
+
+import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowUp,
@@ -20,6 +22,7 @@ import { FaqSection } from "@/components/faq-section";
 import { HeroCopy } from "@/components/hero-copy";
 import { AboutVideo } from "@/components/about-video";
 import { PriceText } from "@/components/price-text";
+import { useI18n } from "@/components/i18n-provider";
 import {
   ContactIconFrame,
   InstagramContactIcon,
@@ -30,13 +33,7 @@ import {
   TelegramContactIcon,
 } from "@/components/contact-icons";
 import { WhatsAppContactCard } from "@/components/whatsapp-contact-card";
-import {
-  aboutParagraphs,
-  benefits,
-  courses,
-  site,
-  stats,
-} from "@/data/site";
+import { benefits, courses, site, stats } from "@/data/site";
 
 const benefitIcons = {
   heart: Heart,
@@ -44,11 +41,17 @@ const benefitIcons = {
   clock: Clock,
 } as const;
 
+const benefitKeys = ["nice", "clear", "personal"] as const;
+const aboutKeys = ["p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7"] as const;
+const statKeys = ["students", "directions", "group"] as const;
+
 const statIcons = {
   users: Users,
 } as const;
 
 export default function HomePage() {
+  const { t } = useI18n();
+
   return (
     <div id="top">
       <SiteHeader />
@@ -79,12 +82,13 @@ export default function HomePage() {
             <HeroCopy />
 
             <dl className="mt-auto mb-3 grid w-full shrink-0 grid-cols-3 gap-4 border-t border-cream-200/70 pt-5 text-center sm:mb-4 sm:pt-6 md:mt-8 md:mb-0 md:pt-8">
-              {stats.map((stat) => {
+              {stats.map((stat, i) => {
                 const StatIcon =
                   "icon" in stat && stat.icon ? statIcons[stat.icon] : null;
+                const label = t(`stat.${statKeys[i]}`);
 
                 return (
-                <div key={stat.label}>
+                <div key={statKeys[i]}>
                   {StatIcon ? (
                     <dt className="flex justify-center">
                       <span className="inline-flex size-11 items-center justify-center rounded-full bg-brand-100 text-brand-700">
@@ -103,7 +107,7 @@ export default function HomePage() {
                         : "font-heading text-xl font-bold text-brand-700 sm:text-2xl"
                     }
                   >
-                    {stat.label}
+                    {label}
                   </dd>
                 </div>
                 );
@@ -121,7 +125,7 @@ export default function HomePage() {
                 <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5">
                   <Image
                     src="/images/room.jpg"
-                    alt="Ольга Лаптева — преподаватель вязания"
+                    alt={t("about.photoAlt")}
                     fill
                     className="object-cover object-top"
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -129,22 +133,23 @@ export default function HomePage() {
                 </div>
                 <div className="mt-5 text-center lg:text-left">
                   <p className="font-heading text-lg font-semibold text-warm-900">Ольга Лаптева</p>
-                  <p className="text-sm text-warm-500">Преподаватель вязания · Семей</p>
+                  <p className="text-sm text-warm-500">{t("about.role")}</p>
                 </div>
               </div>
               <div className="space-y-6">
                 <SectionHeader
                   align="left"
-                  eyebrow="Обо мне"
+                  eyebrow={t("about.eyebrow")}
                   title={
                     <>
-                      Мой <span className="text-gradient">творческий путь</span>
+                      {t("about.title.before")}{" "}
+                      <span className="text-gradient">{t("about.title.accent")}</span>
                     </>
                   }
                 />
                 <div className="space-y-4 text-base leading-relaxed text-warm-500">
-                  {aboutParagraphs.map((p) => (
-                    <p key={p.slice(0, 30)}>{p}</p>
+                  {aboutKeys.map((key) => (
+                    <p key={key}>{t(`about.${key}`)}</p>
                   ))}
                 </div>
               </div>
@@ -152,7 +157,7 @@ export default function HomePage() {
 
             <div className="mt-12 lg:mt-16">
               <p className="mb-5 text-center font-heading text-lg font-semibold text-warm-900 sm:text-xl">
-                Видео из студии
+                {t("about.video")}
               </p>
               <AboutVideo />
             </div>
@@ -163,9 +168,9 @@ export default function HomePage() {
         <section id="courses" className="page-section section-stitch">
           <div className="container-main">
             <SectionHeader
-              eyebrow="Направления"
-              title="Творческие направления"
-              description="Вязание, макраме, вышивка, бисероплетение и шитьё игрушек — выберите направление и начните с нуля в уютной студии."
+              eyebrow={t("courses.eyebrow")}
+              title={t("courses.title")}
+              description={t("courses.desc")}
             />
             <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {courses.map((course) => (
@@ -178,20 +183,22 @@ export default function HomePage() {
                       {course.emoji}
                     </span>
                     <span className="badge-soft">
-                      <PriceText>{course.badge}</PriceText>
+                      <PriceText>{t(`course.${course.id}.badge`)}</PriceText>
                     </span>
                     <h3 className="pr-10 font-heading text-xl font-semibold text-warm-900">
-                      {course.title}
+                      {t(`course.${course.id}.title`)}
                     </h3>
-                    <p className="text-base leading-relaxed text-warm-500">{course.description}</p>
+                    <p className="text-base leading-relaxed text-warm-500">
+                      {t(`course.${course.id}.desc`)}
+                    </p>
                     <div className="mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-3 text-sm font-medium text-brand-800">
                       <PriceText>{course.price}</PriceText>
-                      <span className="text-warm-500">{course.duration}</span>
+                      <span className="text-warm-500">{t(`course.${course.id}.duration`)}</span>
                     </div>
                   </div>
                   <div className="border-t border-warm-900/5 bg-white/60 p-4">
                     <Link href={`/courses/${course.id}/`} className="btn-ghost h-10 w-full">
-                      Подробнее
+                      {t("cta.details")}
                       <ArrowUpRight className="size-4" />
                     </Link>
                   </div>
@@ -214,18 +221,21 @@ export default function HomePage() {
         <section className="page-section section-alt">
           <div className="container-main">
             <div className="grid gap-6 md:grid-cols-3">
-              {benefits.map((b) => {
+              {benefits.map((b, i) => {
                 const Icon = benefitIcons[b.icon];
+                const key = benefitKeys[i];
                 return (
                   <div
-                    key={b.title}
+                    key={key}
                     className="card-soft flex flex-col items-center px-6 pb-6 pt-3 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-100/30"
                   >
                     <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-accent-100 text-brand-600 shadow-inner">
                       <Icon className="size-6" />
                     </div>
-                    <h3 className="font-heading text-xl font-semibold">{b.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-warm-500">{b.description}</p>
+                    <h3 className="font-heading text-xl font-semibold">{t(`benefit.${key}.title`)}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-warm-500">
+                      {t(`benefit.${key}.desc`)}
+                    </p>
                   </div>
                 );
               })}
@@ -239,9 +249,9 @@ export default function HomePage() {
         <section id="contacts" className="page-section section-stitch">
           <div className="container-main">
             <SectionHeader
-              eyebrow="Связаться"
-              title="Контакты"
-              description="Позвоните или напишите — отвечу на вопросы и расскажу про текущие скидки."
+              eyebrow={t("contacts.eyebrow")}
+              title={t("contacts.title")}
+              description={t("contacts.desc")}
             />
             <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-start">
               <div className="space-y-3">
@@ -250,7 +260,7 @@ export default function HomePage() {
                     <PhoneContactIcon />
                   </ContactIconFrame>
                   <div>
-                    <p className="text-sm text-warm-500">Телефон</p>
+                    <p className="text-sm text-warm-500">{t("contacts.phone")}</p>
                     <p className="font-semibold text-warm-900">{site.phoneDisplay}</p>
                   </div>
                 </a>
@@ -306,7 +316,7 @@ export default function HomePage() {
                 </div>
                 <div className="relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 lg:aspect-[4/3]">
                   <iframe
-                    title="Карта: творческая студия lappy.art"
+                    title={t("contacts.map")}
                     src={site.mapEmbedUrl}
                     className="absolute inset-0 h-full w-full border-0"
                     loading="lazy"
@@ -321,7 +331,7 @@ export default function HomePage() {
                   className="block w-full overflow-hidden whitespace-nowrap text-center font-heading font-semibold leading-none text-brand-700 transition-colors hover:text-brand-800"
                   style={{ fontSize: "clamp(0.72rem, 3.4vw, 1.25rem)" }}
                 >
-                  {site.address}
+                  {t("contacts.address")}
                 </a>
               </div>
             </div>
@@ -333,9 +343,9 @@ export default function HomePage() {
           <div className="container-main">
             <div className="mx-auto max-w-xl">
               <SectionHeader
-                eyebrow="Запись"
-                title="Записаться на урок/мастер-класс"
-                description="Оставьте заявку — в ближайшее время обязательно свяжусь с вами."
+                eyebrow={t("signup.eyebrow")}
+                title={t("signup.title")}
+                description={t("signup.desc")}
               />
               <div className="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5">
                 <SignupForm />
@@ -343,7 +353,7 @@ export default function HomePage() {
               <div className="mt-6 flex justify-center">
                 <Link href="#top" className="btn-secondary h-11 px-8">
                   <ArrowUp className="size-4" />
-                  На главную
+                  {t("signup.home")}
                 </Link>
               </div>
             </div>

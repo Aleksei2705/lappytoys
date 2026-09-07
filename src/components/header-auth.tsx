@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { LogIn, LogOut, User, UserPlus, X } from "lucide-react";
 import { getSupabase, isReviewsEnabled, type User as AuthUser } from "@/lib/supabase";
 import { UserAvatar, avatarUrlFromUser } from "@/components/user-avatar";
+import { useI18n } from "@/components/i18n-provider";
 
 type Mode = "login" | "register";
 
@@ -31,16 +32,17 @@ function GoogleIcon({ className }: { className?: string }) {
   );
 }
 
-function displayName(user: AuthUser) {
+function displayName(user: AuthUser, fallback: string) {
   return (
     (user.user_metadata?.full_name as string | undefined) ||
     (user.user_metadata?.name as string | undefined) ||
     user.email ||
-    "Профиль"
+    fallback
   );
 }
 
 export function HeaderAuth() {
+  const { t } = useI18n();
   const emailId = useId();
   const passwordId = useId();
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -132,7 +134,7 @@ export function HeaderAuth() {
     const supabase = getSupabase();
     if (!supabase) {
       setStatus("error");
-      setMessage("Вход временно недоступен.");
+      setMessage(t("auth.unavailable"));
       return;
     }
 
@@ -150,20 +152,20 @@ export function HeaderAuth() {
 
       if (error) {
         setStatus("error");
-        setMessage(error.message || "Не удалось открыть вход через Google.");
+        setMessage(error.message || t("auth.googleFail"));
         return;
       }
 
       if (!data.url) {
         setStatus("error");
-        setMessage("Google-вход не настроен в Supabase.");
+        setMessage(t("auth.googleNotConfigured"));
         return;
       }
 
       window.location.assign(data.url);
     } catch (err) {
       setStatus("error");
-      setMessage(err instanceof Error ? err.message : "Ошибка входа через Google.");
+      setMessage(err instanceof Error ? err.message : t("auth.googleError"));
     }
   }
 
@@ -175,7 +177,7 @@ export function HeaderAuth() {
     const supabase = getSupabase();
     if (!supabase) {
       setStatus("error");
-      setMessage("Регистрация временно недоступна.");
+      setMessage(t("auth.registerUnavailable"));
       return;
     }
 
@@ -189,11 +191,11 @@ export function HeaderAuth() {
         setStatus("error");
         const msg = error.message.toLowerCase();
         if (msg.includes("already") || msg.includes("registered")) {
-          setMessage("Этот email уже зарегистрирован. Нажмите «Вход».");
+          setMessage(t("auth.emailTaken"));
         } else if (msg.includes("password")) {
-          setMessage("Пароль слишком простой. Минимум 6 символов.");
+          setMessage(t("auth.weakPassword"));
         } else if (msg.includes("email")) {
-          setMessage("Проверьте правильность email.");
+          setMessage(t("auth.badEmail"));
         } else {
           setMessage(error.message);
         }
@@ -202,13 +204,13 @@ export function HeaderAuth() {
 
       if (data.session) {
         setStatus("success");
-        setMessage("Готово! Можно оставить отзыв.");
+        setMessage(t("auth.readyReview"));
         setOpen(false);
         return;
       }
 
       setStatus("success");
-      setMessage("Аккаунт создан. Подтвердите email из письма, затем войдите.");
+      setMessage(t("auth.confirmEmail"));
       setMode("login");
       return;
     }
@@ -222,9 +224,9 @@ export function HeaderAuth() {
       setStatus("error");
       const msg = error.message.toLowerCase();
       if (msg.includes("confirm") || msg.includes("not confirmed")) {
-        setMessage("Сначала подтвердите email из письма, затем войдите.");
+        setMessage(t("auth.needConfirm"));
       } else if (msg.includes("invalid")) {
-        setMessage("Неверный email или пароль.");
+        setMessage(t("auth.badCredentials"));
       } else {
         setMessage(error.message);
       }
@@ -252,7 +254,7 @@ export function HeaderAuth() {
           <button
             type="button"
             className="auth-sheet-backdrop"
-            aria-label="Закрыть"
+            aria-label={t("auth.close")}
             onClick={() => setOpen(false)}
           />
           <div
@@ -260,26 +262,28 @@ export function HeaderAuth() {
             className="auth-sheet-panel"
             role="dialog"
             aria-modal="true"
-            aria-label="Профиль"
+            aria-label={t("auth.profile")}
           >
             {user ? (
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-3">
                     <UserAvatar
-                      name={displayName(user)}
+                      name={displayName(user, t("auth.profile"))}
                       src={avatarUrlFromUser(user)}
                       size="md"
                     />
                     <div className="min-w-0">
-                      <p className="text-xs text-warm-500">Вы вошли как</p>
-                      <p className="truncate text-sm font-medium text-warm-900">{displayName(user)}</p>
+                      <p className="text-xs text-warm-500">{t("auth.signedInAs")}</p>
+                      <p className="truncate text-sm font-medium text-warm-900">
+                        {displayName(user, t("auth.profile"))}
+                      </p>
                     </div>
                   </div>
                   <button
                     type="button"
                     className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-warm-500 hover:bg-cream-100"
-                    aria-label="Закрыть"
+                    aria-label={t("auth.close")}
                     onClick={() => setOpen(false)}
                   >
                     <X className="size-4" />
@@ -287,20 +291,20 @@ export function HeaderAuth() {
                 </div>
                 <button type="button" onClick={handleLogout} className="btn-ghost h-10 w-full text-sm">
                   <LogOut className="size-4" />
-                  Выйти
+                  {t("auth.logout")}
                 </button>
               </div>
             ) : (
               <div>
                 <div className="mb-3 flex items-start justify-between gap-2">
                   <div className="min-w-0 pr-2">
-                    <p className="font-heading text-base font-semibold text-warm-900">Профиль</p>
-                    <p className="mt-0.5 text-xs text-warm-500">Вход нужен, чтобы оставить отзыв</p>
+                    <p className="font-heading text-base font-semibold text-warm-900">{t("auth.profile")}</p>
+                    <p className="mt-0.5 text-xs text-warm-500">{t("auth.needForReview")}</p>
                   </div>
                   <button
                     type="button"
                     className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-warm-500 hover:bg-cream-100"
-                    aria-label="Закрыть"
+                    aria-label={t("auth.close")}
                     onClick={() => setOpen(false)}
                   >
                     <X className="size-4" />
@@ -315,13 +319,13 @@ export function HeaderAuth() {
                 >
                   <GoogleIcon className="size-4 shrink-0" />
                   <span className="truncate">
-                    {status === "loading" ? "Открываем Google..." : "Войти через Google"}
+                    {status === "loading" ? t("auth.googleOpening") : t("auth.google")}
                   </span>
                 </button>
 
                 <div className="my-3 flex items-center gap-2">
                   <div className="h-px flex-1 bg-cream-200" />
-                  <span className="text-[10px] uppercase tracking-wider text-warm-500">или</span>
+                  <span className="text-[10px] uppercase tracking-wider text-warm-500">{t("auth.or")}</span>
                   <div className="h-px flex-1 bg-cream-200" />
                 </div>
 
@@ -338,7 +342,7 @@ export function HeaderAuth() {
                     }`}
                   >
                     <UserPlus className="size-3.5 shrink-0" />
-                    <span className="truncate">Регистрация</span>
+                    <span className="truncate">{t("auth.register")}</span>
                   </button>
                   <button
                     type="button"
@@ -352,7 +356,7 @@ export function HeaderAuth() {
                     }`}
                   >
                     <LogIn className="size-3.5 shrink-0" />
-                    <span className="truncate">Вход</span>
+                    <span className="truncate">{t("auth.login")}</span>
                   </button>
                 </div>
 
@@ -378,7 +382,7 @@ export function HeaderAuth() {
                       htmlFor={passwordId}
                       className="mb-1.5 block text-xs font-medium text-warm-700"
                     >
-                      Пароль
+                      {t("auth.password")}
                     </label>
                     <input
                       id={passwordId}
@@ -386,7 +390,7 @@ export function HeaderAuth() {
                       required
                       minLength={6}
                       autoComplete={mode === "register" ? "new-password" : "current-password"}
-                      placeholder="Не менее 6 символов"
+                      placeholder={t("auth.passwordPh")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="input-field h-11 w-full max-w-full text-base sm:text-sm"
@@ -398,10 +402,10 @@ export function HeaderAuth() {
                     disabled={status === "loading"}
                   >
                     {status === "loading"
-                      ? "Подождите..."
+                      ? t("auth.wait")
                       : mode === "register"
-                        ? "Зарегистрироваться"
-                        : "Войти"}
+                        ? t("auth.registerAction")
+                        : t("auth.login")}
                   </button>
                 </form>
 
@@ -433,8 +437,8 @@ export function HeaderAuth() {
           aria-expanded={open}
           aria-haspopup="dialog"
         >
-          <UserAvatar name={displayName(user)} src={avatarUrlFromUser(user)} size="sm" />
-          <span className="truncate">{displayName(user)}</span>
+          <UserAvatar name={displayName(user, t("auth.profile"))} src={avatarUrlFromUser(user)} size="sm" />
+          <span className="truncate">{displayName(user, t("auth.profile"))}</span>
         </button>
       ) : (
         <button
@@ -446,7 +450,7 @@ export function HeaderAuth() {
           aria-haspopup="dialog"
         >
           <User className="size-4" />
-          <span className="hidden sm:inline">Войти</span>
+          <span className="hidden sm:inline">{t("auth.login")}</span>
         </button>
       )}
       {panel}

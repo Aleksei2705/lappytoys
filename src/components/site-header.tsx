@@ -83,7 +83,7 @@ export function SiteHeader() {
             <button
               type="button"
               className="inline-flex size-9 items-center justify-center rounded-xl border border-cream-200 bg-white md:hidden"
-              aria-label={open ? "Закрыть меню" : "Открыть меню"}
+              aria-label={open ? t("aria.closeMenu") : t("aria.openMenu")}
               aria-expanded={open}
               onClick={() => setOpen((value) => !value)}
             >

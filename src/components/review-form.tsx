@@ -1,11 +1,12 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Send, Star } from "lucide-react";
 import { courses, site } from "@/data/site";
 import { notifySiteAuthorAboutReview } from "@/lib/notify-review";
 import { getSupabase, isReviewsEnabled } from "@/lib/supabase";
 import { UserAvatar } from "@/components/user-avatar";
+import { useI18n } from "@/components/i18n-provider";
 
 type ReviewFormProps = {
   onSubmitted?: () => void;
@@ -14,19 +15,26 @@ type ReviewFormProps = {
   avatarUrl?: string | null;
 };
 
-const courseOptions = [
-  ...courses.map((course) => course.title),
-  "Мастер-класс",
-  "Другое",
-];
-
 export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormProps) {
+  const { t } = useI18n();
+  const courseOptions = useMemo(
+    () => [
+      ...courses.map((course) => t(`course.${course.id}.title`)),
+      t("review.option.mc"),
+      t("review.option.other"),
+    ],
+    [t],
+  );
   const [name, setName] = useState(lockedName ?? "");
   const [course, setCourse] = useState(courseOptions[0]);
   const [text, setText] = useState("");
   const [rating, setRating] = useState(5);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setCourse((prev) => (courseOptions.includes(prev) ? prev : courseOptions[0]));
+  }, [courseOptions]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -36,7 +44,7 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
     const authorName = (lockedName ?? name).trim();
     if (!authorName) {
       setStatus("error");
-      setError("Не удалось определить имя профиля. Войдите снова.");
+      setError(t("review.errNoName"));
       return;
     }
 
@@ -53,11 +61,10 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
 
       if (insertError) {
         setStatus("error");
-        setError("Не удалось отправить отзыв. Попробуйте позже.");
+        setError(t("review.errSend"));
         return;
       }
 
-      // Fire email via hidden iframe first — must not be cancelled by UI refresh.
       await notifySiteAuthorAboutReview({
         name: authorName,
         course: course.trim(),
@@ -67,7 +74,6 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
       });
 
       setStatus("success");
-      // Delay list refresh slightly so the mail POST can leave the browser first.
       window.setTimeout(() => {
         onSubmitted?.();
       }, 400);
@@ -75,11 +81,11 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
     }
 
     const message = [
-      "Здравствуйте! Хочу оставить отзыв для сайта.",
-      `Имя: ${authorName}`,
-      `Курс: ${course.trim()}`,
-      `Оценка: ${rating} из 5`,
-      `Отзыв: ${text.trim()}`,
+      t("review.waHello"),
+      `${t("review.waName")} ${authorName}`,
+      `${t("review.waCourse")} ${course.trim()}`,
+      `${t("review.waRating")} ${rating} ${t("review.starsOf")}`,
+      `${t("review.waText")} ${text.trim()}`,
     ].join("\n");
 
     window.open(`${site.whatsapp}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
@@ -90,11 +96,9 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
 
   return (
     <div className="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5">
-      <h3 className="font-heading text-xl font-semibold text-warm-900">Оставить отзыв</h3>
+      <h3 className="font-heading text-xl font-semibold text-warm-900">{t("review.formTitle")}</h3>
       <p className="mt-2 text-sm leading-relaxed text-warm-500">
-        {isReviewsEnabled()
-          ? "Ваш отзыв сразу появится на сайте."
-          : "Отзыв откроется в WhatsApp — Ольга опубликует его на сайте."}
+        {isReviewsEnabled() ? t("review.enabledHint") : t("review.whatsappHint")}
       </p>
 
       <form
@@ -103,10 +107,10 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
         aria-disabled={frozen}
       >
         <fieldset disabled={frozen} className="min-w-0 space-y-5 border-0 p-0 disabled:opacity-70">
-          <legend className="sr-only">Форма отзыва</legend>
+          <legend className="sr-only">{t("review.formLegend")}</legend>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-warm-700">Ваше имя</p>
+            <p className="mb-2 text-sm font-medium text-warm-700">{t("review.yourName")}</p>
             {lockedName ? (
               <div
                 className="flex h-11 items-center gap-3 rounded-xl border border-brand-100 bg-cream-100 px-3 text-sm text-warm-800"
@@ -118,7 +122,7 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
             ) : (
               <>
                 <label htmlFor="review-name" className="sr-only">
-                  Ваше имя
+                  {t("review.yourName")}
                 </label>
                 <input
                   id="review-name"
@@ -126,7 +130,7 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
                   required
                   minLength={2}
                   maxLength={60}
-                  placeholder="Как вас подписать?"
+                  placeholder={t("review.namePh")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="input-field"
@@ -137,7 +141,7 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
 
           <div>
             <label htmlFor="review-course" className="mb-2 block text-sm font-medium text-warm-700">
-              Курс или занятие
+              {t("review.course")}
             </label>
             <select
               id="review-course"
@@ -156,8 +160,8 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
           </div>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-warm-700">Оценка</p>
-            <div className="flex items-center gap-1" role="group" aria-label="Оценка от 1 до 5">
+            <p className="mb-2 text-sm font-medium text-warm-700">{t("review.rating")}</p>
+            <div className="flex items-center gap-1" role="group" aria-label={t("review.ratingAria")}>
               {Array.from({ length: 5 }).map((_, i) => {
                 const value = i + 1;
                 const active = value <= rating;
@@ -167,7 +171,7 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
                     type="button"
                     onClick={() => setRating(value)}
                     className="rounded-lg p-1 transition-transform hover:scale-110 disabled:hover:scale-100"
-                    aria-label={`${value} из 5`}
+                    aria-label={`${value} ${t("review.starsOf")}`}
                     aria-pressed={rating === value}
                   >
                     <Star
@@ -183,7 +187,7 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
 
           <div>
             <label htmlFor="review-text" className="mb-2 block text-sm font-medium text-warm-700">
-              Отзыв
+              {t("review.text")}
             </label>
             <textarea
               id="review-text"
@@ -192,7 +196,7 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
               minLength={5}
               maxLength={600}
               rows={4}
-              placeholder="Расскажите, как прошли занятия"
+              placeholder={t("review.textPh")}
               value={text}
               onChange={(e) => setText(e.target.value)}
               className="textarea-field"
@@ -202,18 +206,15 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
           <button type="submit" className="btn-primary h-11 w-full">
             <Send className="size-4" />
             {status === "loading"
-              ? "Отправка..."
+              ? t("review.sending")
               : status === "success"
-                ? "Отзыв отправлен"
-                : "Отправить отзыв"}
+                ? t("review.sent")
+                : t("review.send")}
           </button>
         </fieldset>
 
         {status === "success" ? (
-          <p className="text-center text-sm text-brand-700">
-            Спасибо! Отзыв отправлен на модерацию. После проверки он появится на сайте. Чтобы
-            оставить ещё один — обновите страницу.
-          </p>
+          <p className="text-center text-sm text-brand-700">{t("review.thanks")}</p>
         ) : null}
 
         {status === "error" ? (

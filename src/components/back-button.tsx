@@ -2,9 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useI18n } from "@/components/i18n-provider";
 
 export function BackButton() {
   const router = useRouter();
+  const { t } = useI18n();
 
   return (
     <button
@@ -19,7 +21,7 @@ export function BackButton() {
       className="btn-secondary h-12 px-8 text-base"
     >
       <ArrowLeft className="size-4" />
-      Назад
+      {t("cta.back")}
     </button>
   );
 }

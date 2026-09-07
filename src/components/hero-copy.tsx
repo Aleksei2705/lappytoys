@@ -18,7 +18,7 @@ export function HeroCopy() {
         <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-warm-900 sm:text-5xl lg:text-6xl">
           {locale === "kk" ? (
             <>
-              Сүйікті <span className="text-gradient">ісіңіз</span>
+              Сіздің сүйікті <span className="text-gradient">ісіңіз</span>
             </>
           ) : (
             <>

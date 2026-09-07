@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { site } from "@/data/site";
+import { useI18n } from "@/components/i18n-provider";
 
 type SiteLogoProps = {
   imageClassName?: string;
@@ -12,6 +15,8 @@ export function SiteLogo({
   titleClassName = "font-heading text-base font-semibold tracking-tight text-brand-800 sm:text-xl",
   subtitleClassName = "text-[11px] text-warm-500 sm:text-sm",
 }: SiteLogoProps) {
+  const { t } = useI18n();
+
   return (
     <>
       <Image
@@ -24,7 +29,7 @@ export function SiteLogo({
       />
       <span className="flex min-w-0 flex-col leading-tight">
         <span className={titleClassName}>{site.brandTitle}</span>
-        <span className={subtitleClassName}>{site.brandSubtitle}</span>
+        <span className={subtitleClassName}>{t("brand.subtitle")}</span>
       </span>
     </>
   );

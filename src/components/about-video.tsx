@@ -3,12 +3,15 @@
 import Image from "next/image";
 import { Play } from "lucide-react";
 import { site } from "@/data/site";
+import { useI18n } from "@/components/i18n-provider";
 
 type AboutVideoProps = {
   className?: string;
 };
 
 export function AboutVideo({ className = "" }: AboutVideoProps) {
+  const { t } = useI18n();
+
   if (site.aboutVideoSrc) {
     const isFile = site.aboutVideoSrc.endsWith(".mp4") || site.aboutVideoSrc.startsWith("/");
     if (isFile) {
@@ -34,7 +37,7 @@ export function AboutVideo({ className = "" }: AboutVideoProps) {
         className={`relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 ${className}`}
       >
         <iframe
-          title="Видео студии lappy.art"
+          title={t("about.videoTitle")}
           src={site.aboutVideoSrc}
           className="absolute inset-0 h-full w-full border-0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -54,7 +57,7 @@ export function AboutVideo({ className = "" }: AboutVideoProps) {
     >
       <Image
         src={site.aboutVideoPoster}
-        alt="Атмосфера студии lappy.art"
+        alt={t("about.posterAlt")}
         fill
         className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         sizes="(max-width: 768px) 100vw, 28rem"
@@ -64,8 +67,10 @@ export function AboutVideo({ className = "" }: AboutVideoProps) {
         <span className="inline-flex size-14 items-center justify-center rounded-full bg-white/90 text-brand-700 shadow-lg">
           <Play className="size-6 fill-current" />
         </span>
-        <p className="font-heading text-lg font-semibold">Видео студии скоро</p>
-        <p className="text-sm text-white/90">Пока загляните в Instagram {site.instagramHandle}</p>
+        <p className="font-heading text-lg font-semibold">{t("about.videoSoon")}</p>
+        <p className="text-sm text-white/90">
+          {t("about.videoIg")} {site.instagramHandle}
+        </p>
       </div>
     </a>
   );

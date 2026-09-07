@@ -7,6 +7,7 @@ import { ReviewCard } from "@/components/review-card";
 import { ReviewAuthGate } from "@/components/review-auth-gate";
 import { reviews as staticReviews } from "@/data/site";
 import { getSupabase, type StoredReview } from "@/lib/supabase";
+import { useI18n } from "@/components/i18n-provider";
 
 const INITIAL_VISIBLE = 4;
 
@@ -21,6 +22,7 @@ type DisplayReview = {
 };
 
 export function ReviewsSection() {
+  const { t } = useI18n();
   const [dynamicReviews, setDynamicReviews] = useState<StoredReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
@@ -71,18 +73,18 @@ export function ReviewsSection() {
       avatarUrl: review.avatar_url ?? null,
     }));
 
-    const fromStatic = staticReviews.map((review) => ({
+    const fromStatic = staticReviews.map((review, i) => ({
       id: `static-${review.name}-${review.course}`,
       name: review.name,
-      text: review.text,
-      course: review.course,
+      text: t(`staticReview.${i}.text`),
+      course: t(`staticReview.${i}.course`),
       rating: 5,
       createdAt: null,
       avatarUrl: null,
     }));
 
     return [...fromDb, ...fromStatic];
-  }, [dynamicReviews]);
+  }, [dynamicReviews, t]);
 
   const visibleReviews = expanded ? allReviews : allReviews.slice(0, INITIAL_VISIBLE);
   const hiddenCount = Math.max(0, allReviews.length - INITIAL_VISIBLE);
@@ -91,9 +93,9 @@ export function ReviewsSection() {
     <section id="reviews" className="page-section">
       <div className="container-main">
         <SectionHeader
-          eyebrow="Отзывы"
-          title="Что говорят ученики"
-          description="Реальные истории людей, которые научились вязать вместе с Ольгой"
+          eyebrow={t("reviews.eyebrow")}
+          title={t("reviews.title")}
+          description={t("reviews.desc")}
         />
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
@@ -120,12 +122,12 @@ export function ReviewsSection() {
               {expanded ? (
                 <>
                   <ChevronUp className="size-4" />
-                  Скрыть
+                  {t("cta.hide")}
                 </>
               ) : (
                 <>
                   <ChevronDown className="size-4" />
-                  Показать ещё ({hiddenCount})
+                  {t("cta.showMore")} ({hiddenCount})
                 </>
               )}
             </button>
@@ -133,7 +135,7 @@ export function ReviewsSection() {
         ) : null}
 
         {loading ? (
-          <p className="mt-8 text-center text-sm text-warm-500">Загрузка отзывов...</p>
+          <p className="mt-8 text-center text-sm text-warm-500">{t("reviews.loading")}</p>
         ) : null}
 
         <div className="mx-auto max-w-xl">

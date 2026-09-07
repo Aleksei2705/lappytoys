@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Eye, Users, MousePointerClick } from "lucide-react";
 import { site } from "@/data/site";
+import { useI18n } from "@/components/i18n-provider";
 
 type InformerData = {
   pageviews: number | null;
@@ -37,6 +38,7 @@ function formatCount(value: number | null | undefined): string {
 }
 
 export function MetrikaInformer() {
+  const { locale, t } = useI18n();
   const [data, setData] = useState<InformerData | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -82,7 +84,7 @@ export function MetrikaInformer() {
   return (
     <div className="w-full max-w-md rounded-2xl border border-brand-100/80 bg-white/80 p-4 shadow-sm shadow-brand-50/40">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="font-heading text-sm font-semibold text-brand-800">Посещаемость сегодня</p>
+        <p className="font-heading text-sm font-semibold text-brand-800">{t("metrika.title")}</p>
         <a
           href={`https://metrika.yandex.ru/stat/?id=${site.yandexMetricaId}&from=informer`}
           target="_blank"
@@ -99,21 +101,21 @@ export function MetrikaInformer() {
           <p className="mt-1.5 font-heading text-lg font-bold text-brand-700">
             {ready ? formatCount(data?.pageviews) : "…"}
           </p>
-          <p className="text-[11px] leading-tight text-warm-500">просмотры</p>
+          <p className="text-[11px] leading-tight text-warm-500">{t("metrika.views")}</p>
         </div>
         <div className="rounded-xl bg-brand-50/80 px-2 py-3">
           <MousePointerClick className="mx-auto size-4 text-brand-600" aria-hidden />
           <p className="mt-1.5 font-heading text-lg font-bold text-brand-700">
             {ready ? formatCount(data?.visits) : "…"}
           </p>
-          <p className="text-[11px] leading-tight text-warm-500">визиты</p>
+          <p className="text-[11px] leading-tight text-warm-500">{t("metrika.visits")}</p>
         </div>
         <div className="rounded-xl bg-brand-50/80 px-2 py-3">
           <Users className="mx-auto size-4 text-brand-600" aria-hidden />
           <p className="mt-1.5 font-heading text-lg font-bold text-brand-700">
             {ready ? formatCount(data?.uniques) : "…"}
           </p>
-          <p className="text-[11px] leading-tight text-warm-500">посетители</p>
+          <p className="text-[11px] leading-tight text-warm-500">{t("metrika.users")}</p>
         </div>
       </div>
 
@@ -130,10 +132,10 @@ export function MetrikaInformer() {
             width={88}
             height={31}
             alt="Яндекс.Метрика"
-            title="Яндекс.Метрика: данные за сегодня"
+            title={`${t("metrika.title")} — Яндекс.Метрика`}
             className="ym-advanced-informer border-0"
             data-cid={site.yandexMetricaId}
-            data-lang="ru"
+            data-lang={locale === "kk" ? "kk" : "ru"}
           />
         </a>
       </div>
