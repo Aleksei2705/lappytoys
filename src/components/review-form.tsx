@@ -185,7 +185,7 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
               id="review-text"
               name="text"
               required
-              minLength={20}
+              minLength={5}
               maxLength={600}
               rows={4}
               placeholder="Расскажите, как прошли занятия"

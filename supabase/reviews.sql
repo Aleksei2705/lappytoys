@@ -2,7 +2,7 @@ create table if not exists public.reviews (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(name) between 2 and 60),
   course text not null check (char_length(course) between 2 and 80),
-  text text not null check (char_length(text) between 20 and 600),
+  text text not null check (char_length(text) between 5 and 600),
   rating integer not null default 5 check (rating between 1 and 5),
   approved boolean not null default false,
   created_at timestamptz not null default now()
@@ -15,6 +15,11 @@ alter table public.reviews
 update public.reviews
 set approved = true
 where approved is distinct from true;
+
+-- Relax minimum review length (was 20)
+alter table public.reviews drop constraint if exists reviews_text_check;
+alter table public.reviews
+  add constraint reviews_text_check check (char_length(text) between 5 and 600);
 
 alter table public.reviews enable row level security;
 
