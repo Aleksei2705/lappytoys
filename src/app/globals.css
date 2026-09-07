@@ -173,10 +173,12 @@ body {
   position: fixed;
   top: calc(4rem + env(safe-area-inset-top, 0px) + 0.5rem);
   right: 0.5rem;
-  bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
   z-index: 45;
   display: flex;
   width: min(18.5rem, 78vw);
+  max-height: calc(
+    100dvh - 4rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 1rem
+  );
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.25rem;
@@ -192,20 +194,19 @@ body {
 
 .mobile-nav-list {
   display: flex;
-  flex: 1;
   flex-direction: column;
   gap: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: 0.55rem 0.65rem;
+  padding: 0.45rem 0.55rem 0.15rem;
 }
 
 .mobile-nav-link {
   position: relative;
   display: block;
   border-radius: 0.85rem;
-  padding: 0.85rem 0.9rem;
+  padding: 0.75rem 0.9rem;
   font-size: 0.95rem;
   font-weight: 500;
   line-height: 1.25;
@@ -243,7 +244,7 @@ body {
 .mobile-nav-cta {
   flex-shrink: 0;
   border-top: 1px solid color-mix(in srgb, var(--color-brand-100) 90%, transparent);
-  padding: 0.85rem;
+  padding: 0.65rem 0.75rem 0.75rem;
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--color-brand-50) 35%, white),
