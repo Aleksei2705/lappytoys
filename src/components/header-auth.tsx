@@ -433,12 +433,12 @@ export function HeaderAuth() {
           ref={buttonRef}
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="inline-flex h-9 max-w-[9rem] items-center gap-2 rounded-xl border border-cream-200 bg-white px-2.5 text-sm text-warm-700 transition-colors hover:border-brand-200 hover:text-brand-800"
+          className="inline-flex size-9 items-center justify-center rounded-xl border border-cream-200 bg-white transition-colors hover:border-brand-200"
           aria-expanded={open}
           aria-haspopup="dialog"
+          aria-label={displayName(user, t("auth.profile"))}
         >
           <UserAvatar name={displayName(user, t("auth.profile"))} src={avatarUrlFromUser(user)} size="sm" />
-          <span className="truncate">{displayName(user, t("auth.profile"))}</span>
         </button>
       ) : (
         <button
