@@ -27,13 +27,17 @@ export const metadata: Metadata = {
   keywords: [
     "творчество",
     "творчество Семей",
+    "творчество для детей Семей",
+    "творчество для взрослых Семей",
     "творческие занятия Семей",
     "творческая студия Семей",
     "творческий кружок Семей",
+    "куда пойти на творчество Семей",
+    "занятия творчеством Семей",
     "рукоделие и творчество",
-    "занятия творчеством",
-    "хобби творчество",
+    "хобби творчество Семей",
     "handmade Семей",
+    "handmade Kazakhstan",
     "Вязание крючком",
     "Вязание спицами",
     "Амигуруми",
@@ -48,12 +52,15 @@ export const metadata: Metadata = {
     "бисероплетение Семей",
     "шитьё игрушек Семей",
     "рукоделие Семей",
+    "мастер-класс рукоделие Семей",
+    "кружок рукоделия Семей",
     "lappy.art",
     "lappytoys",
     "мастер-класс вязание",
     "уроки рукоделия Казахстан",
     "амигуруми Семей",
     "творчество Казахстан",
+    "творческая студия Казахстан",
   ],
   authors: [{ name: "Ольга Лаптева" }],
   creator: "lappy.art",
@@ -140,8 +147,11 @@ const jsonLd = {
   sameAs: [site.instagram, site.telegram],
   priceRange: "$$",
   category: "Творчество и рукоделие",
+  keywords:
+    "творчество, рукоделие, вязание, макраме, вышивка, бисероплетение, амигуруми, Семей",
   knowsAbout: [
     "Творчество",
+    "Творческие занятия",
     "Рукоделие",
     "Вязание крючком",
     "Вязание спицами",
@@ -161,6 +171,23 @@ const jsonLd = {
     "Бисероплетение",
     "Шитьё игрушек",
   ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Творческие курсы и мастер-классы",
+    itemListElement: [
+      {
+        "@type": "OfferCatalog",
+        name: "Творчество и рукоделие в Семее",
+        itemListElement: [
+          { "@type": "Course", name: "Вязание крючком", url: `${site.url}/courses/crochet/` },
+          { "@type": "Course", name: "Вязание спицами", url: `${site.url}/courses/needles/` },
+          { "@type": "Course", name: "Макраме", url: `${site.url}/courses/macrame/` },
+          { "@type": "Course", name: "Вышивка", url: `${site.url}/courses/embroidery/` },
+          { "@type": "Course", name: "Бисероплетение", url: `${site.url}/courses/beadwork/` },
+        ],
+      },
+    ],
+  },
 };
 
 export default function RootLayout({

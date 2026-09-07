@@ -16,13 +16,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const course = getCourseById(slug);
   if (!course) return {};
   return {
-    title: course.title,
-    description: `${course.description} Студия lappy.art, ${site.city}. ${course.price}, ${course.duration}, уровень: ${course.level}.`,
+    title: `${course.title} — творчество и рукоделие в Семее`,
+    description: `${course.description} Творческие занятия в студии lappy.art, ${site.city}. ${course.price}, ${course.duration}, уровень: ${course.level}.`,
+    keywords: [
+      course.title,
+      `${course.title} Семей`,
+      "творчество Семей",
+      "рукоделие Семей",
+      "творческая студия",
+      "lappy.art",
+    ],
     alternates: {
       canonical: `/courses/${course.id}/`,
     },
     openGraph: {
-      title: `${course.title} — ${site.name}`,
+      title: `${course.title} — творчество в ${site.city}`,
       description: course.description,
       url: `${site.url}/courses/${course.id}/`,
       type: "website",
