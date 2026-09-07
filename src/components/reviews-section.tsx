@@ -6,7 +6,12 @@ import { SectionHeader } from "@/components/section-header";
 import { ReviewCard } from "@/components/review-card";
 import { ReviewAuthGate } from "@/components/review-auth-gate";
 import { reviews as staticReviews } from "@/data/site";
-import { getSupabase, type StoredReview } from "@/lib/supabase";
+import {
+  getSupabase,
+  isReviewAdmin,
+  type StoredReview,
+  type User,
+} from "@/lib/supabase";
 import { useI18n } from "@/components/i18n-provider";
 
 const INITIAL_VISIBLE = 4;
@@ -19,6 +24,8 @@ type DisplayReview = {
   rating: number;
   createdAt?: string | null;
   avatarUrl?: string | null;
+  replyText?: string | null;
+  replyAt?: string | null;
 };
 
 export function ReviewsSection() {
@@ -26,6 +33,7 @@ export function ReviewsSection() {
   const [dynamicReviews, setDynamicReviews] = useState<StoredReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const [adminUser, setAdminUser] = useState<User | null>(null);
 
   const loadReviews = useCallback(async () => {
     const supabase = getSupabase();
@@ -38,17 +46,16 @@ export function ReviewsSection() {
 
     const { data, error } = await supabase
       .from("reviews")
-      .select("id,name,text,course,rating,created_at,approved,avatar_url")
+      .select("id,name,text,course,rating,created_at,approved,avatar_url,reply_text,reply_at")
       .eq("approved", true)
       .order("created_at", { ascending: false });
 
     if (!error && data) {
       setDynamicReviews(data);
     } else if (error) {
-      // Fallback if approved/avatar columns are not migrated yet
       const legacy = await supabase
         .from("reviews")
-        .select("id,name,text,course,rating,created_at")
+        .select("id,name,text,course,rating,created_at,avatar_url")
         .order("created_at", { ascending: false });
       if (!legacy.error && legacy.data) {
         setDynamicReviews(legacy.data);
@@ -62,6 +69,25 @@ export function ReviewsSection() {
     loadReviews();
   }, [loadReviews]);
 
+  useEffect(() => {
+    const supabase = getSupabase();
+    if (!supabase) return;
+
+    supabase.auth.getSession().then(({ data }) => {
+      setAdminUser(data.session?.user ?? null);
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAdminUser(session?.user ?? null);
+    });
+
+    return () => {
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  const canReply = isReviewAdmin(adminUser);
+
   const allReviews = useMemo<DisplayReview[]>(() => {
     const fromDb = dynamicReviews.map((review) => ({
       id: review.id,
@@ -71,6 +97,8 @@ export function ReviewsSection() {
       rating: review.rating ?? 5,
       createdAt: review.created_at,
       avatarUrl: review.avatar_url ?? null,
+      replyText: review.reply_text ?? null,
+      replyAt: review.reply_at ?? null,
     }));
 
     const fromStatic = staticReviews.map((review, i) => ({
@@ -81,6 +109,8 @@ export function ReviewsSection() {
       rating: 5,
       createdAt: null,
       avatarUrl: null,
+      replyText: t(`staticReview.${i}.reply`),
+      replyAt: null,
     }));
 
     return [...fromDb, ...fromStatic];
@@ -88,6 +118,14 @@ export function ReviewsSection() {
 
   const visibleReviews = expanded ? allReviews : allReviews.slice(0, INITIAL_VISIBLE);
   const hiddenCount = Math.max(0, allReviews.length - INITIAL_VISIBLE);
+
+  function handleReplySaved(reviewId: string, replyText: string, replyAt: string) {
+    setDynamicReviews((list) =>
+      list.map((item) =>
+        item.id === reviewId ? { ...item, reply_text: replyText, reply_at: replyAt } : item,
+      ),
+    );
+  }
 
   return (
     <section id="reviews" className="page-section">
@@ -102,12 +140,17 @@ export function ReviewsSection() {
           {visibleReviews.map((review) => (
             <ReviewCard
               key={review.id}
+              id={review.id}
               name={review.name}
               text={review.text}
               course={review.course}
               rating={review.rating}
               createdAt={review.createdAt}
               avatarUrl={review.avatarUrl}
+              replyText={review.replyText}
+              replyAt={review.replyAt}
+              canReply={canReply}
+              onReplySaved={(replyText, replyAt) => handleReplySaved(review.id, replyText, replyAt)}
             />
           ))}
         </div>

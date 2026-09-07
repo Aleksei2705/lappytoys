@@ -220,6 +220,25 @@ export const messages: Record<Locale, Record<string, string>> = {
     "review.copied": "Текст отзыва скопирован",
     "review.shareAria": "Поделиться отзывом",
     "review.ratingLabel": "Оценка:",
+    "review.replyFrom": "Ответ Ольги",
+    "review.reply": "Ответить",
+    "review.replyEdit": "Изменить ответ",
+    "review.replyPh": "Поблагодарите за отзыв…",
+    "review.replySend": "Отправить ответ",
+    "review.replySaving": "Сохранение...",
+    "review.replySaved": "Ответ сохранён",
+    "review.replyCancel": "Отмена",
+    "review.replyErr": "Не удалось сохранить ответ. Проверьте вход и SQL-политику в Supabase.",
+    "review.replyThanks": "Спасибо за тёплый отзыв! Очень рада, что занятия приносят радость 💛",
+    "review.replyTemplate": "Вставить благодарность",
+    "staticReview.0.reply":
+      "Спасибо, Айгуль! Рада, что первый зайчик уже получился — дальше будет ещё интереснее 💛",
+    "staticReview.1.reply":
+      "Марина, спасибо за отзыв! Пусть шарф согревает, а занятия продолжают радовать.",
+    "staticReview.2.reply":
+      "Елена, большое спасибо! Всегда на связи в Telegram — спрашивайте, когда удобно.",
+    "staticReview.3.reply":
+      "Динара, спасибо! Здорово, что уже две игрушки и новый мастер-класс — так держать!",
     "aria.prev": "Предыдущий",
     "aria.next": "Следующий",
     "aria.prevMc": "Предыдущий мастер-класс",
@@ -547,6 +566,25 @@ export const messages: Record<Locale, Record<string, string>> = {
     "review.copied": "Пікір мәтіні көшірілді",
     "review.shareAria": "Пікірмен бөлісу",
     "review.ratingLabel": "Баға:",
+    "review.replyFrom": "Ольганың жауабы",
+    "review.reply": "Жауап беру",
+    "review.replyEdit": "Жауапты өзгерту",
+    "review.replyPh": "Пікір үшін алғыс айтыңыз…",
+    "review.replySend": "Жауапты жіберу",
+    "review.replySaving": "Сақталуда...",
+    "review.replySaved": "Жауап сақталды",
+    "review.replyCancel": "Болдырмау",
+    "review.replyErr": "Жауапты сақтау мүмкін болмады. Кіруді және Supabase SQL саясатын тексеріңіз.",
+    "review.replyThanks": "Жылы пікіріңізге рахмет! Сабақтар қуаныш сыйлайтынына қуаныштымын 💛",
+    "review.replyTemplate": "Алғыс үлгісін қою",
+    "staticReview.0.reply":
+      "Рахмет, Айгүл! Алғашқы қоян шыққанына қуаныштымын — алдағысы одан да қызық болады 💛",
+    "staticReview.1.reply":
+      "Марина, пікіріңізге рахмет! Шарф жылытсын, сабақтар қуанта берсін.",
+    "staticReview.2.reply":
+      "Елена, үлкен рахмет! Telegram-да әрқашан байланыстамын — ыңғайлы кезде сұраңыз.",
+    "staticReview.3.reply":
+      "Динара, рахмет! Екі ойыншық және жаңа мастер-класс — керемет, осылай жалғастырыңыз!",
     "aria.prev": "Алдыңғы",
     "aria.next": "Келесі",
     "aria.prevMc": "Алдыңғы мастер-класс",
