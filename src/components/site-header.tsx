@@ -48,7 +48,7 @@ export function SiteHeader() {
   return (
     <>
       <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
-        <div className="container-header flex min-h-16 items-center gap-3 py-2 md:gap-4 lg:gap-5">
+        <div className="container-header flex min-h-16 w-full items-center gap-3 py-2 md:gap-4 lg:gap-5">
           <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3">
             <SiteLogo
               subtitleClassName="hidden text-[11px] text-warm-500 xl:block xl:text-sm"
@@ -72,7 +72,7 @@ export function SiteHeader() {
 
           <span className="header-divider" aria-hidden />
 
-          <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-2.5">
             <LanguageToggle />
             <HeaderAuth />
             <div className="hidden md:block">
