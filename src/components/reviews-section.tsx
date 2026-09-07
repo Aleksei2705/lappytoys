@@ -16,6 +16,7 @@ type DisplayReview = {
   text: string;
   course: string;
   rating: number;
+  createdAt?: string | null;
 };
 
 export function ReviewsSection() {
@@ -65,6 +66,7 @@ export function ReviewsSection() {
       text: review.text,
       course: review.course,
       rating: review.rating ?? 5,
+      createdAt: review.created_at,
     }));
 
     const fromStatic = staticReviews.map((review) => ({
@@ -73,6 +75,7 @@ export function ReviewsSection() {
       text: review.text,
       course: review.course,
       rating: 5,
+      createdAt: null,
     }));
 
     return [...fromDb, ...fromStatic];
@@ -98,6 +101,7 @@ export function ReviewsSection() {
               text={review.text}
               course={review.course}
               rating={review.rating}
+              createdAt={review.createdAt}
             />
           ))}
         </div>

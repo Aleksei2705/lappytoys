@@ -5,7 +5,22 @@ type ReviewNotice = {
   course: string;
   text: string;
   rating: number;
+  createdAt?: string;
 };
+
+function formatNotifyDateTime(iso?: string) {
+  const date = iso ? new Date(iso) : new Date();
+  if (Number.isNaN(date.getTime())) return "";
+
+  return date.toLocaleString("ru-RU", {
+    timeZone: "Asia/Almaty",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 const FRAME_NAME = "review-notify-frame";
 
@@ -38,6 +53,7 @@ function notifyByFormSubmit(review: ReviewNotice) {
   form.acceptCharset = "UTF-8";
   form.style.display = "none";
 
+  const when = formatNotifyDateTime(review.createdAt);
   const fields: Record<string, string> = {
     _subject: `Новый отзыв на lappytoys.kz — ${review.name}`,
     _template: "table",
@@ -45,6 +61,7 @@ function notifyByFormSubmit(review: ReviewNotice) {
     Имя: review.name,
     Курс: review.course,
     Оценка: `${review.rating}/5`,
+    Дата: when,
     Отзыв: review.text,
   };
 
@@ -71,6 +88,7 @@ async function notifyByTelegram(review: ReviewNotice) {
     `Имя: ${review.name}`,
     `Курс: ${review.course}`,
     `Оценка: ${review.rating}/5`,
+    `Дата: ${formatNotifyDateTime(review.createdAt)}`,
     "",
     review.text,
   ].join("\n");

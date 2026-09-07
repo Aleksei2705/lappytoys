@@ -60,6 +60,7 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
         course: course.trim(),
         text: text.trim(),
         rating,
+        createdAt: new Date().toISOString(),
       });
 
       setStatus("success");
