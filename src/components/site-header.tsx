@@ -92,39 +92,41 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {open ? (
-          <nav className="border-t border-cream-200 bg-white/95 px-4 py-4 backdrop-blur-md md:hidden">
-            <div className="flex flex-col gap-3">
+      </header>
+
+      {open ? (
+        <>
+          <div
+            role="presentation"
+            className="mobile-nav-backdrop md:hidden"
+            aria-hidden
+            onPointerDown={closeMenu}
+            onClick={closeMenu}
+          />
+          <nav className="mobile-nav-sheet md:hidden">
+            <div className="mobile-nav-list">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="rounded-lg px-2 py-1.5 text-sm text-warm-500 hover:bg-brand-50 hover:text-brand-800"
+                  className="mobile-nav-link"
                   onClick={() => setOpen(false)}
                 >
                   {t(`nav.${link.href}`)}
                 </Link>
               ))}
+            </div>
+            <div className="mobile-nav-cta">
               <Link
                 href="/#signup"
-                className="btn-primary mt-1 h-10"
+                className="btn-primary h-11 w-full"
                 onClick={() => setOpen(false)}
               >
                 {t("cta.signup")}
               </Link>
             </div>
           </nav>
-        ) : null}
-      </header>
-
-      {open ? (
-        <div
-          role="presentation"
-          className="fixed inset-0 z-40 touch-none bg-warm-900/30 md:hidden"
-          aria-hidden
-          onPointerDown={closeMenu}
-          onClick={closeMenu}
-        />
+        </>
       ) : null}
 
       <div className="site-header-spacer" aria-hidden />
