@@ -261,8 +261,25 @@ body {
 }
 
 .hero-bg-media {
+  /* Mobile: slightly above center. Desktop: focus on tree trunk (mid-tree). */
+  object-position: center 32%;
+  transform-origin: center 32%;
   animation: hero-ken 28s ease-out forwards;
   will-change: transform;
+}
+
+@media (min-width: 768px) {
+  .hero-bg-media {
+    object-position: center 24%;
+    transform-origin: center 24%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-bg-media {
+    object-position: center 20%;
+    transform-origin: center 20%;
+  }
 }
 
 .hero-copy > *:nth-child(1) {
