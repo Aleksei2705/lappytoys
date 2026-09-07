@@ -48,27 +48,31 @@ export function SiteHeader() {
   return (
     <>
       <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
-        <div className="container-main flex min-h-16 items-center gap-3 py-2 md:gap-0">
-          <Link
-            href="/"
-            className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3 md:pr-5 lg:pr-7"
-          >
-            <SiteLogo />
+        <div className="container-header flex min-h-16 items-center gap-3 py-2 md:gap-4 lg:gap-5">
+          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3">
+            <SiteLogo
+              subtitleClassName="hidden text-[11px] text-warm-500 xl:block xl:text-sm"
+              titleClassName="font-heading text-base font-semibold tracking-tight text-brand-800 whitespace-nowrap sm:text-lg lg:text-xl"
+            />
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-3 border-x border-brand-100/80 px-4 md:flex lg:gap-x-5 lg:px-6 xl:gap-x-6 xl:px-8">
+          <span className="header-divider" aria-hidden />
+
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-2.5 md:flex lg:gap-x-4 xl:gap-x-5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="whitespace-nowrap text-[13px] leading-none text-warm-500 transition-colors hover:text-brand-800 lg:text-sm"
+                className="whitespace-nowrap text-[12px] leading-none text-warm-500 transition-colors hover:text-brand-800 lg:text-[13px] xl:text-sm"
               >
                 {t(`nav.${link.href}`)}
               </Link>
             ))}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2 md:pl-5 lg:pl-7">
+          <span className="header-divider" aria-hidden />
+
+          <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
             <LanguageToggle />
             <HeaderAuth />
             <div className="hidden md:block">
