@@ -4,6 +4,7 @@ create table if not exists public.reviews (
   course text not null check (char_length(course) between 2 and 80),
   text text not null check (char_length(text) between 5 and 600),
   rating integer not null default 5 check (rating between 1 and 5),
+  avatar_url text,
   approved boolean not null default false,
   created_at timestamptz not null default now()
 );
@@ -11,6 +12,9 @@ create table if not exists public.reviews (
 -- Existing projects: add moderation column and publish old reviews
 alter table public.reviews
   add column if not exists approved boolean not null default false;
+
+alter table public.reviews
+  add column if not exists avatar_url text;
 
 update public.reviews
 set approved = true

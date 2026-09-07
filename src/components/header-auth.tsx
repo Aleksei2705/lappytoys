@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { LogIn, LogOut, User, UserPlus, X } from "lucide-react";
 import { getSupabase, isReviewsEnabled, type User as AuthUser } from "@/lib/supabase";
+import { UserAvatar, avatarUrlFromUser } from "@/components/user-avatar";
 
 type Mode = "login" | "register";
 
@@ -37,11 +38,6 @@ function displayName(user: AuthUser) {
     user.email ||
     "Профиль"
   );
-}
-
-function initial(user: AuthUser) {
-  const name = displayName(user);
-  return name.charAt(0).toUpperCase();
 }
 
 export function HeaderAuth() {
@@ -269,9 +265,16 @@ export function HeaderAuth() {
             {user ? (
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-xs text-warm-500">Вы вошли как</p>
-                    <p className="truncate text-sm font-medium text-warm-900">{displayName(user)}</p>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <UserAvatar
+                      name={displayName(user)}
+                      src={avatarUrlFromUser(user)}
+                      size="md"
+                    />
+                    <div className="min-w-0">
+                      <p className="text-xs text-warm-500">Вы вошли как</p>
+                      <p className="truncate text-sm font-medium text-warm-900">{displayName(user)}</p>
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -430,9 +433,7 @@ export function HeaderAuth() {
           aria-expanded={open}
           aria-haspopup="dialog"
         >
-          <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-800">
-            {initial(user)}
-          </span>
+          <UserAvatar name={displayName(user)} src={avatarUrlFromUser(user)} size="sm" />
           <span className="truncate">{displayName(user)}</span>
         </button>
       ) : (

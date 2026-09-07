@@ -5,11 +5,13 @@ import { Send, Star } from "lucide-react";
 import { courses, site } from "@/data/site";
 import { notifySiteAuthorAboutReview } from "@/lib/notify-review";
 import { getSupabase, isReviewsEnabled } from "@/lib/supabase";
+import { UserAvatar } from "@/components/user-avatar";
 
 type ReviewFormProps = {
   onSubmitted?: () => void;
   /** When set, name is taken from the signed-in profile and cannot be edited. */
   lockedName?: string;
+  avatarUrl?: string | null;
 };
 
 const courseOptions = [
@@ -18,7 +20,7 @@ const courseOptions = [
   "Другое",
 ];
 
-export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
+export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormProps) {
   const [name, setName] = useState(lockedName ?? "");
   const [course, setCourse] = useState(courseOptions[0]);
   const [text, setText] = useState("");
@@ -46,6 +48,7 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
         course: course.trim(),
         text: text.trim(),
         rating,
+        avatar_url: avatarUrl?.trim() || null,
       });
 
       if (insertError) {
@@ -106,10 +109,11 @@ export function ReviewForm({ onSubmitted, lockedName }: ReviewFormProps) {
             <p className="mb-2 text-sm font-medium text-warm-700">Ваше имя</p>
             {lockedName ? (
               <div
-                className="flex h-11 items-center rounded-xl border border-brand-100 bg-cream-100 px-4 text-sm text-warm-800"
+                className="flex h-11 items-center gap-3 rounded-xl border border-brand-100 bg-cream-100 px-3 text-sm text-warm-800"
                 aria-live="polite"
               >
-                {lockedName}
+                <UserAvatar name={lockedName} src={avatarUrl} size="sm" />
+                <span className="truncate">{lockedName}</span>
               </div>
             ) : (
               <>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { User } from "lucide-react";
 import { getSupabase, isReviewsEnabled, type User as AuthUser } from "@/lib/supabase";
 import { ReviewForm } from "@/components/review-form";
+import { avatarUrlFromUser } from "@/components/user-avatar";
 
 type ReviewAuthGateProps = {
   onSubmitted?: () => void;
@@ -55,7 +56,11 @@ export function ReviewAuthGate({ onSubmitted }: ReviewAuthGateProps) {
 
     return (
       <div className="mt-10">
-        <ReviewForm onSubmitted={onSubmitted} lockedName={authorName} />
+        <ReviewForm
+          onSubmitted={onSubmitted}
+          lockedName={authorName}
+          avatarUrl={avatarUrlFromUser(user)}
+        />
       </div>
     );
   }

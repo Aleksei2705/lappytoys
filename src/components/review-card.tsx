@@ -2,6 +2,7 @@
 
 import { Share2, Star } from "lucide-react";
 import { site } from "@/data/site";
+import { UserAvatar } from "@/components/user-avatar";
 
 type ReviewCardProps = {
   name: string;
@@ -9,6 +10,7 @@ type ReviewCardProps = {
   course: string;
   rating?: number;
   createdAt?: string | null;
+  avatarUrl?: string | null;
 };
 
 function formatReviewDateTime(iso: string) {
@@ -31,6 +33,7 @@ export function ReviewCard({
   course,
   rating = 5,
   createdAt,
+  avatarUrl,
 }: ReviewCardProps) {
   const stars = Math.min(5, Math.max(1, Math.round(rating)));
   const when = createdAt ? formatReviewDateTime(createdAt) : null;
@@ -89,18 +92,18 @@ export function ReviewCard({
       </div>
       <p className="mt-3 text-base leading-relaxed text-warm-700">&ldquo;{text}&rdquo;</p>
       <div className="mt-5 flex items-center justify-between gap-3 border-t border-cream-200/70 pt-4">
-        <div className="min-w-0">
-          <p className="font-semibold text-warm-900">{name}</p>
-          <p className="text-sm text-warm-500">{course}</p>
-          {when ? (
-            <time dateTime={createdAt ?? undefined} className="mt-1 block text-xs text-warm-500/90">
-              {when}
-            </time>
-          ) : null}
+        <div className="flex min-w-0 items-center gap-3">
+          <UserAvatar name={name} src={avatarUrl} size="md" />
+          <div className="min-w-0">
+            <p className="font-semibold text-warm-900">{name}</p>
+            <p className="text-sm text-warm-500">{course}</p>
+            {when ? (
+              <time dateTime={createdAt ?? undefined} className="mt-1 block text-xs text-warm-500/90">
+                {when}
+              </time>
+            ) : null}
+          </div>
         </div>
-        <span className="text-2xl" aria-hidden="true">
-          🧶
-        </span>
       </div>
     </article>
   );

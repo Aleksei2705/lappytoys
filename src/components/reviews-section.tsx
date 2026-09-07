@@ -17,6 +17,7 @@ type DisplayReview = {
   course: string;
   rating: number;
   createdAt?: string | null;
+  avatarUrl?: string | null;
 };
 
 export function ReviewsSection() {
@@ -35,14 +36,14 @@ export function ReviewsSection() {
 
     const { data, error } = await supabase
       .from("reviews")
-      .select("id,name,text,course,rating,created_at,approved")
+      .select("id,name,text,course,rating,created_at,approved,avatar_url")
       .eq("approved", true)
       .order("created_at", { ascending: false });
 
     if (!error && data) {
       setDynamicReviews(data);
     } else if (error) {
-      // Fallback if approved column is not migrated yet
+      // Fallback if approved/avatar columns are not migrated yet
       const legacy = await supabase
         .from("reviews")
         .select("id,name,text,course,rating,created_at")
@@ -67,6 +68,7 @@ export function ReviewsSection() {
       course: review.course,
       rating: review.rating ?? 5,
       createdAt: review.created_at,
+      avatarUrl: review.avatar_url ?? null,
     }));
 
     const fromStatic = staticReviews.map((review) => ({
@@ -76,6 +78,7 @@ export function ReviewsSection() {
       course: review.course,
       rating: 5,
       createdAt: null,
+      avatarUrl: null,
     }));
 
     return [...fromDb, ...fromStatic];
@@ -102,6 +105,7 @@ export function ReviewsSection() {
               course={review.course}
               rating={review.rating}
               createdAt={review.createdAt}
+              avatarUrl={review.avatarUrl}
             />
           ))}
         </div>
