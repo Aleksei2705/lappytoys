@@ -64,7 +64,7 @@ export function HeroBackdrop({ src }: HeroBackdropProps) {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-warm-900">
+    <div className="absolute inset-0 overflow-hidden bg-cream">
       <div
         ref={layerRef}
         className="hero-parallax-layer absolute -inset-[8%] bg-cover bg-center"
@@ -81,9 +81,11 @@ export function HeroBackdrop({ src }: HeroBackdropProps) {
           quality={85}
         />
       </div>
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-warm-900/75 via-warm-900/35 to-warm-900/20" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-warm-900/85 via-warm-900/25 to-warm-900/30" />
-      <div className="pointer-events-none absolute inset-0 opacity-30 mix-blend-soft-light">
+      {/* Soft light wash — keeps knit visible, text readable */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cream/80 via-cream/35 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-cream/90 via-cream/25 to-brand-50/20" />
+      <div className="pointer-events-none absolute inset-0 bg-white/15" />
+      <div className="pointer-events-none absolute inset-0 opacity-25 mix-blend-soft-light">
         <div className="hero-shimmer absolute inset-0" />
       </div>
     </div>
