@@ -26,7 +26,7 @@ export const site = {
     "https://www.google.com/maps/search/?api=1&query=%D0%A8%D1%83%D0%B3%D0%B0%D0%B5%D0%B2%D0%B0%204%2C%20%D0%A1%D0%B5%D0%BC%D0%B5%D0%B9",
   /** Optional studio video (mp4 in /public or YouTube/VK embed URL). Empty = poster placeholder. */
   aboutVideoSrc: "/videos/about.mp4",
-  aboutVideoPoster: "/images/hero-bg.jpg",
+  aboutVideoPoster: "/images/hero-knit.jpg",
 } as const;
 
 export const navLinks = [

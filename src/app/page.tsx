@@ -60,7 +60,7 @@ export default function HomePage() {
         <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-end overflow-hidden">
           <div className="absolute inset-0 bg-warm-900">
             <Image
-              src="/images/hero-bg.jpg"
+              src="/images/hero-knit.jpg"
               alt=""
               fill
               priority
