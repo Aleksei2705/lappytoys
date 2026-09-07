@@ -90,6 +90,58 @@ body {
   @apply hidden h-9 w-px shrink-0 bg-brand-200 md:block;
 }
 
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.35rem;
+  font-weight: 500;
+  transition:
+    color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-brand-500), var(--color-brand-700));
+  transition:
+    width 0.28s ease,
+    left 0.28s ease,
+    opacity 0.22s ease;
+  opacity: 0.85;
+}
+
+.nav-link:hover {
+  color: var(--color-brand-800);
+  transform: translateY(-2px);
+}
+
+.nav-link:hover::after {
+  left: 0;
+  width: 100%;
+}
+
+.nav-link:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link,
+  .nav-link::after {
+    transition: none;
+  }
+
+  .nav-link:hover {
+    transform: none;
+  }
+}
+
 /* Header */
 .site-header {
   @apply border-b border-brand-100/80 bg-white/95 shadow-sm md:bg-white/70 md:backdrop-blur-lg;

@@ -63,7 +63,7 @@ export function SiteHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="whitespace-nowrap text-[12px] leading-none text-warm-500 transition-colors hover:text-brand-800 lg:text-[13px] xl:text-sm"
+                className="nav-link whitespace-nowrap text-[12px] leading-none text-warm-500 lg:text-[13px] xl:text-sm"
               >
                 {t(`nav.${link.href}`)}
               </Link>
