@@ -56,60 +56,59 @@ export default function HomePage() {
     <div id="top">
       <SiteHeader />
       <main>
-        {/* Hero — macrame photo behind content until About */}
-        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-start overflow-hidden pt-3 sm:pt-5 md:justify-center md:pt-0">
-          <div className="absolute inset-0 bg-cream">
+        {/* Hero — full-bleed studio photo, brand-first */}
+        <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-end overflow-hidden">
+          <div className="absolute inset-0 bg-warm-900">
             <Image
               src="/images/hero-bg.jpg"
               alt=""
               fill
               priority
-              className="object-contain object-center brightness-[0.94] md:brightness-[0.97]"
+              className="hero-bg-media object-cover object-center"
               sizes="100vw"
               quality={85}
             />
-            <div className="absolute inset-0 bg-cream/35 md:bg-cream/25" />
-            {/* Soft side fades on desktop — no hard white cut */}
-            <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[22%] bg-gradient-to-r from-cream via-cream/70 to-transparent md:block" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[22%] bg-gradient-to-l from-cream via-cream/70 to-transparent md:block" />
-            <div className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(253,248,249,0.35)_72%,rgba(253,248,249,0.88)_100%)] md:block" />
-            <div className="absolute inset-0 bg-gradient-to-b from-cream/55 via-transparent to-cream/70 md:from-cream/40 md:to-cream/65" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-warm-900/75 via-warm-900/35 to-warm-900/20" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-warm-900/85 via-warm-900/25 to-warm-900/30" />
           </div>
-          <div className="glow-brand -right-24 -top-24 size-96 opacity-40" />
-          <div className="glow-accent -bottom-32 -left-24 size-80 opacity-40" />
 
-          <div className="container-main relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col items-center py-4 text-center sm:py-8 md:flex-none md:py-12">
+          <div className="container-main relative z-10 w-full pb-10 pt-16 sm:pb-14 sm:pt-20 md:pb-16">
             <HeroCopy />
+          </div>
+        </section>
 
-            <dl className="mt-auto mb-3 grid w-full shrink-0 grid-cols-3 gap-4 border-t border-cream-200/70 pt-5 text-center sm:mb-4 sm:pt-6 md:mt-8 md:mb-0 md:pt-8">
+        {/* Stats — below first viewport */}
+        <section className="border-b border-brand-100/70 bg-cream py-8 sm:py-10">
+          <div className="container-main">
+            <dl className="grid grid-cols-3 gap-4 text-center">
               {stats.map((stat, i) => {
                 const StatIcon =
                   "icon" in stat && stat.icon ? statIcons[stat.icon] : null;
                 const label = t(`stat.${statKeys[i]}`);
 
                 return (
-                <div key={statKeys[i]}>
-                  {StatIcon ? (
-                    <dt className="flex justify-center">
-                      <span className="inline-flex size-11 items-center justify-center rounded-full bg-brand-100 text-brand-700">
-                        <StatIcon className="size-6" strokeWidth={1.75} aria-hidden />
-                      </span>
-                    </dt>
-                  ) : "value" in stat && stat.value ? (
-                    <dt className="font-heading text-2xl font-bold text-brand-700 sm:text-3xl">
-                      {stat.value}
-                    </dt>
-                  ) : null}
-                  <dd
-                    className={
-                      StatIcon || ("value" in stat && stat.value)
-                        ? "mt-1 text-xs leading-snug text-warm-500 sm:text-sm"
-                        : "font-heading text-xl font-bold text-brand-700 sm:text-2xl"
-                    }
-                  >
-                    {label}
-                  </dd>
-                </div>
+                  <div key={statKeys[i]}>
+                    {StatIcon ? (
+                      <dt className="flex justify-center">
+                        <span className="inline-flex size-11 items-center justify-center rounded-full bg-brand-100 text-brand-700">
+                          <StatIcon className="size-6" strokeWidth={1.75} aria-hidden />
+                        </span>
+                      </dt>
+                    ) : "value" in stat && stat.value ? (
+                      <dt className="font-heading text-2xl font-bold text-brand-700 sm:text-3xl">
+                        {stat.value}
+                      </dt>
+                    ) : null}
+                    <dd
+                      className={
+                        StatIcon || ("value" in stat && stat.value)
+                          ? "mt-1 text-xs leading-snug text-warm-500 sm:text-sm"
+                          : "font-heading text-xl font-bold text-brand-700 sm:text-2xl"
+                      }
+                    >
+                      {label}
+                    </dd>
+                  </div>
                 );
               })}
             </dl>

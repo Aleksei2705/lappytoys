@@ -260,6 +260,54 @@ body {
   }
 }
 
+.hero-bg-media {
+  animation: hero-ken 28s ease-out forwards;
+  will-change: transform;
+}
+
+.hero-copy > *:nth-child(1) {
+  animation: hero-fade-up 0.8s ease-out both;
+}
+.hero-copy > *:nth-child(2) {
+  animation: hero-fade-up 0.8s ease-out 0.08s both;
+}
+.hero-copy > *:nth-child(3) {
+  animation: hero-fade-up 0.8s ease-out 0.16s both;
+}
+.hero-copy > *:nth-child(4) {
+  animation: hero-fade-up 0.8s ease-out 0.24s both;
+}
+.hero-copy > *:nth-child(5) {
+  animation: hero-fade-up 0.8s ease-out 0.32s both;
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-ken {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg-media,
+  .hero-copy > * {
+    animation: none;
+  }
+}
+
 .section-stitch {
   @apply relative;
 }
