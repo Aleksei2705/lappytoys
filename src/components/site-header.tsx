@@ -48,28 +48,28 @@ export function SiteHeader() {
   return (
     <>
       <header className={`site-header fixed inset-x-0 top-0 z-50 ${scrolled ? "scrolled" : ""}`}>
-        <div className="container-main flex min-h-16 items-center justify-between gap-3 py-2">
-          <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+        <div className="container-main flex min-h-16 items-center gap-3 py-2 md:gap-5 lg:gap-8">
+          <Link href="/" className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3">
             <SiteLogo />
           </Link>
 
-          <nav className="hidden items-center gap-7 md:flex">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-3 md:flex lg:gap-x-5 xl:gap-x-6">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-warm-500 transition-colors hover:text-brand-800"
+                className="whitespace-nowrap text-[13px] leading-none text-warm-500 transition-colors hover:text-brand-800 lg:text-sm"
               >
                 {t(`nav.${link.href}`)}
               </Link>
             ))}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2 md:ml-2 md:border-l md:border-brand-100/80 md:pl-5 lg:ml-3 lg:pl-7">
             <LanguageToggle />
             <HeaderAuth />
             <div className="hidden md:block">
-              <Link href="/#signup" className="btn-primary h-9 px-4 text-sm">
+              <Link href="/#signup" className="btn-primary h-9 whitespace-nowrap px-4 text-sm">
                 {t("cta.signup")}
               </Link>
             </div>
