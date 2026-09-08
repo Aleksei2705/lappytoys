@@ -92,7 +92,7 @@ export function InstagramFeed() {
             className="btn-secondary inline-flex h-11 px-6"
           >
             <Instagram className="size-4" />
-            {t("ig.open")} {site.instagramHandle}
+            {t("ig.open")}
           </a>
         </p>
       </div>
