@@ -56,12 +56,12 @@ export function SiteHeader() {
             />
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-2 lg:flex xl:gap-x-3 2xl:gap-x-5">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-3 lg:flex xl:gap-x-5 2xl:gap-x-7">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="nav-link whitespace-nowrap text-[12px] leading-none text-warm-500 xl:text-[13px] 2xl:text-sm"
+                className="nav-link whitespace-nowrap text-[13px] leading-none text-warm-500 xl:text-sm"
               >
                 {t(`nav.${link.href}`)}
               </Link>
