@@ -8,6 +8,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "nav./#master-classes": "Мастер-классы",
     "nav./#schedule": "Расписание",
     "nav./#works": "Работы учеников",
+    "nav./#instagram": "Лента Instagram",
     "nav./#reviews": "Отзывы",
     "nav./#faq": "Вопросы и ответы",
     "nav./#contacts": "Контакты",
@@ -99,6 +100,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "works.lessonsDesc":
       "Листайте слайды влево и вправо — короткие видео с занятий, чтобы увидеть атмосферу студии и как проходят уроки.",
     "works.lessonsAria": "Видео с уроков",
+    "ig.eyebrow": "Лента Instagram",
     "ig.title": "Свежее из Instagram",
     "ig.desc": "Новые работы появляются в профиле студии — откройте пост или всю ленту @lappy.art.",
     "ig.open": "Открыть",
@@ -399,6 +401,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "nav./#master-classes": "Мастер-класстар",
     "nav./#schedule": "Кесте",
     "nav./#works": "Оқушылардың жұмыстары",
+    "nav./#instagram": "Instagram лентасы",
     "nav./#reviews": "Пікірлер",
     "nav./#faq": "Сұрақтар мен жауаптар",
     "nav./#contacts": "Байланыс",
@@ -490,6 +493,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "works.lessonsDesc":
       "Слайдтарды солға және оңға айналдырыңыз — сабақтардың қысқа бейнелері, студия атмосферасын және сабақ қалай өтетінін көру үшін.",
     "works.lessonsAria": "Сабақ бейнелері",
+    "ig.eyebrow": "Instagram лентасы",
     "ig.title": "Instagram-дағы жаңалық",
     "ig.desc": "Жаңа жұмыстар студия профилінде пайда болады — постты немесе бүкіл лентаны @lappy.art ашыңыз.",
     "ig.open": "Ашу",

@@ -15,6 +15,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SignupForm } from "@/components/signup-form";
 import { ReviewsSection } from "@/components/reviews-section";
+import { InstagramFeed } from "@/components/instagram-feed";
 import { WorksGallery } from "@/components/works-gallery";
 import { MasterClassesCarousel } from "@/components/master-classes-carousel";
 import { ScheduleSection } from "@/components/schedule-section";
@@ -209,6 +210,10 @@ export default function HomePage() {
 
         <Reveal>
           <WorksGallery />
+        </Reveal>
+
+        <Reveal>
+          <InstagramFeed />
         </Reveal>
 
         <Reveal>

@@ -8,7 +8,6 @@ import { SectionHeader } from "@/components/section-header";
 import { studentWorks } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
 import { LessonsVideoCarousel } from "@/components/lessons-video-carousel";
-import { InstagramFeed } from "@/components/instagram-feed";
 
 export function WorksGallery() {
   const { t } = useI18n();
@@ -230,8 +229,6 @@ export function WorksGallery() {
             {t(`work.${index}.title`)}
           </p>
         </div>
-
-        <InstagramFeed />
 
         <LessonsVideoCarousel />
       </div>
