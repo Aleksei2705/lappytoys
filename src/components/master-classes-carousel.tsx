@@ -90,11 +90,6 @@ export function MasterClassesCarousel() {
                         sizes="(max-width: 640px) 80vw, (max-width: 1024px) 56vw, 38vw"
                         priority={i < 2}
                       />
-                      {"badge" in mc && mc.badge ? (
-                        <span className="absolute bottom-3 right-3 rounded-full bg-brand-700 px-3 py-1 text-[11px] font-semibold tracking-wide text-white">
-                          {t("masters.promo")}
-                        </span>
-                      ) : null}
                     </div>
 
                     <div className="space-y-3 px-5 pb-5 pt-4">
@@ -114,14 +109,6 @@ export function MasterClassesCarousel() {
                         <PriceText className="font-heading text-2xl font-bold text-brand-700" as="p">
                           {mc.price}
                         </PriceText>
-                        {"priceFull" in mc && mc.priceFull ? (
-                          <PriceText
-                            className="price-strike-diagonal font-heading text-base text-warm-500"
-                            as="p"
-                          >
-                            {mc.priceFull}
-                          </PriceText>
-                        ) : null}
                       </div>
 
                       <a href="#signup" className="btn-primary mt-1 h-10 w-full">
