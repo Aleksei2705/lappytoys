@@ -297,8 +297,6 @@ export const masterClasses = [
     title: "Сова",
     description: "Макраме-брелок в виде совы — уютный аксессуар своими руками",
     price: "2 500 тг",
-    priceFull: "3 000 тг",
-    badge: "Акция",
     image: "/images/macrame-sova.jpg",
     accent: "from-brand-50 to-accent-100",
   },
@@ -307,8 +305,6 @@ export const masterClasses = [
     title: "Черепаха",
     description: "Макраме-брелок в виде черепахи — милый аксессуар на сумку или ключи",
     price: "2 000 тг",
-    priceFull: "2 500 тг",
-    badge: "Акция",
     image: "/images/macrame-turtle.jpg",
     accent: "from-accent-50 to-brand-100",
   },
@@ -317,8 +313,6 @@ export const masterClasses = [
     title: "Цыплёнок",
     description: "Мягкая игрушка amigurumi — идеальный первый проект для начинающих",
     price: "2 000 тг",
-    priceFull: "2 500 тг",
-    badge: "Акция",
     image: "/images/crochet-chick.jpg",
     accent: "from-brand-100 to-accent-100",
   },
@@ -418,12 +412,12 @@ export const reviews = [
   {
     name: "Елена",
     text: "Очень тёплая атмосфера на занятиях. Между встречами можно задавать вопросы в Telegram — Ольга всегда отвечает.",
-    course: "Мастер-класс «Мишка»",
+    course: "Мастер-класс",
   },
   {
     name: "Динара",
     text: "Искала курсы для полного новичка — здесь всё по шагам, без спешки. За месяц связала две игрушки, уже заказала третий мастер-класс.",
-    course: "Amigurumi-набор",
+    course: "Вязание крючком",
   },
 ] as const;
 

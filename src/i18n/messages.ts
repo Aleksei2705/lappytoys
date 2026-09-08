@@ -341,10 +341,10 @@ export const messages: Record<Locale, Record<string, string>> = {
     "staticReview.1.course": "Вязание спицами",
     "staticReview.2.text":
       "Очень тёплая атмосфера на занятиях. Между встречами можно задавать вопросы в Telegram — Ольга всегда отвечает.",
-    "staticReview.2.course": "Мастер-класс «Мишка»",
+    "staticReview.2.course": "Мастер-класс",
     "staticReview.3.text":
       "Искала курсы для полного новичка — здесь всё по шагам, без спешки. За месяц связала две игрушки, уже заказала третий мастер-класс.",
-    "staticReview.3.course": "Amigurumi-набор",
+    "staticReview.3.course": "Вязание крючком",
     "metrika.title": "Посещаемость сегодня",
     "metrika.views": "просмотры",
     "metrika.visits": "визиты",
@@ -731,10 +731,10 @@ export const messages: Record<Locale, Record<string, string>> = {
     "staticReview.1.course": "Спицамен тоқу",
     "staticReview.2.text":
       "Сабақтардағы атмосфера өте жылы. Кездесулер арасында Telegram-да сұрақ қоюға болады — Ольга әрқашан жауап береді.",
-    "staticReview.2.course": "«Аю» мастер-классы",
+    "staticReview.2.course": "Мастер-класс",
     "staticReview.3.text":
       "Толық жаңа бастаушыға курс іздедім — мұнда бәрі қадамдап, асықпай. Бір айда екі ойыншық тоқыдым, үшінші мастер-классқа жазылдым.",
-    "staticReview.3.course": "Amigurumi жиынтығы",
+    "staticReview.3.course": "Ілмекпен тоқу",
     "metrika.title": "Бүгінгі қатысу",
     "metrika.views": "қаралым",
     "metrika.visits": "кіру",
