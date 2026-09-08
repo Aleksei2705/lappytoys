@@ -80,9 +80,12 @@ export function LessonsVideoCarousel() {
 
   return (
     <div className="mt-14 sm:mt-16">
-      <h3 className="text-center font-heading text-2xl font-bold tracking-tight text-warm-900 sm:text-3xl">
-        {t("works.lessonsTitle")}
-      </h3>
+      <div className="mx-auto max-w-2xl text-center">
+        <h2 className="font-heading text-3xl font-bold tracking-tight text-warm-900 sm:text-4xl">
+          {t("works.lessonsTitle")}
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-warm-500">{t("works.lessonsDesc")}</p>
+      </div>
 
       <div className="relative mt-8 sm:mt-10">
         <div
