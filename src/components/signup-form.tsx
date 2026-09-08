@@ -7,15 +7,37 @@ import { trackGoal } from "@/lib/metrika";
 import { useI18n } from "@/components/i18n-provider";
 import { TelegramIcon } from "@/components/telegram-icon";
 
-function phoneDigits(value: string) {
-  let digits = value.replace(/\D/g, "");
+function interpretPhone(raw: string) {
+  const trimmed = raw.trim();
+  const startsPlus = trimmed.startsWith("+") || trimmed.startsWith("00");
+  let digits = raw.replace(/\D/g, "");
+  if (trimmed.startsWith("00") && digits.startsWith("00")) digits = digits.slice(2);
+
+  if (!digits) {
+    return { digits: "", mode: startsPlus ? "intl" : "cis" } as const;
+  }
+
+  const foreign = startsPlus && !digits.startsWith("7");
+  if (foreign) {
+    return { digits: digits.slice(0, 15), mode: "intl" } as const;
+  }
+
   if (digits.startsWith("8")) digits = `7${digits.slice(1)}`;
-  if (digits && !digits.startsWith("7")) digits = `7${digits}`;
-  return digits.slice(0, 11);
+  if (!digits.startsWith("7")) digits = `7${digits}`;
+  return { digits: digits.slice(0, 11), mode: "cis" } as const;
 }
 
-function formatKzPhone(digits: string) {
-  if (!digits) return "";
+function formatPhone(digits: string, mode: "cis" | "intl") {
+  if (!digits) return mode === "intl" ? "+" : "";
+
+  if (mode === "intl") {
+    const chunks = [digits.slice(0, Math.min(3, digits.length))];
+    for (let i = chunks[0].length; i < digits.length; i += 3) {
+      chunks.push(digits.slice(i, i + 3));
+    }
+    return `+${chunks.join(" ")}`;
+  }
+
   const rest = digits.startsWith("7") ? digits.slice(1) : digits;
   let out = "+7";
   if (!rest) return out;
@@ -27,8 +49,52 @@ function formatKzPhone(digits: string) {
   return out;
 }
 
-function isKzMobile(digits: string) {
-  return /^77\d{9}$/.test(digits);
+function isValidPhone(digits: string) {
+  if (/^7\d{10}$/.test(digits)) return true;
+  if (digits.startsWith("7")) return false;
+  return digits.length >= 10 && digits.length <= 15;
+}
+
+/** Longer prefixes first. +7 is split KZ/RU by the next digit. */
+const CALLING_PREFIXES: [string, string][] = [
+  ["996", "KG"],
+  ["998", "UZ"],
+  ["993", "TM"],
+  ["992", "TJ"],
+  ["994", "AZ"],
+  ["995", "GE"],
+  ["380", "UA"],
+  ["375", "BY"],
+  ["374", "AM"],
+  ["373", "MD"],
+  ["971", "AE"],
+  ["90", "TR"],
+  ["86", "CN"],
+  ["82", "KR"],
+  ["81", "JP"],
+  ["66", "TH"],
+  ["49", "DE"],
+  ["48", "PL"],
+  ["44", "GB"],
+  ["39", "IT"],
+  ["34", "ES"],
+  ["33", "FR"],
+  ["31", "NL"],
+  ["20", "EG"],
+  ["91", "IN"],
+  ["1", "US_CA"],
+];
+
+function countryKey(digits: string) {
+  if (digits.startsWith("7")) {
+    const next = digits[1];
+    if (next === "0" || next === "6" || next === "7") return "KZ";
+    if (next === "3" || next === "4" || next === "8" || next === "9") return "RU";
+    return "KZ_RU";
+  }
+
+  const match = CALLING_PREFIXES.find(([code]) => digits.startsWith(code));
+  return match?.[1] ?? "other";
 }
 
 function WhatsAppIcon() {
@@ -55,11 +121,14 @@ export function SignupForm() {
     return [...courseTitles, ...mcTitles, t("signup.undecided")];
   }, [t]);
 
-  function buildMessage() {
+  function buildMessage(digits: string) {
+    const country = t(`signup.country.${countryKey(digits)}`);
+    const phoneLine = phone ? `${t("signup.waPhone")} ${phone} (${country})` : "";
+
     return [
       t("signup.waHello"),
       name && `${t("signup.waName")} ${name}`,
-      phone && `${t("signup.waPhone")} ${phone}`,
+      phoneLine,
       direction && `${t("signup.waDirection")} ${direction}`,
       preferredDate && `${t("signup.waDate")} ${preferredDate}`,
       message && `${t("signup.waMessage")} ${message}`,
@@ -73,13 +142,13 @@ export function SignupForm() {
   function send(channel: "whatsapp" | "telegram") {
     if (!formRef.current?.reportValidity()) return;
 
-    const digits = phoneDigits(phone);
-    if (!isKzMobile(digits)) {
+    const { digits } = interpretPhone(phone);
+    if (!isValidPhone(digits)) {
       setPhoneError(t("signup.phoneErr"));
       return;
     }
 
-    const text = buildMessage();
+    const text = buildMessage(digits);
     const encoded = encodeURIComponent(text);
 
     if (channel === "telegram") {
@@ -130,7 +199,8 @@ export function SignupForm() {
           aria-invalid={phoneError ? true : undefined}
           aria-describedby={phoneError ? "phone-error" : undefined}
           onChange={(e) => {
-            setPhone(formatKzPhone(phoneDigits(e.target.value)));
+            const parsed = interpretPhone(e.target.value);
+            setPhone(formatPhone(parsed.digits, parsed.mode));
             if (phoneError) setPhoneError("");
           }}
           className="input-field"
