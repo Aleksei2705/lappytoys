@@ -6,6 +6,10 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outFile = resolve(root, "src/data/instagram-feed.json");
 
 function pickImage(item) {
+  const sizes = item.sizes || {};
+  const behold =
+    sizes.medium?.mediaUrl || sizes.large?.mediaUrl || sizes.small?.mediaUrl || "";
+  if (behold) return behold;
   const type = String(item.mediaType || item.media_type || "").toUpperCase();
   if (type === "VIDEO" || type === "REELS") {
     return item.thumbnailUrl || item.thumbnail_url || item.mediaUrl || item.media_url || "";
@@ -41,7 +45,7 @@ function toPosts(data) {
 }
 
 async function loadFeed() {
-  const behold = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL;
+  const behold = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL || "https://feeds.behold.so/ZD2jrWRtGAxnQ1Ew6dO1";
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
 
   if (behold) {

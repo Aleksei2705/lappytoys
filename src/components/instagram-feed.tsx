@@ -17,7 +17,7 @@ const FALLBACK_POSTS: InstagramPost[] = [
   { id: "berries", imageUrl: "/images/works/blueberry-strawberry.jpg", permalink: site.instagram, caption: "", isVideo: false },
 ];
 
-const feedUrl = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL ?? "";
+const feedUrl = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL || site.instagramFeedUrl;
 
 export function InstagramFeed() {
   const { t } = useI18n();

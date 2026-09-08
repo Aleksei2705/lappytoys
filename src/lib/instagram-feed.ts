@@ -34,9 +34,14 @@ export function normalizeInstagramFeed(data: unknown): InstagramPost[] {
     const rec = asRecord(item);
     if (!rec) continue;
 
+    const sizes = asRecord(rec.sizes);
+    const medium = asRecord(sizes?.medium);
+    const large = asRecord(sizes?.large);
     const mediaType = asString(rec.mediaType || rec.media_type).toUpperCase();
     const isVideo = mediaType === "VIDEO" || mediaType === "REELS";
     const imageUrl =
+      asString(medium?.mediaUrl) ||
+      asString(large?.mediaUrl) ||
       asString(rec.imageUrl) ||
       asString(rec.thumbnailUrl) ||
       asString(rec.thumbnail_url) ||
