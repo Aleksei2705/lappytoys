@@ -124,9 +124,9 @@ export const messages: Record<Locale, Record<string, string>> = {
     "faq.4.q": "Как записаться и есть ли скидки?",
     "faq.4.a":
       "Оставьте заявку на сайте или напишите в WhatsApp/Telegram. Актуальные акции и свободные окна подскажу при ответе.",
-    "contacts.eyebrow": "Связаться",
-    "contacts.title": "Контакты",
-    "contacts.desc": "Позвоните или напишите — отвечу на вопросы и расскажу про текущие скидки.",
+    "contacts.eyebrow": "Контакты",
+    "contacts.title": "Где нас найти и как связаться",
+    "contacts.desc": "Позвоните или напишите — отвечу на вопросы и расскажу подробнее.",
     "contacts.phone": "Телефон",
     "contacts.map": "Карта: творческая студия lappy.art",
     "signup.eyebrow": "Запись",
@@ -471,8 +471,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "faq.4.a":
       "Сайтта өтінім қалдырыңыз немесе WhatsApp/Telegram-ға жазыңыз. Акциялар мен бос уақыттарды жауапта айтамын.",
     "contacts.eyebrow": "Байланыс",
-    "contacts.title": "Байланыс деректері",
-    "contacts.desc": "Қоңырау шалыңыз немесе жазыңыз — сұрақтарыңызға жауап беріп, жеңілдіктер туралы айтамын.",
+    "contacts.title": "Қайдан табуға болады және қалай хабарласуға болады",
+    "contacts.desc": "Қоңырау шалыңыз немесе жазыңыз — сұрақтарыңызға жауап беріп, толығырақ айтамын.",
     "contacts.phone": "Телефон",
     "contacts.map": "Карта: lappy.art шығармашылық студиясы",
     "signup.eyebrow": "Жазылу",
