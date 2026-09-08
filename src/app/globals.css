@@ -9,9 +9,9 @@
   --color-cream: #fdf8f9;
   --color-cream-100: #f9eef2;
   --color-cream-200: #f0dde6;
-  --color-warm-900: #3f3239;
-  --color-warm-700: #5e4f57;
-  --color-warm-500: #917a85;
+  --color-warm-900: #1f161a;
+  --color-warm-700: #34282e;
+  --color-warm-500: #4a3b42;
 
   /* Основной — пыльная роза */
   --color-brand-50: #fdf2f6;
@@ -20,8 +20,8 @@
   --color-brand-300: #f0a8c4;
   --color-brand-500: #de86a8;
   --color-brand-600: #d4719a;
-  --color-brand-700: #c45c85;
-  --color-brand-800: #a84a6f;
+  --color-brand-700: #a84a6f;
+  --color-brand-800: #7d3254;
 
   /* Акцент — лиловый / мauve */
   --color-accent-50: #faf5f8;
@@ -52,6 +52,7 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   background-color: #fdf8f9;
+  font-weight: 500;
 }
 
 .font-heading {
@@ -64,7 +65,7 @@ body {
 }
 
 .eyebrow {
-  @apply text-sm font-medium uppercase tracking-[0.2em] text-brand-600;
+  @apply text-sm font-semibold uppercase tracking-[0.2em] text-brand-800;
 }
 
 /* Layout */
