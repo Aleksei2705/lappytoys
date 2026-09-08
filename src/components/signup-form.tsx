@@ -105,12 +105,16 @@ function WhatsAppIcon() {
   );
 }
 
-export function SignupForm() {
+type SignupFormProps = {
+  direction: string;
+  onDirectionChange: (value: string) => void;
+};
+
+export function SignupForm({ direction, onDirectionChange }: SignupFormProps) {
   const { t } = useI18n();
   const formRef = useRef<HTMLFormElement>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [direction, setDirection] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [message, setMessage] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -161,7 +165,7 @@ export function SignupForm() {
 
     setName("");
     setPhone("");
-    setDirection("");
+    onDirectionChange("");
     setPreferredDate("");
     setMessage("");
     setPhoneError("");
@@ -173,7 +177,7 @@ export function SignupForm() {
   }
 
   return (
-    <form ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
+    <form id="signup-form" ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
       <div>
         <label htmlFor="name" className="mb-2 block text-sm font-medium text-warm-700">
           {t("signup.name")}
@@ -226,7 +230,7 @@ export function SignupForm() {
           name="direction"
           required
           value={direction}
-          onChange={(e) => setDirection(e.target.value)}
+          onChange={(e) => onDirectionChange(e.target.value)}
           className="input-field"
         >
           <option value="" disabled>

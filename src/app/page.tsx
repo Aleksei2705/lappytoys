@@ -13,7 +13,7 @@ import {
 import { SectionHeader } from "@/components/section-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { SignupForm } from "@/components/signup-form";
+import { SignupQuizAndForm } from "@/components/signup-quiz";
 import { ReviewsSection } from "@/components/reviews-section";
 import { InstagramFeed } from "@/components/instagram-feed";
 import { WorksGallery } from "@/components/works-gallery";
@@ -357,9 +357,7 @@ export default function HomePage() {
                 title={t("signup.title")}
                 description={t("signup.desc")}
               />
-              <div className="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5">
-                <SignupForm />
-              </div>
+              <SignupQuizAndForm />
               <div className="mt-6 flex justify-center">
                 <Link href="#top" className="btn-secondary h-11 px-8">
                   <ArrowUp className="size-4" />
