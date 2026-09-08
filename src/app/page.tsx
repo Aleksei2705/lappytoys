@@ -149,13 +149,6 @@ export default function HomePage() {
                 </div>
               </Reveal>
             </div>
-
-            <Reveal className="mt-12 lg:mt-16">
-              <p className="mb-5 text-center font-heading text-lg font-semibold text-warm-900 sm:text-xl">
-                {t("about.video")}
-              </p>
-              <AboutVideo />
-            </Reveal>
           </div>
         </section>
 
@@ -210,6 +203,17 @@ export default function HomePage() {
         <Reveal>
           <MasterClassesCarousel />
         </Reveal>
+
+        <section className="page-section">
+          <div className="container-main">
+            <Reveal>
+              <p className="mb-5 text-center font-heading text-lg font-semibold text-warm-900 sm:text-xl">
+                {t("about.video")}
+              </p>
+              <AboutVideo />
+            </Reveal>
+          </div>
+        </section>
 
         <Reveal>
           <ScheduleSection />
