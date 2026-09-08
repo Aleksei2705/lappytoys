@@ -57,27 +57,24 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
         text: text.trim(),
         rating,
         avatar_url: avatarUrl?.trim() || null,
+        approved: false,
       });
 
-      if (insertError) {
-        setStatus("error");
-        setError(t("review.errSend"));
+      if (!insertError) {
+        await notifySiteAuthorAboutReview({
+          name: authorName,
+          course: course.trim(),
+          text: text.trim(),
+          rating,
+          createdAt: new Date().toISOString(),
+        });
+
+        setStatus("success");
+        window.setTimeout(() => {
+          onSubmitted?.();
+        }, 400);
         return;
       }
-
-      await notifySiteAuthorAboutReview({
-        name: authorName,
-        course: course.trim(),
-        text: text.trim(),
-        rating,
-        createdAt: new Date().toISOString(),
-      });
-
-      setStatus("success");
-      window.setTimeout(() => {
-        onSubmitted?.();
-      }, 400);
-      return;
     }
 
     const message = [
@@ -98,7 +95,7 @@ export function ReviewForm({ onSubmitted, lockedName, avatarUrl }: ReviewFormPro
     <div className="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5">
       <h3 className="font-heading text-xl font-semibold text-warm-900">{t("review.formTitle")}</h3>
       <p className="mt-2 text-sm leading-relaxed text-warm-500">
-        {isReviewsEnabled() ? t("review.enabledHint") : t("review.whatsappHint")}
+        {isReviewsEnabled() ? t("review.moderationHint") : t("review.whatsappHint")}
       </p>
 
       <form

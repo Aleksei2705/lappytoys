@@ -48,11 +48,15 @@ create policy "Anyone can read approved reviews"
 
 drop policy if exists "Anyone can add reviews" on public.reviews;
 drop policy if exists "Authenticated users can add reviews" on public.reviews;
-create policy "Authenticated users can add reviews"
+create policy "Anyone can add reviews"
   on public.reviews
   for insert
-  to authenticated
-  with check (true);
+  to anon, authenticated
+  with check (
+    approved = false
+    and reply_text is null
+    and reply_at is null
+  );
 
 -- Ответы преподавателя (email из site.notifyEmail)
 drop policy if exists "Owner can reply to reviews" on public.reviews;

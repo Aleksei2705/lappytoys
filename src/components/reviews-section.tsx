@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { ReviewCard } from "@/components/review-card";
-import { ReviewAuthGate } from "@/components/review-auth-gate";
+import { ReviewForm } from "@/components/review-form";
 import { reviews as staticReviews } from "@/data/site";
 import {
   getSupabase,
@@ -44,25 +44,29 @@ export function ReviewsSection() {
       return;
     }
 
-    const { data, error } = await supabase
-      .from("reviews")
-      .select("id,name,text,course,rating,created_at,approved,avatar_url,reply_text,reply_at")
-      .eq("approved", true)
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      setDynamicReviews(data);
-    } else if (error) {
-      const legacy = await supabase
+    try {
+      const { data, error } = await supabase
         .from("reviews")
-        .select("id,name,text,course,rating,created_at,avatar_url")
+        .select("id,name,text,course,rating,created_at,approved,avatar_url,reply_text,reply_at")
+        .eq("approved", true)
         .order("created_at", { ascending: false });
-      if (!legacy.error && legacy.data) {
-        setDynamicReviews(legacy.data);
-      }
-    }
 
-    setLoading(false);
+      if (!error && data) {
+        setDynamicReviews(data);
+      } else if (error) {
+        const legacy = await supabase
+          .from("reviews")
+          .select("id,name,text,course,rating,created_at,avatar_url")
+          .order("created_at", { ascending: false });
+        if (!legacy.error && legacy.data) {
+          setDynamicReviews(legacy.data);
+        }
+      }
+    } catch {
+      // Keep static reviews if the request fails or hangs past unload.
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -177,12 +181,12 @@ export function ReviewsSection() {
           </div>
         ) : null}
 
-        {loading ? (
+        {loading && allReviews.length === 0 ? (
           <p className="mt-8 text-center text-sm text-warm-500">{t("reviews.loading")}</p>
         ) : null}
 
         <div className="mx-auto max-w-xl">
-          <ReviewAuthGate onSubmitted={loadReviews} />
+          <ReviewForm onSubmitted={loadReviews} />
         </div>
       </div>
     </section>

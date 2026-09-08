@@ -20,11 +20,11 @@ export function HeroCopy() {
       <h1 className="mt-8 font-heading text-2xl font-semibold leading-snug tracking-tight text-warm-900 sm:mt-10 sm:text-3xl lg:text-4xl">
         {locale === "kk" ? (
           <>
-            Сіздің сүйікті <span className="text-brand-700">ісіңіз</span>
+            Сүйікті ісіңізді <span className="text-brand-700">табыңыз</span>
           </>
         ) : (
           <>
-            Любимое ваше <span className="text-brand-700">занятие</span>
+            Найдите своё <span className="text-brand-700">увлечение</span>
           </>
         )}
       </h1>
