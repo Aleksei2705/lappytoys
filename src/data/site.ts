@@ -35,7 +35,7 @@ export const navLinks = [
   { href: "/#courses", label: "Виды занятий" },
   { href: "/#master-classes", label: "Мастер-классы" },
   { href: "/#schedule", label: "Расписание" },
-  { href: "/#works", label: "Работы" },
+  { href: "/#works", label: "Работы учеников" },
   { href: "/#reviews", label: "Отзывы" },
   { href: "/#faq", label: "Вопросы" },
   { href: "/#contacts", label: "Контакты" },

@@ -128,10 +128,14 @@ export function WorksGallery() {
         <SectionHeader
           eyebrow={t("works.eyebrow")}
           title={
-            <>
-              {t("works.title.before")}{" "}
-              <span className="text-gradient">{t("works.title.accent")}</span>
-            </>
+            t("works.title.accent") ? (
+              <>
+                {t("works.title.before")}{" "}
+                <span className="text-gradient">{t("works.title.accent")}</span>
+              </>
+            ) : (
+              t("works.title.before")
+            )
           }
           description={t("works.desc")}
         />
