@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { site, studentWorks } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
+import { LessonsVideoCarousel } from "@/components/lessons-video-carousel";
 
 export function WorksGallery() {
   const { t } = useI18n();
@@ -15,15 +16,7 @@ export function WorksGallery() {
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const scrollingRef = useRef(false);
   const titleId = useId();
-  const photoCount = studentWorks.length;
-  const hasVideo = Boolean(site.aboutVideoSrc);
-  const videoIndex = photoCount;
-  const count = photoCount + (hasVideo ? 1 : 0);
-  const isVideoSlide = (i: number) => hasVideo && i === videoIndex;
-  const slideTitle = (i: number) =>
-    isVideoSlide(i) ? t("works.videoTitle") : t(`work.${i}.title`);
-  const slideCategory = (i: number) =>
-    isVideoSlide(i) ? t("works.videoCategory") : t(`work.${i}.category`);
+  const count = studentWorks.length;
 
   const scrollToSlide = useCallback((next: number) => {
     const scroller = scrollerRef.current;
@@ -164,7 +157,7 @@ export function WorksGallery() {
                   setLightbox(true);
                 }}
                 className="group relative aspect-[3/4] w-[78%] max-w-md shrink-0 snap-center overflow-hidden rounded-3xl text-left outline-none ring-brand-300 transition duration-300 focus-visible:ring-4 sm:w-[55%] lg:w-[42%]"
-                aria-label={`${slideTitle(i)}, ${slideCategory(i)}`}
+                aria-label={`${t(`work.${i}.title`)}, ${t(`work.${i}.category`)}`}
                 aria-current={i === index ? "true" : undefined}
               >
                 <Image
@@ -178,38 +171,14 @@ export function WorksGallery() {
                 <span className="absolute inset-0 bg-gradient-to-t from-warm-900/60 via-warm-900/10 to-transparent" />
                 <span className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
                   <span className="block text-xs font-medium uppercase tracking-[0.18em] text-white/75">
-                    {slideCategory(i)}
+                    {t(`work.${i}.category`)}
                   </span>
                   <span className="mt-1 block font-heading text-xl font-semibold text-white sm:text-2xl">
-                    {slideTitle(i)}
+                    {t(`work.${i}.title`)}
                   </span>
                 </span>
               </button>
             ))}
-            {hasVideo ? (
-              <div
-                className="relative aspect-[3/4] w-[78%] max-w-md shrink-0 snap-center overflow-hidden rounded-3xl bg-warm-900 outline-none ring-brand-300 sm:w-[55%] lg:w-[42%]"
-                aria-label={`${slideTitle(videoIndex)}, ${slideCategory(videoIndex)}`}
-                aria-current={index === videoIndex ? "true" : undefined}
-              >
-                <iframe
-                  title={t("about.videoTitle")}
-                  src={site.aboutVideoSrc}
-                  className="absolute inset-0 h-full w-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  loading="lazy"
-                />
-                <span className="pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-warm-900/70 to-transparent p-5 sm:p-6">
-                  <span className="block text-xs font-medium uppercase tracking-[0.18em] text-white/75">
-                    {slideCategory(videoIndex)}
-                  </span>
-                  <span className="mt-1 block font-heading text-xl font-semibold text-white sm:text-2xl">
-                    {slideTitle(videoIndex)}
-                  </span>
-                </span>
-              </div>
-            ) : null}
           </div>
 
           <button
@@ -232,13 +201,13 @@ export function WorksGallery() {
 
         <div className="mt-5 flex flex-col items-center gap-3">
           <div className="flex flex-wrap items-center justify-center gap-2" role="tablist" aria-label={t("aria.slides")}>
-            {Array.from({ length: count }, (_, i) => (
+            {studentWorks.map((work, i) => (
               <button
-                key={isVideoSlide(i) ? "studio-video" : studentWorks[i].src}
+                key={work.src}
                 type="button"
                 role="tab"
                 aria-selected={i === index}
-                aria-label={`${t("aria.slideN")} ${i + 1}: ${slideTitle(i)}`}
+                aria-label={`${t("aria.slideN")} ${i + 1}: ${t(`work.${i}.title`)}`}
                 onClick={() => goTo(i)}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   i === index ? "w-7 bg-brand-600" : "w-2 bg-brand-200 hover:bg-brand-300"
@@ -251,7 +220,7 @@ export function WorksGallery() {
             {" / "}
             {count}
             <span className="mx-2 text-brand-200">·</span>
-            {slideTitle(index)}
+            {t(`work.${index}.title`)}
           </p>
         </div>
 
@@ -266,6 +235,8 @@ export function WorksGallery() {
             Instagram {site.instagramHandle}
           </a>
         </p>
+
+        <LessonsVideoCarousel />
       </div>
 
       {lightbox ? (
@@ -315,35 +286,26 @@ export function WorksGallery() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-[min(70vh,32rem)] w-full shrink-0 bg-brand-50 sm:h-[min(72vh,28rem)]">
-              {isVideoSlide(index) ? (
-                <iframe
-                  title={t("about.videoTitle")}
-                  src={site.aboutVideoSrc}
-                  className="absolute inset-0 h-full w-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
+              {/* Keep all photos mounted — opacity only. Avoids new→old→new flash on src swap. */}
+              {studentWorks.map((work, i) => (
+                <Image
+                  key={work.src}
+                  src={work.src}
+                  alt={work.alt}
+                  fill
+                  className={`object-contain p-2 transition-opacity duration-200 sm:p-4 ${
+                    i === index ? "opacity-100" : "pointer-events-none opacity-0"
+                  }`}
+                  sizes="(max-width: 768px) 100vw, 48rem"
+                  priority={Math.abs(i - index) <= 1 || i === index}
                 />
-              ) : (
-                studentWorks.map((work, i) => (
-                  <Image
-                    key={work.src}
-                    src={work.src}
-                    alt={work.alt}
-                    fill
-                    className={`object-contain p-2 transition-opacity duration-200 sm:p-4 ${
-                      i === index ? "opacity-100" : "pointer-events-none opacity-0"
-                    }`}
-                    sizes="(max-width: 768px) 100vw, 48rem"
-                    priority={Math.abs(i - index) <= 1 || i === index}
-                  />
-                ))
-              )}
+              ))}
             </div>
             <div className="border-t border-brand-100/80 px-5 py-4 text-center">
               <p id={titleId} className="font-heading text-lg font-semibold text-warm-900">
-                {slideTitle(index)}
+                {t(`work.${index}.title`)}
               </p>
-              <p className="mt-0.5 text-sm text-warm-500">{slideCategory(index)}</p>
+              <p className="mt-0.5 text-sm text-warm-500">{t(`work.${index}.category`)}</p>
             </div>
           </div>
         </div>

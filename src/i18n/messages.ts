@@ -96,8 +96,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "works.desc":
       "Листайте слайды влево и вправо — игрушки, макраме и творческие проекты с занятий.",
     "works.aria": "Работы учениц",
-    "works.videoTitle": "Заглянем на наш урок",
-    "works.videoCategory": "Видео",
+    "works.lessonsTitle": "Заглянем на наши уроки",
+    "works.lessonsAria": "Видео с уроков",
     "reviews.eyebrow": "Отзывы",
     "reviews.title": "Впечатления о занятиях",
     "reviews.desc": "Реальные истории людей, которые научились вязать вместе со мной",
@@ -291,6 +291,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "work.6.category": "Макраме",
     "work.7.title": "Ягодки",
     "work.7.category": "Вязание крючком",
+    "lesson.0.title": "Пробный урок",
     "staticReview.0.text":
       "Никогда не думала, что смогу связать игрушку для дочки. Ольга объясняет так спокойно и понятно — уже связала первого зайца!",
     "staticReview.0.course": "Вязание крючком",
@@ -444,8 +445,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "works.desc":
       "Слайдтарды солға және оңға айналдырыңыз — ойыншықтар, макраме және сабақтардағы шығармашылық жобалар.",
     "works.aria": "Оқушылардың жұмыстары",
-    "works.videoTitle": "Сабағымызға үңілейік",
-    "works.videoCategory": "Бейне",
+    "works.lessonsTitle": "Сабақтарымызға үңілейік",
+    "works.lessonsAria": "Сабақ бейнелері",
     "reviews.eyebrow": "Пікірлер",
     "reviews.title": "Сабақтар туралы әсерлер",
     "reviews.desc": "Менімен бірге тоқуды үйренген адамдардың нақты әңгімелері",
@@ -639,6 +640,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "work.6.category": "Макраме",
     "work.7.title": "Жидектер",
     "work.7.category": "Ілмекпен тоқу",
+    "lesson.0.title": "Сынақ сабағы",
     "staticReview.0.text":
       "Қызыма ойыншық тоқи аламын деп ешқашан ойламағанмын. Ольга байсалды әрі түсінікті түсіндіреді — алғашқы қоянды тоқып қойдым!",
     "staticReview.0.course": "Ілмекпен тоқу",

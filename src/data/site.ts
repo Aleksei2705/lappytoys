@@ -382,6 +382,19 @@ export const studentWorks: StudentWork[] = [
   },
 ];
 
+export type StudioVideo = {
+  src: string;
+  title: string;
+};
+
+/** Видео для слайдера «Заглянем на наши уроки». */
+export const studioVideos: StudioVideo[] = [
+  {
+    src: "https://www.youtube.com/embed/hYk7mVuqDrk",
+    title: "Пробный урок",
+  },
+];
+
 export const reviews = [
   {
     name: "Айгуль",
