@@ -241,7 +241,7 @@ export function WorksGallery() {
 
       {lightbox ? (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-warm-900/80 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-warm-900/90 p-3 backdrop-blur-sm sm:p-6"
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
@@ -250,7 +250,7 @@ export function WorksGallery() {
           <button
             ref={closeBtnRef}
             type="button"
-            className="absolute right-4 top-4 z-20 inline-flex size-10 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white"
+            className="absolute right-3 top-3 z-20 inline-flex size-11 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:right-6 sm:top-6"
             aria-label={t("aria.close")}
             onClick={() => setLightbox(false)}
           >
@@ -259,7 +259,7 @@ export function WorksGallery() {
 
           <button
             type="button"
-            className="absolute left-3 top-1/2 z-20 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white sm:left-6"
+            className="absolute left-2 top-1/2 z-20 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:left-6"
             aria-label={t("aria.prevPhoto")}
             onClick={(e) => {
               e.stopPropagation();
@@ -271,7 +271,7 @@ export function WorksGallery() {
 
           <button
             type="button"
-            className="absolute right-3 top-1/2 z-20 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-warm-900 shadow-md transition hover:bg-white sm:right-6"
+            className="absolute right-2 top-1/2 z-20 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:right-6"
             aria-label={t("aria.nextPhoto")}
             onClick={(e) => {
               e.stopPropagation();
@@ -282,30 +282,29 @@ export function WorksGallery() {
           </button>
 
           <div
-            className="relative flex w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-cream shadow-2xl"
+            className="flex h-full w-full flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative h-[min(70vh,32rem)] w-full shrink-0 bg-brand-50 sm:h-[min(72vh,28rem)]">
-              {/* Keep all photos mounted — opacity only. Avoids new→old→new flash on src swap. */}
+            <div className="relative min-h-0 w-full flex-1">
               {studentWorks.map((work, i) => (
                 <Image
                   key={work.src}
                   src={work.src}
                   alt={work.alt}
                   fill
-                  className={`object-contain p-2 transition-opacity duration-200 sm:p-4 ${
+                  className={`object-contain transition-opacity duration-200 ${
                     i === index ? "opacity-100" : "pointer-events-none opacity-0"
                   }`}
-                  sizes="(max-width: 768px) 100vw, 48rem"
+                  sizes="100vw"
                   priority={Math.abs(i - index) <= 1 || i === index}
                 />
               ))}
             </div>
-            <div className="border-t border-brand-100/80 px-5 py-4 text-center">
-              <p id={titleId} className="font-heading text-lg font-semibold text-warm-900">
+            <div className="shrink-0 px-14 py-3 text-center sm:px-20">
+              <p id={titleId} className="font-heading text-lg font-semibold text-white sm:text-xl">
                 {t(`work.${index}.title`)}
               </p>
-              <p className="mt-0.5 text-sm text-warm-500">{t(`work.${index}.category`)}</p>
+              <p className="mt-0.5 text-sm text-white/75">{t(`work.${index}.category`)}</p>
             </div>
           </div>
         </div>

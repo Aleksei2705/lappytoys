@@ -1,15 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { studioVideos } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
+
+function videoEmbedSrc(src: string, autoplay = false) {
+  try {
+    const url = new URL(src);
+    url.searchParams.set("rel", "0");
+    if (autoplay) url.searchParams.set("autoplay", "1");
+    return url.toString();
+  } catch {
+    return src;
+  }
+}
 
 export function LessonsVideoCarousel() {
   const { t } = useI18n();
   const [index, setIndex] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
   const scrollingRef = useRef(false);
+  const titleId = useId();
   const count = studioVideos.length;
 
   const scrollToSlide = useCallback((next: number) => {
@@ -29,13 +43,26 @@ export function LessonsVideoCarousel() {
       if (count === 0) return;
       const bounded = ((next % count) + count) % count;
       setIndex(bounded);
-      scrollToSlide(bounded);
+      if (!lightbox) scrollToSlide(bounded);
     },
-    [count, scrollToSlide],
+    [count, lightbox, scrollToSlide],
   );
 
   const goPrev = useCallback(() => goTo(index - 1), [goTo, index]);
   const goNext = useCallback(() => goTo(index + 1), [goTo, index]);
+
+  const lightboxPrev = useCallback(() => {
+    setIndex((i) => (i - 1 + count) % count);
+  }, [count]);
+
+  const lightboxNext = useCallback(() => {
+    setIndex((i) => (i + 1) % count);
+  }, [count]);
+
+  const openLightbox = useCallback((i: number) => {
+    setIndex(i);
+    setLightbox(true);
+  }, []);
 
   useEffect(() => {
     const scroller = scrollerRef.current;
@@ -43,7 +70,7 @@ export function LessonsVideoCarousel() {
 
     let frame = 0;
     function onScroll() {
-      if (scrollingRef.current) return;
+      if (scrollingRef.current || lightbox) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         if (!scroller) return;
@@ -68,7 +95,42 @@ export function LessonsVideoCarousel() {
       cancelAnimationFrame(frame);
       scroller.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [lightbox]);
+
+  useEffect(() => {
+    if (!lightbox) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeBtnRef.current?.focus();
+
+    function handleKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setLightbox(false);
+        return;
+      }
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        lightboxNext();
+        return;
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        lightboxPrev();
+      }
+    }
+
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [lightbox, lightboxNext, lightboxPrev]);
+
+  useEffect(() => {
+    if (lightbox) return;
+    scrollToSlide(index);
+  }, [lightbox]); // eslint-disable-line react-hooks/exhaustive-deps -- only sync on close
 
   if (count === 0) return null;
 
@@ -102,14 +164,24 @@ export function LessonsVideoCarousel() {
               className="relative aspect-[9/16] w-[78%] max-w-sm shrink-0 snap-center overflow-hidden rounded-3xl bg-warm-900 sm:w-[48%] lg:w-[36%]"
               aria-current={i === index ? "true" : undefined}
             >
-              <iframe
-                title={slideTitle(i)}
-                src={video.src}
-                className="absolute inset-0 h-full w-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                loading="lazy"
-              />
+              {lightbox ? null : (
+                <iframe
+                  title={slideTitle(i)}
+                  src={videoEmbedSrc(video.src)}
+                  className="absolute inset-0 h-full w-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              )}
+              <button
+                type="button"
+                onClick={() => openLightbox(i)}
+                className="absolute right-3 top-3 z-10 inline-flex size-10 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white"
+                aria-label={t("aria.expandVideo")}
+              >
+                <Maximize2 className="size-4" />
+              </button>
             </div>
           ))}
         </div>
@@ -160,6 +232,74 @@ export function LessonsVideoCarousel() {
             <span className="mx-2 text-brand-200">·</span>
             {slideTitle(index)}
           </p>
+        </div>
+      ) : null}
+
+      {lightbox ? (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-warm-900/90 p-3 backdrop-blur-sm sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          onClick={() => setLightbox(false)}
+        >
+          <button
+            ref={closeBtnRef}
+            type="button"
+            className="absolute right-3 top-3 z-20 inline-flex size-11 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:right-6 sm:top-6"
+            aria-label={t("aria.close")}
+            onClick={() => setLightbox(false)}
+          >
+            <X className="size-5" />
+          </button>
+
+          {count > 1 ? (
+            <>
+              <button
+                type="button"
+                className="absolute left-2 top-1/2 z-20 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:left-6"
+                aria-label={t("aria.prevVideo")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  lightboxPrev();
+                }}
+              >
+                <ChevronLeft className="size-5" />
+              </button>
+              <button
+                type="button"
+                className="absolute right-2 top-1/2 z-20 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:right-6"
+                aria-label={t("aria.nextVideo")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  lightboxNext();
+                }}
+              >
+                <ChevronRight className="size-5" />
+              </button>
+            </>
+          ) : null}
+
+          <div
+            className="flex h-full w-full flex-col items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative w-[min(calc(100vw-1.5rem),calc((100dvh-6rem)*9/16))] max-w-full aspect-[9/16]">
+              <iframe
+                key={studioVideos[index].src}
+                title={slideTitle(index)}
+                src={videoEmbedSrc(studioVideos[index].src, true)}
+                className="absolute inset-0 h-full w-full rounded-2xl border-0 bg-black"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+            <div className="shrink-0 px-14 py-3 text-center sm:px-20">
+              <p id={titleId} className="font-heading text-lg font-semibold text-white sm:text-xl">
+                {slideTitle(index)}
+              </p>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>
