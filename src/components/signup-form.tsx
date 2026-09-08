@@ -154,11 +154,17 @@ export function SignupForm() {
     if (channel === "telegram") {
       trackGoal("signup_telegram");
       window.open(`${site.telegram}?text=${encoded}`, "_blank", "noopener,noreferrer");
-      return;
+    } else {
+      trackGoal("signup_whatsapp");
+      window.open(`${site.whatsapp}?text=${encoded}`, "_blank", "noopener,noreferrer");
     }
 
-    trackGoal("signup_whatsapp");
-    window.open(`${site.whatsapp}?text=${encoded}`, "_blank", "noopener,noreferrer");
+    setName("");
+    setPhone("");
+    setDirection("");
+    setPreferredDate("");
+    setMessage("");
+    setPhoneError("");
   }
 
   function handleSubmit(e: FormEvent) {
