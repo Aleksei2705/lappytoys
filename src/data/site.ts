@@ -393,6 +393,14 @@ export const studioVideos: StudioVideo[] = [
     src: "https://www.youtube.com/embed/hYk7mVuqDrk",
     title: "Пробный урок",
   },
+  {
+    src: "https://www.youtube.com/embed/mmq1g60HxA8",
+    title: "Приходи вязать со мной",
+  },
+  {
+    src: "https://www.youtube.com/embed/POJMq4jZDMI",
+    title: "Вязание игрушек",
+  },
 ];
 
 export const reviews = [

@@ -292,6 +292,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "work.7.title": "Ягодки",
     "work.7.category": "Вязание крючком",
     "lesson.0.title": "Пробный урок",
+    "lesson.1.title": "Приходи вязать со мной",
+    "lesson.2.title": "Вязание игрушек",
     "staticReview.0.text":
       "Никогда не думала, что смогу связать игрушку для дочки. Ольга объясняет так спокойно и понятно — уже связала первого зайца!",
     "staticReview.0.course": "Вязание крючком",
@@ -641,6 +643,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "work.7.title": "Жидектер",
     "work.7.category": "Ілмекпен тоқу",
     "lesson.0.title": "Сынақ сабағы",
+    "lesson.1.title": "Кел, менімен тоқы",
+    "lesson.2.title": "Ойыншық тоқу",
     "staticReview.0.text":
       "Қызыма ойыншық тоқи аламын деп ешқашан ойламағанмын. Ольга байсалды әрі түсінікті түсіндіреді — алғашқы қоянды тоқып қойдым!",
     "staticReview.0.course": "Ілмекпен тоқу",
