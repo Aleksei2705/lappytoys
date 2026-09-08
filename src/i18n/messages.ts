@@ -73,8 +73,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "course.trial.title": "Пробный урок",
     "course.trial.desc":
       "30 минут бесплатно — познакомьтесь с форматом. Урок с изготовлением игрушки — 1,5 часа, 2 000 тг.",
-    "masters.eyebrow": "Готовые проекты",
-    "masters.title": "Мастер-классы",
+    "masters.eyebrow": "Мастер-классы",
+    "masters.title": "Готовые проекты",
     "masters.desc": "Листайте влево и вправо — и записывайтесь на понравившийся проект.",
     "masters.signup": "Записаться",
     "masters.instagram": "Смотреть в Instagram",
@@ -419,8 +419,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "course.trial.title": "Сынақ сабағы",
     "course.trial.desc":
       "30 минут тегін — форматпен танысыңыз. Ойыншық жасап шығатын сабақ — 1,5 сағат, 2 000 тг.",
-    "masters.eyebrow": "Дайын жобалар",
-    "masters.title": "Мастер-класстар",
+    "masters.eyebrow": "Мастер-класстар",
+    "masters.title": "Дайын жобалар",
     "masters.desc": "Солға және оңға айналдырып қараңыз — ұнаған жобаға жазылыңыз.",
     "masters.signup": "Жазылу",
     "masters.instagram": "Instagram-да қарау",
