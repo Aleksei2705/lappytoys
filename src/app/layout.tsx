@@ -147,7 +147,7 @@ const jsonLd = {
     "@type": "City",
     name: site.city,
   },
-  sameAs: [site.instagram, site.telegram, site.telegramGroup],
+  sameAs: [site.instagram, site.tiktok, site.telegram, site.telegramGroup],
   priceRange: "$$",
   category: "Творчество и рукоделие",
   keywords:

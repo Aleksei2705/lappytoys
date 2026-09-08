@@ -49,6 +49,19 @@ export function InstagramContactIcon() {
   );
 }
 
+export function TikTokContactIcon() {
+  return (
+    <Image
+      src="/images/tiktok.svg"
+      alt=""
+      width={48}
+      height={48}
+      className={iconClass}
+      aria-hidden
+    />
+  );
+}
+
 const mapIconClass = "size-[1.125rem] shrink-0 sm:size-5";
 
 export function Map2GisIcon({ className = mapIconClass }: { className?: string }) {

@@ -28,6 +28,7 @@ import { useI18n } from "@/components/i18n-provider";
 import {
   ContactIconFrame,
   InstagramContactIcon,
+  TikTokContactIcon,
   Map2GisIcon,
   MapGoogleIcon,
   MapYandexIcon,
@@ -280,15 +281,6 @@ export default function HomePage() {
                       <p className="font-semibold text-warm-900">{site.telegramHandle}</p>
                     </div>
                   </a>
-                  <a href={site.telegramGroup} target="_blank" rel="noopener noreferrer" className="contact-card">
-                    <ContactIconFrame>
-                      <TelegramContactIcon />
-                    </ContactIconFrame>
-                    <div>
-                      <p className="text-sm text-warm-500">{t("contacts.telegramGroup")}</p>
-                      <p className="font-semibold text-warm-900">{site.telegramGroupHandle}</p>
-                    </div>
-                  </a>
                   <WhatsAppContactCard />
                   <a href={site.instagram} target="_blank" rel="noopener noreferrer" className="contact-card">
                     <ContactIconFrame>
@@ -297,6 +289,15 @@ export default function HomePage() {
                     <div>
                       <p className="text-sm text-warm-500">Instagram</p>
                       <p className="font-semibold text-warm-900">{site.instagramHandle}</p>
+                    </div>
+                  </a>
+                  <a href={site.tiktok} target="_blank" rel="noopener noreferrer" className="contact-card">
+                    <ContactIconFrame>
+                      <TikTokContactIcon />
+                    </ContactIconFrame>
+                    <div>
+                      <p className="text-sm text-warm-500">TikTok</p>
+                      <p className="font-semibold text-warm-900">{site.tiktokHandle}</p>
                     </div>
                   </a>
                 </div>

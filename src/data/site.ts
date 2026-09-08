@@ -13,6 +13,8 @@ export const site = {
   whatsapp: "https://wa.me/77058553873",
   instagram: "https://www.instagram.com/lappy.art",
   instagramHandle: "@lappy.art",
+  tiktok: "https://www.tiktok.com/@lapteva2113",
+  tiktokHandle: "@lapteva2113",
   notifyEmail: "olgalapteva8518@gmail.com",
   yandexMetricaId: "112086282",
   city: "Семей",

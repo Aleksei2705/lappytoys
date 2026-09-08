@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUp } from "lucide-react";
 import { MetrikaInformer } from "@/components/metrika-informer";
 import { SiteLogo } from "@/components/site-logo";
@@ -23,6 +24,19 @@ function InstagramIcon() {
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
       <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
     </svg>
+  );
+}
+
+function TikTokIcon() {
+  return (
+    <Image
+      src="/images/tiktok.svg"
+      alt=""
+      width={24}
+      height={24}
+      className="size-5"
+      aria-hidden
+    />
   );
 }
 
@@ -71,6 +85,15 @@ export function SiteFooter() {
                 className="flex size-11 items-center justify-center rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50"
               >
                 <InstagramIcon />
+              </a>
+              <a
+                href={site.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+                className="flex size-11 items-center justify-center rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50"
+              >
+                <TikTokIcon />
               </a>
             </div>
           </div>
