@@ -97,9 +97,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/og.jpg",
+        url: "/images/og.jpg?v=2",
         width: 1200,
         height: 630,
+        type: "image/jpeg",
         alt: `${site.name} — творчество в Семее`,
       },
     ],
@@ -109,7 +110,7 @@ export const metadata: Metadata = {
     title: `${site.name} — творчество и рукоделие в Семее`,
     description:
       "Творческие занятия: вязание, макраме, вышивка и шитьё игрушек в Семее. Запись к Ольге.",
-    images: ["/images/og.jpg"],
+    images: ["/images/og.jpg?v=2"],
   },
 };
 
