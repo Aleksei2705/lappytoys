@@ -4,7 +4,7 @@ export type Locale = "ru" | "kk";
 export const messages: Record<Locale, Record<string, string>> = {
   ru: {
     "nav./#about": "Обо мне",
-    "nav./#courses": "Уроки",
+    "nav./#courses": "Виды занятий",
     "nav./#master-classes": "Мастер-классы",
     "nav./#schedule": "Расписание",
     "nav./#works": "Работы",
@@ -49,7 +49,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "about.p7":
       "Ведь творчество — это не только красивый результат. Это возможность попробовать, ошибиться, найти своё и однажды сказать: «У меня получилось!» 🧶",
     "courses.eyebrow": "Направления",
-    "courses.title": "Творческие направления",
+    "courses.title": "Виды занятий",
     "courses.desc":
       "Вязание, макраме, вышивка, бисероплетение и шитьё игрушек — выберите направление и начните с нуля в уютной студии.",
     "course.crochet.title": "Вязание крючком",
@@ -350,7 +350,7 @@ export const messages: Record<Locale, Record<string, string>> = {
   },
   kk: {
     "nav./#about": "Мен туралы",
-    "nav./#courses": "Сабақтар",
+    "nav./#courses": "Сабақ түрлері",
     "nav./#master-classes": "Мастер-класстар",
     "nav./#schedule": "Кесте",
     "nav./#works": "Жұмыстар",
@@ -395,7 +395,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "about.p7":
       "Шығармашылық — тек әдемі нәтиже емес. Бұл байқап көру, қателесу, өзін табу және бір күні: «Менде шықты!» деп айту мүмкіндігі. 🧶",
     "courses.eyebrow": "Бағыттар",
-    "courses.title": "Шығармашылық бағыттар",
+    "courses.title": "Сабақ түрлері",
     "courses.desc":
       "Тоқыма, макраме, кесте, моншақ өру және ойыншық тігу — бағытты таңдап, жайлы студияда нөлден бастаңыз.",
     "course.crochet.title": "Ілмекпен тоқу",

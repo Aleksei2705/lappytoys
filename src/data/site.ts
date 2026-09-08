@@ -32,7 +32,7 @@ export const site = {
 
 export const navLinks = [
   { href: "/#about", label: "Обо мне" },
-  { href: "/#courses", label: "Уроки" },
+  { href: "/#courses", label: "Виды занятий" },
   { href: "/#master-classes", label: "Мастер-классы" },
   { href: "/#schedule", label: "Расписание" },
   { href: "/#works", label: "Работы" },
