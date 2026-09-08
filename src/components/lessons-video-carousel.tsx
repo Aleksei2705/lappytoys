@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import { studioVideos } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -10,11 +10,27 @@ function videoEmbedSrc(src: string, autoplay = false) {
   try {
     const url = new URL(src);
     url.searchParams.set("rel", "0");
+    url.searchParams.set("playsinline", "1");
+    url.searchParams.set("modestbranding", "1");
     if (autoplay) url.searchParams.set("autoplay", "1");
     return url.toString();
   } catch {
     return src;
   }
+}
+
+function youtubeIdFromEmbed(src: string) {
+  try {
+    const parts = new URL(src).pathname.split("/").filter(Boolean);
+    return parts[parts.length - 1] ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function videoThumb(src: string) {
+  const id = youtubeIdFromEmbed(src);
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "";
 }
 
 export function LessonsVideoCarousel() {
@@ -165,30 +181,26 @@ export function LessonsVideoCarousel() {
           aria-label={t("works.lessonsAria")}
         >
           {studioVideos.map((video, i) => (
-            <div
+            <button
               key={video.src}
-              className="relative aspect-[9/16] w-[78%] max-w-sm shrink-0 snap-center overflow-hidden rounded-3xl bg-warm-900 sm:w-[48%] lg:w-[36%]"
+              type="button"
+              onClick={() => openLightbox(i)}
+              className="group relative aspect-[9/16] w-[78%] max-w-sm shrink-0 snap-center overflow-hidden rounded-3xl bg-warm-900 text-left outline-none ring-brand-300 transition focus-visible:ring-4 sm:w-[48%] lg:w-[36%]"
+              aria-label={`${slideTitle(i)}. ${t("aria.expandVideo")}`}
               aria-current={i === index ? "true" : undefined}
             >
-              {lightbox ? null : (
-                <iframe
-                  title={slideTitle(i)}
-                  src={videoEmbedSrc(video.src)}
-                  className="absolute inset-0 h-full w-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              )}
-              <button
-                type="button"
-                onClick={() => openLightbox(i)}
-                className="absolute right-3 top-3 z-10 inline-flex size-10 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white"
-                aria-label={t("aria.expandVideo")}
-              >
-                <Maximize2 className="size-4" />
-              </button>
-            </div>
+              <img
+                src={videoThumb(video.src)}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-warm-900/55 via-warm-900/10 to-transparent" />
+              <span className="absolute inset-0 flex items-center justify-center">
+                <span className="inline-flex size-16 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition group-hover:scale-105">
+                  <Play className="size-7 fill-current" />
+                </span>
+              </span>
+            </button>
           ))}
         </div>
 
@@ -288,15 +300,21 @@ export function LessonsVideoCarousel() {
               ) : null}
 
               <div
-                className="flex h-[100dvh] w-full flex-col items-center justify-center px-4 pb-16 pt-14 sm:px-16"
+                className="flex h-[100dvh] w-full items-center justify-center px-3 pb-16 pt-14 sm:px-6"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="relative w-[min(calc(100vw-2rem),calc((100dvh-6.5rem)*9/16))] aspect-[9/16]">
+                <div
+                  className="relative overflow-hidden rounded-2xl bg-black shadow-2xl"
+                  style={{
+                    width: "min(calc(100vw - 1.5rem), calc((100dvh - 7.5rem) * 9 / 16))",
+                    height: "min(calc(100dvh - 7.5rem), calc((100vw - 1.5rem) * 16 / 9))",
+                  }}
+                >
                   <iframe
                     key={studioVideos[index].src}
                     title={slideTitle(index)}
                     src={videoEmbedSrc(studioVideos[index].src, true)}
-                    className="absolute inset-0 h-full w-full rounded-2xl border-0 bg-black"
+                    className="absolute inset-0 h-full w-full border-0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
                   />
