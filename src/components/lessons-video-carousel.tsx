@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { studioVideos } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
@@ -20,11 +21,16 @@ export function LessonsVideoCarousel() {
   const { t } = useI18n();
   const [index, setIndex] = useState(0);
   const [lightbox, setLightbox] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const scrollingRef = useRef(false);
   const titleId = useId();
   const count = studioVideos.length;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const scrollToSlide = useCallback((next: number) => {
     const scroller = scrollerRef.current;
@@ -235,73 +241,76 @@ export function LessonsVideoCarousel() {
         </div>
       ) : null}
 
-      {lightbox ? (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-warm-900/90 p-3 backdrop-blur-sm sm:p-6"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          onClick={() => setLightbox(false)}
-        >
-          <button
-            ref={closeBtnRef}
-            type="button"
-            className="absolute right-3 top-3 z-20 inline-flex size-11 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:right-6 sm:top-6"
-            aria-label={t("aria.close")}
-            onClick={() => setLightbox(false)}
-          >
-            <X className="size-5" />
-          </button>
-
-          {count > 1 ? (
-            <>
+      {mounted && lightbox
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[80] bg-warm-900/92"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              onClick={() => setLightbox(false)}
+            >
               <button
+                ref={closeBtnRef}
                 type="button"
-                className="absolute left-2 top-1/2 z-20 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:left-6"
-                aria-label={t("aria.prevVideo")}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  lightboxPrev();
-                }}
+                className="absolute right-3 top-3 z-20 inline-flex size-11 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:right-6 sm:top-6"
+                aria-label={t("aria.close")}
+                onClick={() => setLightbox(false)}
               >
-                <ChevronLeft className="size-5" />
+                <X className="size-5" />
               </button>
-              <button
-                type="button"
-                className="absolute right-2 top-1/2 z-20 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:right-6"
-                aria-label={t("aria.nextVideo")}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  lightboxNext();
-                }}
-              >
-                <ChevronRight className="size-5" />
-              </button>
-            </>
-          ) : null}
 
-          <div
-            className="flex h-full w-full flex-col items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative w-[min(calc(100vw-1.5rem),calc((100dvh-6rem)*9/16))] max-w-full aspect-[9/16]">
-              <iframe
-                key={studioVideos[index].src}
-                title={slideTitle(index)}
-                src={videoEmbedSrc(studioVideos[index].src, true)}
-                className="absolute inset-0 h-full w-full rounded-2xl border-0 bg-black"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-            <div className="shrink-0 px-14 py-3 text-center sm:px-20">
-              <p id={titleId} className="font-heading text-lg font-semibold text-white sm:text-xl">
-                {slideTitle(index)}
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : null}
+              {count > 1 ? (
+                <>
+                  <button
+                    type="button"
+                    className="absolute left-2 top-1/2 z-20 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:left-6"
+                    aria-label={t("aria.prevVideo")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      lightboxPrev();
+                    }}
+                  >
+                    <ChevronLeft className="size-5" />
+                  </button>
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 z-20 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-warm-900 shadow-md transition hover:bg-white sm:right-6"
+                    aria-label={t("aria.nextVideo")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      lightboxNext();
+                    }}
+                  >
+                    <ChevronRight className="size-5" />
+                  </button>
+                </>
+              ) : null}
+
+              <div
+                className="flex h-[100dvh] w-full flex-col items-center justify-center px-4 pb-16 pt-14 sm:px-16"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="relative w-[min(calc(100vw-2rem),calc((100dvh-6.5rem)*9/16))] aspect-[9/16]">
+                  <iframe
+                    key={studioVideos[index].src}
+                    title={slideTitle(index)}
+                    src={videoEmbedSrc(studioVideos[index].src, true)}
+                    className="absolute inset-0 h-full w-full rounded-2xl border-0 bg-black"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+              <div className="pointer-events-none absolute inset-x-0 bottom-3 px-4 text-center sm:bottom-5">
+                <p id={titleId} className="font-heading text-lg font-semibold text-white sm:text-xl">
+                  {slideTitle(index)}
+                </p>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
