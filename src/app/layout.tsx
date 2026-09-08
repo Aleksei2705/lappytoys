@@ -97,18 +97,19 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/logo.png",
-        width: 512,
-        height: 512,
+        url: "/images/og.jpg",
+        width: 1200,
+        height: 630,
         alt: `${site.name} — творчество в Семее`,
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: `${site.name} — творчество и рукоделие в Семее`,
     description:
       "Творческие занятия: вязание, макраме, вышивка и шитьё игрушек в Семее. Запись к Ольге.",
+    images: ["/images/og.jpg"],
   },
 };
 
