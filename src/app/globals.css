@@ -159,6 +159,13 @@ body {
   flex-shrink: 0;
 }
 
+@media (min-width: 1024px) {
+  .site-header-spacer {
+    height: calc(6.5rem + env(safe-area-inset-top, 0px));
+  }
+}
+}
+
 /* Mobile nav — right sheet, page peeks on the left */
 .mobile-nav-backdrop {
   position: fixed;
