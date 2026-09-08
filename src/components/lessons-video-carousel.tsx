@@ -87,7 +87,9 @@ export function LessonsVideoCarousel() {
       <div className="relative mt-8 sm:mt-10">
         <div
           ref={scrollerRef}
-          className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-[8%] pb-2 [scrollbar-width:none] sm:gap-5 sm:px-[12%] [&::-webkit-scrollbar]:hidden"
+          className={`flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none] sm:gap-5 [&::-webkit-scrollbar]:hidden ${
+            count === 1 ? "justify-center px-4" : "px-[8%] sm:px-[12%]"
+          }`}
           aria-roledescription="carousel"
           aria-label={t("works.lessonsAria")}
         >
