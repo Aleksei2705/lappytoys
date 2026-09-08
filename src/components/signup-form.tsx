@@ -105,16 +105,12 @@ function WhatsAppIcon() {
   );
 }
 
-type SignupFormProps = {
-  direction: string;
-  onDirectionChange: (value: string) => void;
-};
-
-export function SignupForm({ direction, onDirectionChange }: SignupFormProps) {
+export function SignupForm() {
   const { t } = useI18n();
   const formRef = useRef<HTMLFormElement>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [direction, setDirection] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [message, setMessage] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -165,7 +161,7 @@ export function SignupForm({ direction, onDirectionChange }: SignupFormProps) {
 
     setName("");
     setPhone("");
-    onDirectionChange("");
+    setDirection("");
     setPreferredDate("");
     setMessage("");
     setPhoneError("");
@@ -177,7 +173,7 @@ export function SignupForm({ direction, onDirectionChange }: SignupFormProps) {
   }
 
   return (
-    <form id="signup-form" ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
+    <form ref={formRef} className="space-y-5" onSubmit={handleSubmit}>
       <div>
         <label htmlFor="name" className="mb-2 block text-sm font-medium text-warm-700">
           {t("signup.name")}
@@ -230,7 +226,7 @@ export function SignupForm({ direction, onDirectionChange }: SignupFormProps) {
           name="direction"
           required
           value={direction}
-          onChange={(e) => onDirectionChange(e.target.value)}
+          onChange={(e) => setDirection(e.target.value)}
           className="input-field"
         >
           <option value="" disabled>
