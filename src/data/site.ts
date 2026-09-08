@@ -387,7 +387,7 @@ export type StudioVideo = {
   title: string;
 };
 
-/** Видео для слайдера «Заглянем на наши уроки». */
+/** Видео для слайдера «Как проходят уроки». */
 export const studioVideos: StudioVideo[] = [
   {
     src: "https://www.youtube.com/embed/hYk7mVuqDrk",
