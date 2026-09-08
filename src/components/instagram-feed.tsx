@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Instagram, Play } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
+import { TelegramChatButton } from "@/components/telegram-chat-button";
 import { useI18n } from "@/components/i18n-provider";
 import { site } from "@/data/site";
 import bakedFeed from "@/data/instagram-feed.json";
@@ -84,7 +85,7 @@ export function InstagramFeed() {
           ))}
         </div>
 
-        <p className="mt-6 text-center">
+        <p className="mt-6 flex flex-wrap justify-center gap-3">
           <a
             href={site.instagram}
             target="_blank"
@@ -94,6 +95,7 @@ export function InstagramFeed() {
             <Instagram className="size-4" />
             {t("ig.open")}
           </a>
+          <TelegramChatButton className="btn-secondary inline-flex h-11 px-6" />
         </p>
       </div>
     </section>

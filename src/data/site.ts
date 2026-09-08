@@ -8,6 +8,8 @@ export const site = {
   phoneDisplay: "+7 (705) 855-38-73",
   telegram: "https://t.me/OlgaLapteva85",
   telegramHandle: "@OlgaLapteva85",
+  telegramGroup: "https://t.me/lappyart",
+  telegramGroupHandle: "@lappyart",
   whatsapp: "https://wa.me/77058553873",
   instagram: "https://www.instagram.com/lappy.art",
   instagramHandle: "@lappy.art",

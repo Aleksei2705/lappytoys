@@ -20,6 +20,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "cta.showMore": "Показать ещё",
     "cta.hide": "Скрыть",
     "cta.toTop": "Наверх",
+    "cta.chat": "Творческий чат",
     "hero.badge": "Создаём руками вместе",
     "hero.title": "Найдите своё увлечение",
     "hero.lead":
@@ -138,6 +139,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "contacts.title": "Где нас найти и как связаться",
     "contacts.desc": "Позвоните или напишите — отвечу на вопросы и расскажу подробнее.",
     "contacts.phone": "Телефон",
+    "contacts.telegram": "Telegram · Ольга",
+    "contacts.telegramGroup": "Telegram · группа",
     "contacts.map": "Карта: творческая студия Lappy Art",
     "signup.eyebrow": "Записаться",
     "signup.title": "Хочу на занятие",
@@ -413,6 +416,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "cta.showMore": "Тағы көрсету",
     "cta.hide": "Жасыру",
     "cta.toTop": "Жоғарыға",
+    "cta.chat": "Шығармашылық чат",
     "hero.badge": "Қолмен бірге жасаймыз",
     "hero.title": "Сүйікті ісіңізді табыңыз",
     "hero.lead":
@@ -531,6 +535,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "contacts.title": "Қайдан табуға болады және қалай хабарласуға болады",
     "contacts.desc": "Қоңырау шалыңыз немесе жазыңыз — сұрақтарыңызға жауап беріп, толығырақ айтамын.",
     "contacts.phone": "Телефон",
+    "contacts.telegram": "Telegram · Ольга",
+    "contacts.telegramGroup": "Telegram · топ",
     "contacts.map": "Карта: Lappy Art шығармашылық студиясы",
     "signup.eyebrow": "Жазылу",
     "signup.title": "Сабаққа барғым келеді",

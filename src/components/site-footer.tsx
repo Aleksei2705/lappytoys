@@ -46,10 +46,10 @@ export function SiteFooter() {
             </a>
             <div className="mt-5 flex flex-wrap gap-3">
               <a
-                href={site.telegram}
+                href={site.telegramGroup}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Telegram"
+                aria-label={t("contacts.telegramGroup")}
                 className="flex size-11 items-center justify-center rounded-full border border-cream-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:bg-sky-50"
               >
                 <TelegramIcon className="size-5 text-sky-600" />

@@ -276,8 +276,17 @@ export default function HomePage() {
                       <TelegramContactIcon />
                     </ContactIconFrame>
                     <div>
-                      <p className="text-sm text-warm-500">Telegram</p>
+                      <p className="text-sm text-warm-500">{t("contacts.telegram")}</p>
                       <p className="font-semibold text-warm-900">{site.telegramHandle}</p>
+                    </div>
+                  </a>
+                  <a href={site.telegramGroup} target="_blank" rel="noopener noreferrer" className="contact-card">
+                    <ContactIconFrame>
+                      <TelegramContactIcon />
+                    </ContactIconFrame>
+                    <div>
+                      <p className="text-sm text-warm-500">{t("contacts.telegramGroup")}</p>
+                      <p className="font-semibold text-warm-900">{site.telegramGroupHandle}</p>
                     </div>
                   </a>
                   <WhatsAppContactCard />
