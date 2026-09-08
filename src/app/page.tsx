@@ -22,7 +22,6 @@ import { FaqSection } from "@/components/faq-section";
 import { HeroCopy } from "@/components/hero-copy";
 import { HeroBackdrop } from "@/components/hero-backdrop";
 import { Reveal } from "@/components/reveal";
-import { AboutVideo } from "@/components/about-video";
 import { PriceText } from "@/components/price-text";
 import { useI18n } from "@/components/i18n-provider";
 import {
@@ -203,17 +202,6 @@ export default function HomePage() {
         <Reveal>
           <MasterClassesCarousel />
         </Reveal>
-
-        <section className="page-section">
-          <div className="container-main">
-            <Reveal>
-              <p className="mb-5 text-center font-heading text-lg font-semibold text-warm-900 sm:text-xl">
-                {t("about.video")}
-              </p>
-              <AboutVideo />
-            </Reveal>
-          </div>
-        </section>
 
         <Reveal>
           <ScheduleSection />

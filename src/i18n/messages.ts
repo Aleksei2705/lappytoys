@@ -96,6 +96,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "works.desc":
       "Листайте слайды влево и вправо — игрушки, макраме и творческие проекты с занятий.",
     "works.aria": "Работы учениц",
+    "works.videoTitle": "Заглянем на наш урок",
+    "works.videoCategory": "Видео",
     "reviews.eyebrow": "Отзывы",
     "reviews.title": "Впечатления о занятиях",
     "reviews.desc": "Реальные истории людей, которые научились вязать вместе со мной",
@@ -442,6 +444,8 @@ export const messages: Record<Locale, Record<string, string>> = {
     "works.desc":
       "Слайдтарды солға және оңға айналдырыңыз — ойыншықтар, макраме және сабақтардағы шығармашылық жобалар.",
     "works.aria": "Оқушылардың жұмыстары",
+    "works.videoTitle": "Сабағымызға үңілейік",
+    "works.videoCategory": "Бейне",
     "reviews.eyebrow": "Пікірлер",
     "reviews.title": "Сабақтар туралы әсерлер",
     "reviews.desc": "Менімен бірге тоқуды үйренген адамдардың нақты әңгімелері",
