@@ -33,13 +33,13 @@ export function AboutVideo({ className = "" }: AboutVideoProps) {
 
     return (
       <div
-        className={`relative aspect-video overflow-hidden rounded-3xl shadow-xl ring-1 ring-warm-900/5 ${className}`}
+        className={`relative mx-auto aspect-[9/16] w-full max-w-sm overflow-hidden rounded-3xl bg-warm-900/5 shadow-xl ring-1 ring-warm-900/5 sm:max-w-md ${className}`}
       >
         <iframe
           title={t("about.videoTitle")}
           src={site.aboutVideoSrc}
           className="absolute inset-0 h-full w-full border-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
           loading="lazy"
         />
