@@ -1,4 +1,4 @@
-﻿import type { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { SiteBackground } from "@/components/site-background";
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description:
-    "Творчество в Семее: творческая студия lappy.art — уроки вязания крючком и спицами, макраме, вышивка, бисероплетение, шитьё игрушек. Занятия с Ольгой с нуля, пробный урок и мастер-классы.",
+    "Творчество в Семее: творческая студия Lappy Art — уроки вязания крючком и спицами, макраме, вышивка, бисероплетение, шитьё игрушек. Занятия с Ольгой с нуля, пробный урок и мастер-классы.",
   keywords: [
     "творчество",
     "творчество Семей",
@@ -54,6 +54,7 @@ export const metadata: Metadata = {
     "рукоделие Семей",
     "мастер-класс рукоделие Семей",
     "кружок рукоделия Семей",
+    "Lappy Art",
     "lappy.art",
     "lappytoys",
     "мастер-класс вязание",
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
     "творческая студия Казахстан",
   ],
   authors: [{ name: "Ольга Лаптева" }],
-  creator: "lappy.art",
+  creator: "Lappy Art",
   category: "Творчество и рукоделие",
   robots: {
     index: true,
@@ -90,7 +91,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${site.name} — творчество и рукоделие в Семее`,
     description:
-      "Творческие занятия в Семее: вязание, макраме, вышивка и игрушки своими руками. Студия lappy.art — с нуля и с удовольствием.",
+      "Творческие занятия в Семее: вязание, макраме, вышивка и игрушки своими руками. Студия Lappy Art — с нуля и с удовольствием.",
     url: site.url,
     siteName: site.name,
     locale: "ru_KZ",
@@ -124,7 +125,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": ["LocalBusiness", "EducationalOrganization"],
   name: site.name,
-  alternateName: ["lappy.art", "lappytoys", "Творческая студия lappy.art"],
+  alternateName: ["Lappy Art", "lappy.art", "lappytoys", "Творческая студия Lappy Art"],
   description:
     "Творческая студия в Семее: творчество и рукоделие — вязание, макраме, вышивка, бисероплетение, шитьё игрушек. Занятия с нуля для детей и взрослых.",
   url: site.url,

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Палитра lappy.art — нежная женственная гамма */
+/* Палитра Lappy Art — нежная женственная гамма */
 @theme inline {
   --font-sans: var(--font-manrope), "Segoe UI", sans-serif;
   --font-heading: var(--font-playfair), Georgia, serif;

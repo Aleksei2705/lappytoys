@@ -14,13 +14,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!course) return {};
   return {
     title: `${course.title} — творчество и рукоделие в Семее`,
-    description: `${course.description} Творческие занятия в студии lappy.art, ${site.city}. ${course.price}, ${course.duration}, уровень: ${course.level}.`,
+    description: `${course.description} Творческие занятия в студии Lappy Art, ${site.city}. ${course.price}, ${course.duration}, уровень: ${course.level}.`,
     keywords: [
       course.title,
       `${course.title} Семей`,
       "творчество Семей",
       "рукоделие Семей",
       "творческая студия",
+      "Lappy Art",
       "lappy.art",
     ],
     alternates: {

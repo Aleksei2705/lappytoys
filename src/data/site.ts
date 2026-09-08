@@ -1,6 +1,6 @@
 export const site = {
-  name: "Творческая студия lappy.art",
-  brandTitle: "lappy.art",
+  name: "Творческая студия Lappy Art",
+  brandTitle: "Lappy Art",
   brandSubtitle: "Творческая студия",
   tagline: "Творчество и живые занятия с опытным мастером",
   url: "https://lappytoys.kz",

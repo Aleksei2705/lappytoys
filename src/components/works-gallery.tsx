@@ -5,9 +5,10 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
-import { site, studentWorks } from "@/data/site";
+import { studentWorks } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
 import { LessonsVideoCarousel } from "@/components/lessons-video-carousel";
+import { InstagramFeed } from "@/components/instagram-feed";
 
 export function WorksGallery() {
   const { t } = useI18n();
@@ -230,17 +231,7 @@ export function WorksGallery() {
           </p>
         </div>
 
-        <p className="mt-6 text-center text-sm text-warm-500">
-          {t("works.more")}{" "}
-          <a
-            href={site.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-brand-700 underline-offset-2 hover:underline"
-          >
-            Instagram {site.instagramHandle}
-          </a>
-        </p>
+        <InstagramFeed />
 
         <LessonsVideoCarousel />
       </div>
