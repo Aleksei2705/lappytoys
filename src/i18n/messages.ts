@@ -91,7 +91,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "weekday.sat": "Суббота",
     "weekday.sun": "Воскресенье",
     "works.eyebrow": "Работы учеников",
-    "works.title.before": "Галерея",
+    "works.title.before": "Галерея готовых работ",
     "works.title.accent": "",
     "works.desc":
       "Листайте слайды влево и вправо — игрушки, макраме и творческие проекты с занятий.",
@@ -437,7 +437,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "weekday.sat": "Сенбі",
     "weekday.sun": "Жексенбі",
     "works.eyebrow": "Оқушылардың жұмыстары",
-    "works.title.before": "Галерея",
+    "works.title.before": "Дайын жұмыстар галереясы",
     "works.title.accent": "",
     "works.desc":
       "Слайдтарды солға және оңға айналдырыңыз — ойыншықтар, макраме және сабақтардағы шығармашылық жобалар.",
