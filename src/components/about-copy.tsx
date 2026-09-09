@@ -13,14 +13,16 @@ export function AboutCopy() {
   const visibleKeys = expanded ? aboutKeys : aboutKeys.slice(0, PREVIEW_COUNT);
 
   return (
-    <div className="space-y-4 text-base leading-relaxed text-warm-500">
+    <div className="flex flex-col items-center space-y-4 text-base leading-relaxed text-warm-500">
       {visibleKeys.map((key) => (
-        <p key={key}>{t(`about.${key}`)}</p>
+        <p key={key} className="w-full">
+          {t(`about.${key}`)}
+        </p>
       ))}
       <button
         type="button"
         onClick={() => setExpanded((value) => !value)}
-        className="btn-secondary h-11 px-6"
+        className="btn-secondary mx-auto h-11 px-6"
         aria-expanded={expanded}
       >
         {expanded ? (

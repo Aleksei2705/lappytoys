@@ -133,7 +133,6 @@ export default function HomePage() {
               <Reveal delayMs={120}>
                 <div className="space-y-6">
                   <SectionHeader
-                    align="left"
                     eyebrow={t("about.eyebrow")}
                     title={
                       <>
