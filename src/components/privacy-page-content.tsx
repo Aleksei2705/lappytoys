@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { site } from "@/data/site";
+import { HomeHashLink } from "@/components/hash-scroll";
 import { useI18n } from "@/components/i18n-provider";
 
 export function PrivacyPageContent() {
@@ -30,9 +30,9 @@ export function PrivacyPageContent() {
         <h2 className="font-heading text-xl font-semibold text-warm-900">{t("privacy.h5")}</h2>
         <p>{t("privacy.p6")}</p>
       </div>
-      <Link href="/#signup" className="btn-secondary mt-10 inline-flex h-11 px-6">
+      <HomeHashLink href="/#signup" className="btn-secondary mt-10 inline-flex h-11 px-6">
         {t("privacy.back")}
-      </Link>
+      </HomeHashLink>
     </div>
   );
 }

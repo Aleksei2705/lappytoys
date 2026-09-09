@@ -9,11 +9,7 @@ import { LanguageToggle } from "@/components/language-toggle";
 import { SiteLogo } from "@/components/site-logo";
 import { navLinks } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
-
-function sectionId(href: string) {
-  const index = href.indexOf("#");
-  return index >= 0 ? href.slice(index + 1) : "";
-}
+import { hashId, rememberHash, scrollToId } from "@/components/hash-scroll";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -66,7 +62,7 @@ export function SiteHeader() {
       pendingHash.current = null;
       if (hash) {
         window.requestAnimationFrame(() => {
-          document.getElementById(hash)?.scrollIntoView();
+          scrollToId(hash);
         });
         return;
       }
@@ -81,8 +77,9 @@ export function SiteHeader() {
   }
 
   function onSectionClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
-    const id = sectionId(href);
+    const id = hashId(href);
     setOpen(false);
+    rememberHash(href);
     if (!id || !onHome) return;
 
     event.preventDefault();
@@ -91,7 +88,7 @@ export function SiteHeader() {
       pendingHash.current = id;
       return;
     }
-    document.getElementById(id)?.scrollIntoView();
+    scrollToId(id);
   }
 
   return (

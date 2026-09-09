@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
+import { HomeHashLink } from "@/components/hash-scroll";
 import { useI18n } from "@/components/i18n-provider";
 import { scheduleSlots } from "@/data/site";
 
@@ -48,9 +48,9 @@ export function ScheduleSection() {
           ))}
         </div>
         <div className="mt-8 flex justify-center">
-          <Link href="/#signup" className="btn-primary h-11 px-6">
+          <HomeHashLink href="/#signup" className="btn-primary h-11 px-6">
             {t("cta.schedule")}
-          </Link>
+          </HomeHashLink>
         </div>
       </div>
     </section>
