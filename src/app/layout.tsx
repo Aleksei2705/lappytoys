@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { SiteBackground } from "@/components/site-background";
+import { HashScroll } from "@/components/hash-scroll";
 import { I18nProvider } from "@/components/i18n-provider";
 import { site } from "@/data/site";
 import "./globals.css";
@@ -214,6 +215,7 @@ export default function RootLayout({
       <body className="min-h-full font-sans">
         <SiteBackground />
         <I18nProvider>
+          <HashScroll />
           <noscript>
             <div>
               <img

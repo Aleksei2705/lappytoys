@@ -2,17 +2,27 @@
 
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type SyntheticEvent } from "react";
+import { usePathname } from "next/navigation";
 import { HeaderAuth } from "@/components/header-auth";
 import { LanguageToggle } from "@/components/language-toggle";
 import { SiteLogo } from "@/components/site-logo";
 import { navLinks } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
 
+function sectionId(href: string) {
+  const index = href.indexOf("#");
+  return index >= 0 ? href.slice(index + 1) : "";
+}
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const lockY = useRef(0);
+  const pendingHash = useRef<string | null>(null);
   const { t } = useI18n();
+  const onHome = pathname === "/";
 
   useEffect(() => {
     function onScroll() {
@@ -30,19 +40,58 @@ export function SiteHeader() {
       if (event.key === "Escape") setOpen(false);
     }
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const { body } = document;
+    lockY.current = window.scrollY;
+    const previous = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+    };
+
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${lockY.current}px`;
+    body.style.width = "100%";
     document.addEventListener("keydown", onKey);
+
     return () => {
-      document.body.style.overflow = previousOverflow;
+      body.style.overflow = previous.overflow;
+      body.style.position = previous.position;
+      body.style.top = previous.top;
+      body.style.width = previous.width;
       document.removeEventListener("keydown", onKey);
+
+      const hash = pendingHash.current;
+      pendingHash.current = null;
+      if (hash) {
+        window.requestAnimationFrame(() => {
+          document.getElementById(hash)?.scrollIntoView();
+        });
+        return;
+      }
+      window.scrollTo(0, lockY.current);
     };
   }, [open]);
 
-  function closeMenu(event: React.SyntheticEvent) {
+  function closeMenu(event: SyntheticEvent) {
     event.preventDefault();
     event.stopPropagation();
     setOpen(false);
+  }
+
+  function onSectionClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
+    const id = sectionId(href);
+    setOpen(false);
+    if (!id || !onHome) return;
+
+    event.preventDefault();
+    window.history.pushState(null, "", `/#${id}`);
+    if (open) {
+      pendingHash.current = id;
+      return;
+    }
+    document.getElementById(id)?.scrollIntoView();
   }
 
   return (
@@ -61,7 +110,9 @@ export function SiteHeader() {
               <Link
                 key={link.href}
                 href={link.href}
+                scroll={false}
                 className="nav-link whitespace-nowrap text-[13px] leading-none text-warm-500 xl:text-sm"
+                onClick={(event) => onSectionClick(event, link.href)}
               >
                 {t(`nav.${link.href}`)}
               </Link>
@@ -72,7 +123,12 @@ export function SiteHeader() {
             <LanguageToggle />
             <HeaderAuth />
             <div className="hidden lg:block">
-              <Link href="/#signup" className="btn-primary h-9 whitespace-nowrap px-3 text-sm xl:px-4">
+              <Link
+                href="/#signup"
+                scroll={false}
+                className="btn-primary h-9 whitespace-nowrap px-3 text-sm xl:px-4"
+                onClick={(event) => onSectionClick(event, "/#signup")}
+              >
                 {t("cta.signup")}
               </Link>
             </div>
@@ -87,7 +143,6 @@ export function SiteHeader() {
             </button>
           </div>
         </div>
-
       </header>
 
       {open ? (
@@ -105,8 +160,9 @@ export function SiteHeader() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  scroll={false}
                   className="mobile-nav-link"
-                  onClick={() => setOpen(false)}
+                  onClick={(event) => onSectionClick(event, link.href)}
                 >
                   {t(`nav.${link.href}`)}
                 </Link>
@@ -115,8 +171,9 @@ export function SiteHeader() {
             <div className="mobile-nav-cta">
               <Link
                 href="/#signup"
+                scroll={false}
                 className="btn-primary h-11 w-full"
-                onClick={() => setOpen(false)}
+                onClick={(event) => onSectionClick(event, "/#signup")}
               >
                 {t("cta.signup")}
               </Link>
