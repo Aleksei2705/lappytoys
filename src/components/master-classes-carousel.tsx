@@ -57,7 +57,6 @@ export function MasterClassesCarousel() {
     <section id="master-classes" className="page-section section-alt">
       <div className="container-main">
         <SectionHeader
-          align="left"
           eyebrow={t("masters.eyebrow")}
           title={t("masters.title")}
           description={t("masters.desc")}

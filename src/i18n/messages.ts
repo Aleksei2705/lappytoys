@@ -18,10 +18,13 @@ export const messages: Record<Locale, Record<string, string>> = {
     "cta.submit": "Отправить заявку",
     "cta.share": "Поделиться",
     "cta.showMore": "Показать ещё",
+    "cta.readMore": "Читать далее",
     "cta.hide": "Скрыть",
     "cta.toTop": "Наверх",
     "cta.chat": "Творческий чат",
     "hero.badge": "Создаём руками вместе",
+    "hero.offer": "Первый урок бесплатный",
+    "hero.offerHint": "30 минут знакомства со студией",
     "hero.title": "Найдите своё увлечение",
     "hero.lead":
       "Приходите в студию на занятия по вязанию, макраме, вышивке и откройте для себя новое увлечение — спокойно, пошагово и с поддержкой на каждом этапе.",
@@ -101,6 +104,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "works.lessonsDesc":
       "Листайте слайды влево и вправо — короткие видео с занятий, чтобы увидеть атмосферу студии и как проходят уроки.",
     "works.lessonsAria": "Видео с уроков",
+    "works.lessonsShow": "Показать видео",
     "ig.eyebrow": "Лента Instagram",
     "ig.title": "Свежее из Instagram",
     "ig.desc": "Новые работы появляются в профиле студии — откройте пост или всю ленту Instagram.",
@@ -414,10 +418,13 @@ export const messages: Record<Locale, Record<string, string>> = {
     "cta.submit": "Өтінім жіберу",
     "cta.share": "Бөлісу",
     "cta.showMore": "Тағы көрсету",
+    "cta.readMore": "Әрі қарай оқу",
     "cta.hide": "Жасыру",
     "cta.toTop": "Жоғарыға",
     "cta.chat": "Шығармашылық чат",
     "hero.badge": "Қолмен бірге жасаймыз",
+    "hero.offer": "Алғашқы сабақ тегін",
+    "hero.offerHint": "Студиямен 30 минут танысу",
     "hero.title": "Сүйікті ісіңізді табыңыз",
     "hero.lead":
       "Студияға тоқыма, макраме және кесте сабақтарына келіңіз — байсалды түрде, қадамдап және әр кезеңде қолдаумен жаңа хобби ашыңыз.",
@@ -497,6 +504,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "works.lessonsDesc":
       "Слайдтарды солға және оңға айналдырыңыз — сабақтардың қысқа бейнелері, студия атмосферасын және сабақ қалай өтетінін көру үшін.",
     "works.lessonsAria": "Сабақ бейнелері",
+    "works.lessonsShow": "Бейнені көрсету",
     "ig.eyebrow": "Instagram лентасы",
     "ig.title": "Instagram-дағы жаңалық",
     "ig.desc": "Жаңа жұмыстар студия профилінде пайда болады — постты немесе бүкіл Instagram лентасын ашыңыз.",

@@ -22,6 +22,7 @@ import { ScheduleSection } from "@/components/schedule-section";
 import { FaqSection } from "@/components/faq-section";
 import { HeroCopy } from "@/components/hero-copy";
 import { HeroBackdrop } from "@/components/hero-backdrop";
+import { AboutCopy } from "@/components/about-copy";
 import { Reveal } from "@/components/reveal";
 import { PriceText } from "@/components/price-text";
 import { useI18n } from "@/components/i18n-provider";
@@ -45,7 +46,6 @@ const benefitIcons = {
 } as const;
 
 const benefitKeys = ["nice", "clear", "personal"] as const;
-const aboutKeys = ["p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7"] as const;
 const statKeys = ["students", "directions", "group"] as const;
 
 const statIcons = {
@@ -142,11 +142,7 @@ export default function HomePage() {
                       </>
                     }
                   />
-                  <div className="space-y-4 text-base leading-relaxed text-warm-500">
-                    {aboutKeys.map((key) => (
-                      <p key={key}>{t(`about.${key}`)}</p>
-                    ))}
-                  </div>
+                  <AboutCopy />
                 </div>
               </Reveal>
             </div>

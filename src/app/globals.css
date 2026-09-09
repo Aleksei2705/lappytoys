@@ -524,6 +524,137 @@ body {
 .hero-copy > *:nth-child(5) {
   animation: hero-fade-up 0.8s ease-out 0.32s both;
 }
+.hero-copy > *:nth-child(6) {
+  animation: hero-fade-up 0.8s ease-out 0.4s both;
+}
+
+.hero-offer {
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+  text-decoration: none;
+}
+
+.hero-offer-aura {
+  position: absolute;
+  inset: -0.85rem -1.1rem;
+  z-index: -1;
+  border-radius: 999px;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    color-mix(in srgb, var(--color-brand-300) 70%, white) 0%,
+    color-mix(in srgb, var(--color-brand-200) 35%, transparent) 55%,
+    transparent 75%
+  );
+  filter: blur(10px);
+  animation: hero-offer-pulse 3.6s ease-in-out infinite;
+}
+
+.hero-offer-card {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-300) 65%, white);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 252, 253, 0.88) 0%,
+    rgba(253, 242, 246, 0.72) 48%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  padding: 0.7rem 1.2rem 0.7rem 0.95rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 8px 24px color-mix(in srgb, var(--color-brand-700) 12%, transparent),
+    0 0 28px color-mix(in srgb, var(--color-brand-300) 35%, transparent);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.hero-offer:hover .hero-offer-card {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 12px 28px color-mix(in srgb, var(--color-brand-700) 16%, transparent),
+    0 0 36px color-mix(in srgb, var(--color-brand-300) 48%, transparent);
+}
+
+.hero-offer-title {
+  display: block;
+  font-family: var(--font-heading), Georgia, serif;
+  font-size: clamp(1.15rem, 2.6vw, 1.7rem);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  background: linear-gradient(
+    100deg,
+    var(--color-brand-800) 0%,
+    var(--color-brand-600) 42%,
+    var(--color-brand-700) 70%,
+    var(--color-brand-800) 100%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: hero-offer-ink 7s ease-in-out infinite;
+}
+
+.hero-offer-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    108deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.08) 42%,
+    rgba(255, 255, 255, 0.62) 50%,
+    rgba(255, 255, 255, 0.08) 58%,
+    transparent 68%
+  );
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: hero-offer-shine 4.8s ease-in-out 0.8s infinite;
+}
+
+@keyframes hero-offer-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes hero-offer-shine {
+  0%,
+  100% {
+    background-position: 120% 0;
+  }
+  45%,
+  60% {
+    background-position: -20% 0;
+  }
+}
+
+@keyframes hero-offer-ink {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
 
 @keyframes hero-fade-up {
   from {
@@ -538,7 +669,10 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-shimmer,
-  .hero-copy > * {
+  .hero-copy > *,
+  .hero-offer-aura,
+  .hero-offer-shine,
+  .hero-offer-title {
     animation: none;
   }
 

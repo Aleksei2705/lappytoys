@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Sparkles } from "lucide-react";
+import { BookOpen, Gift, Sparkles } from "lucide-react";
 import { site } from "@/data/site";
 import { TelegramChatButton } from "@/components/telegram-chat-button";
 import { useI18n } from "@/components/i18n-provider";
@@ -20,6 +20,20 @@ export function HeroCopy() {
       <p className="mt-2 text-sm font-medium tracking-wide text-warm-700 sm:text-base">
         {t("brand.subtitle")}
       </p>
+
+      <Link href="/courses/trial/" className="hero-offer mt-6 sm:mt-7">
+        <span className="hero-offer-aura" aria-hidden />
+        <span className="hero-offer-card">
+          <span className="hero-offer-shine" aria-hidden />
+          <Gift className="relative size-5 shrink-0 text-brand-700 sm:size-6" strokeWidth={1.75} />
+          <span className="relative">
+            <span className="hero-offer-title">{t("hero.offer")}</span>
+            <span className="mt-0.5 block text-[0.7rem] font-medium tracking-wide text-brand-800/80 sm:text-xs">
+              {t("hero.offerHint")}
+            </span>
+          </span>
+        </span>
+      </Link>
 
       <h1 className="mt-8 font-heading text-2xl font-semibold leading-snug tracking-tight text-warm-900 sm:mt-10 sm:text-3xl lg:text-4xl">
         {locale === "kk" ? (

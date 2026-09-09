@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Play, X } from "lucide-react";
 import { studioVideos } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -36,6 +36,7 @@ function videoThumb(src: string) {
 export function LessonsVideoCarousel() {
   const { t } = useI18n();
   const [index, setIndex] = useState(0);
+  const [expanded, setExpanded] = useState(false);
   const [lightbox, setLightbox] = useState(false);
   const [mounted, setMounted] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -117,7 +118,7 @@ export function LessonsVideoCarousel() {
       cancelAnimationFrame(frame);
       scroller.removeEventListener("scroll", onScroll);
     };
-  }, [lightbox]);
+  }, [expanded, lightbox]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -171,6 +172,20 @@ export function LessonsVideoCarousel() {
         <p className="mt-4 text-base leading-relaxed text-warm-500">{t("works.lessonsDesc")}</p>
       </div>
 
+      {!expanded ? (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setExpanded(true)}
+            className="btn-secondary h-11 px-6"
+            aria-expanded={false}
+          >
+            <ChevronDown className="size-4" />
+            {t("works.lessonsShow")}
+          </button>
+        </div>
+      ) : (
+        <>
       <div className="relative mt-8 sm:mt-10">
         <div
           ref={scrollerRef}
@@ -252,6 +267,23 @@ export function LessonsVideoCarousel() {
           </p>
         </div>
       ) : null}
+
+      <div className="mt-8 flex justify-center">
+        <button
+          type="button"
+          onClick={() => {
+            setLightbox(false);
+            setExpanded(false);
+          }}
+          className="btn-secondary h-11 px-6"
+          aria-expanded={true}
+        >
+          <ChevronUp className="size-4" />
+          {t("cta.hide")}
+        </button>
+      </div>
+        </>
+      )}
 
       {mounted && lightbox
         ? createPortal(

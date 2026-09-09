@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Instagram, Play } from "lucide-react";
+import { ChevronDown, ChevronUp, Instagram, Play } from "lucide-react";
 import { SectionHeader } from "@/components/section-header";
 import { TelegramChatButton } from "@/components/telegram-chat-button";
 import { useI18n } from "@/components/i18n-provider";
@@ -19,11 +19,13 @@ const FALLBACK_POSTS: InstagramPost[] = [
 ];
 
 const feedUrl = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL || site.instagramFeedUrl;
+const INITIAL_VISIBLE = 3;
 
 export function InstagramFeed() {
   const { t } = useI18n();
   const baked = normalizeInstagramFeed(bakedFeed);
   const [posts, setPosts] = useState<InstagramPost[]>(baked);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     if (!feedUrl) return;
@@ -45,6 +47,8 @@ export function InstagramFeed() {
   }, []);
 
   const items = posts.length > 0 ? posts : FALLBACK_POSTS;
+  const visibleItems = expanded ? items : items.slice(0, INITIAL_VISIBLE);
+  const hiddenCount = Math.max(0, items.length - INITIAL_VISIBLE);
 
   return (
     <section id="instagram" className="page-section section-alt">
@@ -56,7 +60,7 @@ export function InstagramFeed() {
         />
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-          {items.map((post, i) => (
+          {visibleItems.map((post, i) => (
             <a
               key={post.id}
               href={post.permalink}
@@ -84,6 +88,29 @@ export function InstagramFeed() {
             </a>
           ))}
         </div>
+
+        {hiddenCount > 0 ? (
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setExpanded((value) => !value)}
+              className="btn-secondary h-11 px-6"
+              aria-expanded={expanded}
+            >
+              {expanded ? (
+                <>
+                  <ChevronUp className="size-4" />
+                  {t("cta.hide")}
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="size-4" />
+                  {t("cta.showMore")} ({hiddenCount})
+                </>
+              )}
+            </button>
+          </div>
+        ) : null}
 
         <p className="mt-6 flex flex-wrap justify-center gap-3">
           <a
