@@ -19,7 +19,7 @@ const FALLBACK_POSTS: InstagramPost[] = [
 ];
 
 const feedUrl = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL || site.instagramFeedUrl;
-const INITIAL_VISIBLE = 3;
+const INITIAL_VISIBLE = 2;
 
 export function InstagramFeed() {
   const { t } = useI18n();
@@ -59,7 +59,11 @@ export function InstagramFeed() {
           description={t("ig.desc")}
         />
 
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+        <div
+          className={`mt-8 grid gap-3 sm:gap-4 ${
+            expanded ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2"
+          }`}
+        >
           {visibleItems.map((post, i) => (
             <a
               key={post.id}

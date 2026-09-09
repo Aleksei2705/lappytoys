@@ -14,7 +14,7 @@ import {
 } from "@/lib/supabase";
 import { useI18n } from "@/components/i18n-provider";
 
-const INITIAL_VISIBLE = 4;
+const INITIAL_VISIBLE = 2;
 
 type DisplayReview = {
   id: string;
