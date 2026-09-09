@@ -25,8 +25,8 @@ export function HeroCopy() {
         <span className="hero-offer-aura" aria-hidden />
         <span className="hero-offer-card">
           <span className="hero-offer-shine" aria-hidden />
-          <Gift className="relative size-5 shrink-0 text-brand-700 sm:size-6" strokeWidth={1.75} />
-          <span className="relative">
+          <Gift className="relative z-[1] size-5 shrink-0 text-brand-700 sm:size-6" strokeWidth={1.75} />
+          <span className="relative z-[1]">
             <span className="hero-offer-title">{t("hero.offer")}</span>
             <span className="mt-0.5 block text-[0.7rem] font-medium tracking-wide text-brand-800/80 sm:text-xs">
               {t("hero.offerHint")}
