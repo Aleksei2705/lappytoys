@@ -47,6 +47,10 @@ html {
   scroll-padding-top: calc(5rem + env(safe-area-inset-top, 0px));
 }
 
+html.lappy-hash-lock body {
+  opacity: 0;
+}
+
 body {
   min-height: 100%;
   color: var(--color-foreground);

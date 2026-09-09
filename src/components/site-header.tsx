@@ -9,7 +9,7 @@ import { LanguageToggle } from "@/components/language-toggle";
 import { SiteLogo } from "@/components/site-logo";
 import { navLinks } from "@/data/site";
 import { useI18n } from "@/components/i18n-provider";
-import { hashId, rememberHash, scrollToId } from "@/components/hash-scroll";
+import { hashId, lockHomeHash, rememberHash, scrollToId } from "@/components/hash-scroll";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -79,8 +79,12 @@ export function SiteHeader() {
   function onSectionClick(event: MouseEvent<HTMLAnchorElement>, href: string) {
     const id = hashId(href);
     setOpen(false);
+    if (!id) return;
     rememberHash(href);
-    if (!id || !onHome) return;
+    if (!onHome) {
+      lockHomeHash();
+      return;
+    }
 
     event.preventDefault();
     window.history.pushState(null, "", `/#${id}`);
