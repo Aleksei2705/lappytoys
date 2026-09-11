@@ -23,7 +23,6 @@ jobs:
       - run: npm run fetch-instagram
         continue-on-error: true
         env:
-          NEXT_PUBLIC_INSTAGRAM_FEED_URL: ${{ secrets.NEXT_PUBLIC_INSTAGRAM_FEED_URL }}
           INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
       - run: npm run build
         env:
@@ -31,7 +30,6 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_TELEGRAM_BOT_TOKEN: ${{ secrets.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN }}
           NEXT_PUBLIC_TELEGRAM_CHAT_ID: ${{ secrets.NEXT_PUBLIC_TELEGRAM_CHAT_ID }}
-          NEXT_PUBLIC_INSTAGRAM_FEED_URL: ${{ secrets.NEXT_PUBLIC_INSTAGRAM_FEED_URL }}
 
       - name: Publish static site to deploy branch
         run: |

@@ -45,7 +45,7 @@ function toPosts(data) {
 }
 
 async function loadFeed() {
-  const behold = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL || "https://feeds.behold.so/ZD2jrWRtGAxnQ1Ew6dO1";
+  const behold = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL || "https://feeds.behold.so/V4blKLr5nSZxMvHd3bHc";
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
 
   if (behold) {
