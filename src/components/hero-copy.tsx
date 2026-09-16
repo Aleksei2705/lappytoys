@@ -10,7 +10,7 @@ const heroBtn =
   "inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-3 py-2.5 text-center text-sm font-semibold leading-snug shadow-md transition duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-4";
 
 export function HeroCopy() {
-  const { locale, t } = useI18n();
+  const { t } = useI18n();
 
   return (
     <div className="hero-copy flex w-full max-w-2xl flex-col items-start text-left">
@@ -35,19 +35,11 @@ export function HeroCopy() {
         </span>
       </Link>
 
-      <h1 className="mt-8 font-heading text-2xl font-semibold leading-snug tracking-tight text-warm-900 sm:mt-10 sm:text-3xl lg:text-4xl">
-        {locale === "kk" ? (
-          <>
-            Сүйікті ісіңізді <span className="text-brand-700">табыңыз</span>
-          </>
-        ) : (
-          <>
-            Найдите своё <span className="text-brand-700">увлечение</span>
-          </>
-        )}
+      <h1 className="mt-8 max-w-xl font-heading text-2xl font-semibold leading-snug tracking-tight text-warm-900 sm:mt-10 sm:text-3xl lg:text-4xl">
+        {t("hero.title")}
       </h1>
-
-      <p className="mt-4 max-w-md text-base leading-relaxed text-warm-700 sm:text-lg">{t("hero.lead")}</p>
+      <p className="mt-3 text-base font-medium text-brand-700 sm:text-lg">{t("hero.slogan")}</p>
+      <p className="mt-3 max-w-md text-base leading-relaxed text-warm-700 sm:text-lg">{t("hero.lead")}</p>
 
       <div className="mt-8 grid w-full max-w-xl grid-cols-1 gap-2.5 sm:grid-cols-3">
         <Link
