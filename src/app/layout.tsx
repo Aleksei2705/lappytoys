@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
-import Script from "next/script";
 import { SiteBackground } from "@/components/site-background";
 import { HashScroll } from "@/components/hash-scroll";
+import { Metrika } from "@/components/metrika";
 import { I18nProvider } from "@/components/i18n-provider";
 import { site } from "@/data/site";
 import "./globals.css";
@@ -181,7 +181,18 @@ export default function RootLayout({
       className={`${manrope.variable} ${playfair.variable} h-full antialiased`}
     >
       <head>
-        <Script src="/metrica.js" strategy="beforeInteractive" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for(var j=0;j<document.scripts.length;j++){if((document.scripts[j].src||"").indexOf("/metrika/tag.js")!==-1){return;}}
+k=e.createElement(t);a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;
+k.onerror=function(){k.src="https://mc.yandex.com/metrika/tag.js"};
+if(a&&a.parentNode){a.parentNode.insertBefore(k,a);}else{document.head.appendChild(k);}})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(${site.yandexMetricaId},"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -191,6 +202,7 @@ export default function RootLayout({
         <SiteBackground />
         <I18nProvider>
           <HashScroll />
+          <Metrika />
           <noscript>
             <div>
               <img

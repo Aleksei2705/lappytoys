@@ -6,7 +6,7 @@
     };
   m[i].l = 1 * new Date();
   for (var j = 0; j < document.scripts.length; j++) {
-    if (document.scripts[j].src === r) {
+    if (document.scripts[j].src.indexOf("/metrika/tag.js") !== -1) {
       return;
     }
   }
@@ -14,7 +14,11 @@
   a = e.getElementsByTagName(t)[0];
   k.async = 1;
   k.src = r;
-  a.parentNode.insertBefore(k, a);
+  k.onerror = function () {
+    k.src = "https://mc.yandex.com/metrika/tag.js";
+  };
+  if (a && a.parentNode) a.parentNode.insertBefore(k, a);
+  else e.head.appendChild(k);
 })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
 ym(112086282, "init", {
