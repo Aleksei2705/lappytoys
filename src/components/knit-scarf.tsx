@@ -33,14 +33,16 @@ export function KnitScarf() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const node = canvasRef.current;
+    if (!node) return;
 
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (motion.matches) return;
 
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
+    const rawCtx = node.getContext("2d", { alpha: true });
+    if (!rawCtx) return;
+    const canvas: HTMLCanvasElement = node;
+    const ctx: CanvasRenderingContext2D = rawCtx;
 
     const needleSprite = new Image();
     needleSprite.src = "/images/knit-needle.png?v=2";
