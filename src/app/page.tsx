@@ -22,6 +22,7 @@ import { ScheduleSection } from "@/components/schedule-section";
 import { FaqSection } from "@/components/faq-section";
 import { HeroCopy } from "@/components/hero-copy";
 import { HeroBackdrop } from "@/components/hero-backdrop";
+import { KnitScarf } from "@/components/knit-scarf";
 import { AboutCopy } from "@/components/about-copy";
 import { Reveal } from "@/components/reveal";
 import { PriceText } from "@/components/price-text";
@@ -62,6 +63,7 @@ export default function HomePage() {
         {/* Hero — full-bleed photo + cursor parallax */}
         <section className="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-end overflow-hidden">
           <HeroBackdrop src="/images/hero-knit.jpg" />
+          <KnitScarf />
 
           <div className="container-main relative z-10 w-full pb-10 pt-16 sm:pb-14 sm:pt-20 md:pb-16">
             <HeroCopy />
