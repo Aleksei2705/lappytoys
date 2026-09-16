@@ -45,15 +45,21 @@ function toPosts(data) {
 }
 
 async function loadFeed() {
-  const behold = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL || "https://feeds.behold.so/V4blKLr5nSZxMvHd3bHc";
-  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
+  const beholdUrls = [
+    process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL,
+    "https://feeds.behold.so/kYt2WPv30FLfYDoPKSxQ",
+  ].filter((url, i, list) => url && list.indexOf(url) === i);
 
-  if (behold) {
+  for (const behold of beholdUrls) {
     const res = await fetch(behold);
-    if (!res.ok) throw new Error(`Instagram feed ${res.status}`);
+    if (!res.ok) {
+      console.warn(`Instagram feed ${res.status}: ${behold}`);
+      continue;
+    }
     return toPosts(await res.json());
   }
 
+  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
   if (token) {
     const url = new URL("https://graph.instagram.com/me/media");
     url.searchParams.set(
