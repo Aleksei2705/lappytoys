@@ -95,8 +95,8 @@ export function KnitScarf() {
     }
 
     function workPoint() {
-      if (width < 768) return { x: 18, y: 6 };
-      return { x: 78, y: 54 };
+      if (width < 768) return { x: 20, y: 36 };
+      return { x: 78, y: 58 };
     }
 
     function drawNeedle(tipX: number, tipY: number, nearX: number, nearY: number) {
@@ -179,27 +179,39 @@ export function KnitScarf() {
 
       const firstW = items[0]?.w ?? 0;
       const destX = 0;
-      const destY = width < 768 ? 2 : Math.max(8, oy - itemH * 0.72);
+      const destY = oy - itemH * 0.28;
       const destW = width;
       const shift = ((travel % loopW) + loopW) % loopW;
       const fadeW = width < 768 ? 96 : 120;
+      const zoneStart = width * 0.52;
+      const maxScale = width < 768 ? 1.55 : 1.7;
+      const maxDrop = width < 768 ? 54 : 82;
+      const bandH = itemH * maxScale + maxDrop + 20;
 
       ctx.save();
       ctx.beginPath();
-      ctx.rect(destX, destY - 6, destW, itemH + 12);
+      ctx.rect(destX, destY - 8, destW, bandH);
       ctx.clip();
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
 
       let x = destX - firstW + shift - loopW;
-      while (x < destX + destW) {
+      while (x < destX + destW + itemH * maxScale) {
         for (const item of items) {
           const shown = x + item.w - destX;
           if (shown > 0 && x < destX + destW) {
+            const mid = x + item.w * 0.5;
+            const raw = (mid - zoneStart) / Math.max(80, destW - zoneStart);
+            const u = Math.min(1, Math.max(0, raw));
+            const p = u * u * (3 - 2 * u);
+            const scale = 1 + p * (maxScale - 1);
+            const drop = p * maxDrop;
+            const dw = item.w * scale;
+            const dh = item.h * scale;
             const t = Math.min(1, Math.max(0, shown / Math.max(90, item.w * 2)));
             const fade = t * t * (3 - 2 * t);
             ctx.globalAlpha = fade;
-            ctx.drawImage(item.img, x, destY, item.w, item.h);
+            ctx.drawImage(item.img, x, destY + drop, dw, dh);
             ctx.globalAlpha = 1;
           }
           x += item.w + gap;
@@ -213,7 +225,7 @@ export function KnitScarf() {
       veil.addColorStop(1, "rgba(0,0,0,1)");
       ctx.globalCompositeOperation = "destination-in";
       ctx.fillStyle = veil;
-      ctx.fillRect(destX, destY - 6, destW, itemH + 12);
+      ctx.fillRect(destX, destY - 8, destW, bandH);
       ctx.restore();
     }
 
