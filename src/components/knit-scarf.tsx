@@ -114,6 +114,20 @@ export function KnitScarf() {
       return Math.sqrt(x * x + y * y);
     }
 
+    function brandRect() {
+      const title = document.querySelector(".hero-brand-title");
+      const cr = canvas.getBoundingClientRect();
+      if (!title) {
+        return { left: width < 768 ? 72 : 160, top: height * 0.38, cy: height * 0.38 };
+      }
+      const tr = title.getBoundingClientRect();
+      return {
+        left: tr.left - cr.left,
+        top: tr.top - cr.top,
+        cy: tr.top - cr.top + tr.height / 2,
+      };
+    }
+
     function workPoint() {
       if (width < 768) return { x: 20, y: 24 };
       return { x: 78, y: 46 };
@@ -160,18 +174,13 @@ export function KnitScarf() {
       return { mobile, size, aspect, h: size * aspect };
     }
 
-    function brandCenterY() {
-      const title = document.querySelector(".hero-brand-title");
-      if (!title) return height * 0.38;
-      const tr = title.getBoundingClientRect();
-      const cr = canvas.getBoundingClientRect();
-      return tr.top - cr.top + tr.height / 2;
-    }
-
     function stepHangingYarn(ax: number, ay: number, pump: number, dt: number, now: number) {
-      const { mobile, size, h } = yarnMetrics();
-      const homeX = (mobile ? 36 : 70) + size / 2;
-      const homeY = brandCenterY();
+      const { mobile, size } = yarnMetrics();
+      const brand = brandRect();
+      const homeX = mobile
+        ? 36 + size / 2
+        : Math.max(size * 0.55 + 8, brand.left - size / 2 - 10);
+      const homeY = brand.cy;
       if (!yarnSettled) {
         ballCX = homeX;
         ballCY = homeY;
