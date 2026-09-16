@@ -46,8 +46,8 @@ function toPosts(data) {
 
 async function loadFeed() {
   const beholdUrls = [
+    "https://feeds.behold.so/hno6PmalWozM7koH7u5G",
     process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL,
-    "https://feeds.behold.so/kYt2WPv30FLfYDoPKSxQ",
   ].filter((url, i, list) => url && list.indexOf(url) === i);
 
   for (const behold of beholdUrls) {
