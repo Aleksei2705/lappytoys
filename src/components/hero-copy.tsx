@@ -14,12 +14,14 @@ export function HeroCopy() {
 
   return (
     <div className="hero-copy flex w-full max-w-2xl flex-col items-start text-left">
-      <p className="font-heading text-5xl font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-6xl lg:text-7xl">
-        {site.brandTitle}
-      </p>
-      <p className="mt-2 text-sm font-medium tracking-wide text-warm-700 sm:text-base">
-        {t("brand.subtitle")}
-      </p>
+      <div className="hero-brand ml-[4.75rem] sm:ml-[6.5rem] md:ml-32">
+        <p className="hero-brand-title font-heading text-5xl font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-6xl lg:text-7xl">
+          {site.brandTitle}
+        </p>
+        <p className="hero-brand-subtitle mt-2 text-sm font-medium tracking-wide text-warm-700 sm:text-base">
+          {t("brand.subtitle")}
+        </p>
+      </div>
 
       <Link href="/courses/trial/" className="hero-offer mt-6 sm:mt-7">
         <span className="hero-offer-aura" aria-hidden />

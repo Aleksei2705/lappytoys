@@ -15,7 +15,7 @@ const CRAFTS = [
   "/images/craft-embroidery-bird.png?v=1",
   "/images/craft-mittens.png?v=1",
   "/images/craft-macrame-hanger.png?v=1",
-  "/images/craft-beads-bracelet.png?v=1",
+  "/images/craft-beads-bracelet.png?v=3",
   "/images/craft-sweater.png?v=1",
   "/images/craft-amigurumi-cat.png?v=1",
   "/images/craft-granny-blanket.png?v=1",
@@ -56,6 +56,18 @@ export function KnitScarf() {
         needleReady = needleSprite.naturalWidth > 0;
       });
 
+    const yarnBall = new Image();
+    yarnBall.src = "/images/yarn-ball.png?v=1";
+    let ballReady = false;
+    yarnBall
+      .decode()
+      .then(() => {
+        ballReady = true;
+      })
+      .catch(() => {
+        ballReady = yarnBall.naturalWidth > 0;
+      });
+
     const craftImgs = CRAFTS.map((src) => {
       const img = new Image();
       img.src = src;
@@ -80,6 +92,13 @@ export function KnitScarf() {
     let running = true;
     let last = performance.now();
     let travel = 0;
+    let ballCX = 0;
+    let ballCY = 0;
+    let ballVX = 0;
+    let ballVY = 0;
+    let ballRot = 0;
+    let yarnSettled = false;
+    let prevPump = 0;
 
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -88,6 +107,7 @@ export function KnitScarf() {
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      yarnSettled = false;
     }
 
     function hypot(x: number, y: number) {
@@ -95,8 +115,8 @@ export function KnitScarf() {
     }
 
     function workPoint() {
-      if (width < 768) return { x: 20, y: 36 };
-      return { x: 78, y: 58 };
+      if (width < 768) return { x: 20, y: 24 };
+      return { x: 78, y: 46 };
     }
 
     function drawNeedle(tipX: number, tipY: number, nearX: number, nearY: number) {
@@ -131,6 +151,85 @@ export function KnitScarf() {
       ctx.lineWidth = Math.max(0.8, widthY * 0.28);
       draw();
       ctx.stroke();
+    }
+
+    function yarnMetrics() {
+      const mobile = width < 768;
+      const size = mobile ? 36 : 50;
+      const aspect = yarnBall.naturalHeight / yarnBall.naturalWidth || 1;
+      return { mobile, size, aspect, h: size * aspect };
+    }
+
+    function brandCenterY() {
+      const title = document.querySelector(".hero-brand-title");
+      if (!title) return height * 0.38;
+      const tr = title.getBoundingClientRect();
+      const cr = canvas.getBoundingClientRect();
+      return tr.top - cr.top + tr.height / 2;
+    }
+
+    function stepHangingYarn(ax: number, ay: number, pump: number, dt: number, now: number) {
+      const { mobile, size, h } = yarnMetrics();
+      const homeX = (mobile ? 36 : 70) + size / 2;
+      const homeY = brandCenterY();
+      if (!yarnSettled) {
+        ballCX = homeX;
+        ballCY = homeY;
+        ballVX = 0;
+        ballVY = 0;
+        ballRot = 0;
+        prevPump = pump;
+        yarnSettled = true;
+      }
+      const wanderY =
+        Math.sin(now / 1140 + 0.8) * (mobile ? 5 : 8) +
+        Math.sin(now / 1610) * (mobile ? 3 : 5) +
+        Math.sin(now / 2380 + 1.7) * (mobile ? 2 : 3) +
+        pump * (mobile ? -2 : -3);
+      const minY = homeY - (mobile ? 10 : 14);
+      const maxY = homeY + (mobile ? 6 : 8);
+      const targetY = Math.min(maxY, Math.max(minY, homeY + wanderY));
+      const k = 0.00032;
+      const c = 0.0075;
+      ballVX = 0;
+      ballCX = homeX;
+      ballVY += ((targetY - ballCY) * k - ballVY * c) * dt;
+      ballCY += ballVY * dt;
+      const dPump = pump - prevPump;
+      prevPump = pump;
+      ballRot += Math.abs(dPump) * 0.48 + dt * 0.003;
+    }
+
+    function drawHangingYarn(ax: number, ay: number) {
+      const { mobile, size, h } = yarnMetrics();
+      const leaveR = size * 0.34;
+      const attachX = ballCX + Math.cos(ballRot) * leaveR;
+      const attachY = ballCY - h * 0.18 + Math.sin(ballRot) * size * 0.2;
+
+      withYarn(mobile ? 1.7 : 2.2, () => {
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        const n = 14;
+        const bob = ballVY * (mobile ? 6 : 8);
+        for (let i = 1; i <= n; i++) {
+          const t = i / n;
+          const belly = Math.sin(t * Math.PI);
+          const px =
+            ax + (attachX - ax) * t + Math.sin(t * 6 + ballRot) * belly * (mobile ? 1 : 1.6);
+          const py =
+            ay + (attachY - ay) * t + belly * (mobile ? 3.5 : 5) + bob * belly * 0.45;
+          ctx.lineTo(px, py);
+        }
+      });
+
+      if (!ballReady) return;
+      ctx.save();
+      ctx.translate(ballCX, ballCY);
+      ctx.rotate(ballRot);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(yarnBall, -size / 2, -h / 2, size, h);
+      ctx.restore();
     }
 
     function drawHeldLoops(
@@ -184,8 +283,8 @@ export function KnitScarf() {
       const shift = ((travel % loopW) + loopW) % loopW;
       const fadeW = width < 768 ? 96 : 120;
       const zoneStart = width * 0.52;
-      const maxScale = width < 768 ? 1.55 : 1.7;
-      const maxDrop = width < 768 ? 54 : 82;
+      const maxScale = width < 768 ? 2.2 : 2.5;
+      const maxDrop = width < 768 ? 62 : 96;
       const bandH = itemH * maxScale + maxDrop + 20;
 
       ctx.save();
@@ -245,10 +344,14 @@ export function KnitScarf() {
       const n1y = y + (mobile ? 28 : 46) + pump * (mobile ? 1.6 : 2.5);
       const n2x = x + (mobile ? 7 : 9) + pump * (mobile ? 2 : 3);
       const n2y = y + (mobile ? 34 : 54) - pump * (mobile ? 1.4 : 2);
+      const ax = x + (n2x - x) * 0.1;
+      const ay = y + (n2y - y) * 0.1;
+      stepHangingYarn(ax, ay, pump, dt, now);
 
       ctx.save();
       ctx.globalAlpha = 0.94;
       drawCrafts(y);
+      drawHangingYarn(ax, ay);
       drawHeldLoops(x, y, n2x, n2y, pump, "back");
       drawNeedle(x, y, n1x, n1y);
       drawNeedle(x, y, n2x, n2y);
