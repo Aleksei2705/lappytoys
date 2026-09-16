@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BookOpen, Gift, MapPin, Sparkles } from "lucide-react";
 import { site } from "@/data/site";
 import { TelegramChatButton } from "@/components/telegram-chat-button";
+import { WatchCat } from "@/components/watch-cat";
 import { useI18n } from "@/components/i18n-provider";
 
 const heroBtn =
@@ -14,14 +15,15 @@ export function HeroCopy() {
 
   return (
     <div className="hero-copy flex w-full max-w-2xl flex-col items-start text-left">
-      <div className="hero-brand ml-[4.75rem] sm:ml-[6.5rem] md:ml-32">
-        <p className="hero-brand-title font-heading text-5xl font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-6xl lg:text-7xl">
+      <div className="flex items-end gap-1.5 sm:gap-2.5">
+        <p className="font-heading text-5xl font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-6xl lg:text-7xl">
           {site.brandTitle}
         </p>
-        <p className="hero-brand-subtitle mt-2 text-sm font-medium tracking-wide text-warm-700 sm:text-base">
-          {t("brand.subtitle")}
-        </p>
+        <WatchCat />
       </div>
+      <p className="mt-2 text-sm font-medium tracking-wide text-warm-700 sm:text-base">
+        {t("brand.subtitle")}
+      </p>
 
       <Link href="/courses/trial/" className="hero-offer mt-6 sm:mt-7">
         <span className="hero-offer-aura" aria-hidden />
