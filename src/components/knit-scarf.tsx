@@ -95,6 +95,7 @@ export function KnitScarf() {
     }
 
     function workPoint() {
+      if (width < 768) return { x: 18, y: 6 };
       return { x: 78, y: 54 };
     }
 
@@ -178,9 +179,10 @@ export function KnitScarf() {
 
       const firstW = items[0]?.w ?? 0;
       const destX = 0;
-      const destY = oy - itemH * 0.42;
+      const destY = width < 768 ? 2 : Math.max(8, oy - itemH * 0.72);
       const destW = width;
       const shift = ((travel % loopW) + loopW) % loopW;
+      const fadeW = width < 768 ? 96 : 120;
 
       ctx.save();
       ctx.beginPath();
@@ -194,7 +196,8 @@ export function KnitScarf() {
         for (const item of items) {
           const shown = x + item.w - destX;
           if (shown > 0 && x < destX + destW) {
-            const fade = Math.min(1, shown / Math.max(28, item.w * 0.85));
+            const t = Math.min(1, Math.max(0, shown / Math.max(90, item.w * 2)));
+            const fade = t * t * (3 - 2 * t);
             ctx.globalAlpha = fade;
             ctx.drawImage(item.img, x, destY, item.w, item.h);
             ctx.globalAlpha = 1;
@@ -202,6 +205,15 @@ export function KnitScarf() {
           x += item.w + gap;
         }
       }
+
+      const veil = ctx.createLinearGradient(destX, 0, destX + fadeW, 0);
+      veil.addColorStop(0, "rgba(0,0,0,0)");
+      veil.addColorStop(0.4, "rgba(0,0,0,0.2)");
+      veil.addColorStop(0.75, "rgba(0,0,0,0.7)");
+      veil.addColorStop(1, "rgba(0,0,0,1)");
+      ctx.globalCompositeOperation = "destination-in";
+      ctx.fillStyle = veil;
+      ctx.fillRect(destX, destY - 6, destW, itemH + 12);
       ctx.restore();
     }
 
@@ -210,16 +222,17 @@ export function KnitScarf() {
       const dt = Math.min(32, now - last);
       last = now;
       if (craftsReady >= craftImgs.length) {
-        travel += dt * 0.028;
+        travel += dt * 0.016;
       }
 
       ctx.clearRect(0, 0, width, height);
       const { x, y } = workPoint();
       const pump = Math.sin((now / 420) * Math.PI);
-      const n1x = 48 - pump * 3;
-      const n1y = y + 46 + pump * 2.5;
-      const n2x = 87 + pump * 3;
-      const n2y = y + 54 - pump * 2;
+      const mobile = width < 768;
+      const n1x = x - (mobile ? 16 : 30) - pump * (mobile ? 2 : 3);
+      const n1y = y + (mobile ? 28 : 46) + pump * (mobile ? 1.6 : 2.5);
+      const n2x = x + (mobile ? 7 : 9) + pump * (mobile ? 2 : 3);
+      const n2y = y + (mobile ? 34 : 54) - pump * (mobile ? 1.4 : 2);
 
       ctx.save();
       ctx.globalAlpha = 0.94;
