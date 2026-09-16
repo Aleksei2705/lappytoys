@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Gift, Sparkles } from "lucide-react";
+import { BookOpen, Gift, MapPin, Sparkles } from "lucide-react";
 import { site } from "@/data/site";
 import { TelegramChatButton } from "@/components/telegram-chat-button";
 import { useI18n } from "@/components/i18n-provider";
@@ -35,10 +35,25 @@ export function HeroCopy() {
         </span>
       </Link>
 
-      <h1 className="mt-8 max-w-xl font-heading text-2xl font-semibold leading-snug tracking-tight text-warm-900 sm:mt-10 sm:text-3xl lg:text-4xl">
-        {t("hero.title")}
+      <h1 className="hero-heading mt-8 max-w-xl">
+        <span className="hero-heading-line">{t("hero.title.before")}</span>
+        <svg className="hero-heading-yarn" viewBox="0 0 280 14" fill="none" aria-hidden>
+          <path
+            d="M2 9 C 28 2, 52 13, 80 7 S 130 1, 160 8 S 220 14, 278 6"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+        </svg>
+        <span className="hero-heading-place">
+          <MapPin className="size-4 shrink-0 sm:size-[1.1rem]" strokeWidth={2.25} aria-hidden />
+          {t("hero.title.accent")}
+        </span>
       </h1>
-      <p className="mt-3 text-base font-medium text-brand-700 sm:text-lg">{t("hero.slogan")}</p>
+      <p className="hero-slogan mt-5">
+        {t("hero.slogan.before")}{" "}
+        <span className="hero-slogan-accent">{t("hero.slogan.accent")}</span>
+      </p>
       <p className="mt-3 max-w-md text-base leading-relaxed text-warm-700 sm:text-lg">{t("hero.lead")}</p>
 
       <div className="mt-8 grid w-full max-w-xl grid-cols-1 gap-2.5 sm:grid-cols-3">
