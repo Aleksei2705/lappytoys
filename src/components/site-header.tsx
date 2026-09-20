@@ -33,8 +33,9 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
-    const nav = navRef.current;
-    if (!nav) return;
+    const node = navRef.current;
+    if (!node) return;
+    const nav: HTMLElement = node;
 
     let velocity = 0;
     let hovering = false;
