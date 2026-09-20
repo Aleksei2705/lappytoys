@@ -39,6 +39,7 @@ export const navLinks = [
   { href: "/#schedule", label: "Расписание" },
   { href: "/#works", label: "Работы учеников" },
   { href: "/#instagram", label: "Лента Instagram" },
+  { href: "/#tiktok", label: "Лента TikTok" },
   { href: "/#reviews", label: "Отзывы" },
   { href: "/#faq", label: "Вопросы и ответы" },
   { href: "/#contacts", label: "Контакты" },
