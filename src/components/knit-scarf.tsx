@@ -94,9 +94,19 @@ export function KnitScarf() {
       return Math.sqrt(x * x + y * y);
     }
 
+    function contentBand() {
+      const pad = width < 640 ? 16 : 24;
+      const maxW = 1280;
+      const inner = Math.min(width, maxW);
+      const x0 = (width - inner) / 2 + pad;
+      const x1 = (width + inner) / 2 - pad;
+      return { x0, x1, bandW: Math.max(1, x1 - x0) };
+    }
+
     function workPoint() {
-      if (width < 768) return { x: 20, y: 24 };
-      return { x: 78, y: 46 };
+      const { x0 } = contentBand();
+      if (width < 768) return { x: x0 + 4, y: 24 };
+      return { x: x0 + 54, y: 46 };
     }
 
     function drawNeedle(tipX: number, tipY: number, nearX: number, nearY: number) {
@@ -177,13 +187,14 @@ export function KnitScarf() {
       const { items, gap, loopW, itemH } = craftLayout();
       if (loopW <= 0) return;
 
+      const { x0, bandW } = contentBand();
       const firstW = items[0]?.w ?? 0;
-      const destX = 0;
+      const destX = x0;
       const destY = oy - itemH * 0.28;
-      const destW = width;
+      const destW = bandW;
       const shift = ((travel % loopW) + loopW) % loopW;
       const fadeW = width < 768 ? 96 : 120;
-      const zoneStart = width * 0.52;
+      const zoneStart = destX + destW * 0.52;
       const maxScale = width < 768 ? 2.2 : 2.5;
       const maxDrop = width < 768 ? 62 : 96;
       const bandH = itemH * maxScale + maxDrop + 20;

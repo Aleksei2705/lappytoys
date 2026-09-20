@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent, type SyntheticEvent } from "react";
 import { usePathname } from "next/navigation";
 import { HeaderAuth } from "@/components/header-auth";
@@ -17,7 +17,10 @@ export function SiteHeader() {
   const pathname = usePathname();
   const lockY = useRef(0);
   const pendingHash = useRef<string | null>(null);
-  const { t } = useI18n();
+  const navRef = useRef<HTMLElement>(null);
+  const [moreLeft, setMoreLeft] = useState(false);
+  const [moreRight, setMoreRight] = useState(true);
+  const { t, locale } = useI18n();
   const onHome = pathname === "/";
 
   useEffect(() => {
@@ -28,6 +31,104 @@ export function SiteHeader() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    let velocity = 0;
+    let hovering = false;
+    let frame = 0;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function maxScroll() {
+      return Math.max(0, nav.scrollWidth - nav.clientWidth);
+    }
+
+    function updateMore() {
+      const overflow = maxScroll();
+      setMoreLeft(overflow > 8 && nav.scrollLeft > 8);
+      setMoreRight(overflow > 8 && nav.scrollLeft < overflow - 8);
+    }
+
+    function setVelocityFromX(clientX: number) {
+      const overflow = maxScroll();
+      if (overflow <= 0) {
+        velocity = 0;
+        return;
+      }
+      const rect = nav.getBoundingClientRect();
+      const x = (clientX - rect.left) / Math.max(1, rect.width);
+      const edge = 0.34;
+      if (x < edge) {
+        const t = (edge - x) / edge;
+        velocity = -18 * t * t;
+      } else if (x > 1 - edge) {
+        const t = (x - (1 - edge)) / edge;
+        velocity = 18 * t * t;
+      } else {
+        velocity = 0;
+      }
+    }
+
+    function tick() {
+      frame = 0;
+      if (!hovering || velocity === 0) return;
+      const overflow = maxScroll();
+      if (overflow > 0) {
+        const next = nav.scrollLeft + (reduceMotion ? velocity * 3 : velocity);
+        nav.scrollLeft = Math.min(overflow, Math.max(0, next));
+        updateMore();
+      }
+      frame = window.requestAnimationFrame(tick);
+    }
+
+    function startTick() {
+      if (!frame) frame = window.requestAnimationFrame(tick);
+    }
+
+    function onPointerMove(event: PointerEvent) {
+      if (event.pointerType && event.pointerType !== "mouse") return;
+      hovering = true;
+      setVelocityFromX(event.clientX);
+      startTick();
+    }
+
+    function onPointerLeave() {
+      hovering = false;
+      velocity = 0;
+    }
+
+    function onWheel(event: WheelEvent) {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      hovering = false;
+      velocity = 0;
+      nav.scrollLeft = Math.min(maxScroll(), Math.max(0, nav.scrollLeft + event.deltaY));
+      updateMore();
+      event.preventDefault();
+    }
+
+    const observer = new ResizeObserver(updateMore);
+    observer.observe(nav);
+    nav.addEventListener("pointermove", onPointerMove);
+    nav.addEventListener("pointerleave", onPointerLeave);
+    nav.addEventListener("wheel", onWheel, { passive: false });
+    nav.addEventListener("scroll", updateMore, { passive: true });
+    window.addEventListener("resize", updateMore);
+    updateMore();
+    const later = window.requestAnimationFrame(updateMore);
+    return () => {
+      hovering = false;
+      window.cancelAnimationFrame(later);
+      if (frame) window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      nav.removeEventListener("pointermove", onPointerMove);
+      nav.removeEventListener("pointerleave", onPointerLeave);
+      nav.removeEventListener("wheel", onWheel);
+      nav.removeEventListener("scroll", updateMore);
+      window.removeEventListener("resize", updateMore);
+    };
+  }, [locale]);
 
   useEffect(() => {
     if (!open) return;
@@ -106,19 +207,39 @@ export function SiteHeader() {
             />
           </Link>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-x-3 lg:flex xl:gap-x-5 2xl:gap-x-7">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                scroll={false}
-                className="nav-link whitespace-nowrap text-[13px] leading-none text-warm-500 xl:text-sm"
-                onClick={(event) => onSectionClick(event, link.href)}
-              >
-                {t(`nav.${link.href}`)}
-              </Link>
-            ))}
-          </nav>
+          <div
+            className={`site-header-nav-wrap hidden flex-1 lg:block${moreLeft ? " has-more-left" : ""}${moreRight ? " has-more-right" : ""}`}
+          >
+            <nav
+              ref={navRef}
+              className="site-header-nav"
+              aria-label={t("aria.menu")}
+            >
+              <div className="site-header-nav-inner">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    scroll={false}
+                    className="nav-link shrink-0 whitespace-nowrap text-[13px] leading-none text-warm-500"
+                    onClick={(event) => onSectionClick(event, link.href)}
+                  >
+                    {t(`nav.${link.href}`)}
+                  </Link>
+                ))}
+              </div>
+            </nav>
+            <span className="site-header-nav-more site-header-nav-more-left" aria-hidden>
+              <span className="site-header-nav-more-btn">
+                <ChevronLeft className="size-3.5" />
+              </span>
+            </span>
+            <span className="site-header-nav-more site-header-nav-more-right" aria-hidden>
+              <span className="site-header-nav-more-btn">
+                <ChevronRight className="size-3.5" />
+              </span>
+            </span>
+          </div>
 
           <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-2.5 lg:ml-0">
             <LanguageToggle />
