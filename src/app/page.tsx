@@ -211,9 +211,7 @@ export default function HomePage() {
           <WorksGallery />
         </Reveal>
 
-        <Reveal>
-          <InstagramFeed />
-        </Reveal>
+        <InstagramFeed />
 
         <TikTokFeed />
 
