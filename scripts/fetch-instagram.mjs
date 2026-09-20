@@ -41,7 +41,35 @@ function toPosts(data) {
       };
     })
     .filter(Boolean)
-    .slice(0, 6);
+    .slice(0, 12);
+}
+
+const PINNED_POSTS = [
+  {
+    id: "DdB-wVnoztI",
+    imageUrl: "/images/instagram/DdB-wVnoztI.jpg",
+    permalink: "https://www.instagram.com/reel/DdB-wVnoztI/",
+    caption: "Работа ученицы за год обучения",
+    isVideo: true,
+  },
+];
+
+function postKey(post) {
+  const match = String(post.permalink || "").match(/\/(?:reel|p|tv)\/([^/?#]+)/i);
+  return (match?.[1] || post.id || "").toLowerCase();
+}
+
+function mergePinned(live) {
+  const seen = new Set();
+  const posts = [];
+  for (const post of [...PINNED_POSTS, ...live]) {
+    const key = postKey(post);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    posts.push(post);
+    if (posts.length >= 12) break;
+  }
+  return posts;
 }
 
 async function loadFeed() {
@@ -66,7 +94,7 @@ async function loadFeed() {
       "fields",
       "id,caption,media_type,media_url,permalink,thumbnail_url",
     );
-    url.searchParams.set("limit", "6");
+    url.searchParams.set("limit", "12");
     url.searchParams.set("access_token", token);
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Instagram API ${res.status}`);
@@ -86,8 +114,8 @@ try {
     console.log("Instagram feed returned no posts — keeping previous file");
     process.exit(0);
   }
-  await writeFile(outFile, `${JSON.stringify({ posts }, null, 2)}\n`, "utf8");
-  console.log(`Saved ${posts.length} Instagram posts`);
+  await writeFile(outFile, `${JSON.stringify({ posts: mergePinned(posts) }, null, 2)}\n`, "utf8");
+  console.log(`Saved ${mergePinned(posts).length} Instagram posts`);
 } catch (error) {
   console.warn("Instagram feed fetch failed:", error.message);
   process.exit(0);

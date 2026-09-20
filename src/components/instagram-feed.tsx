@@ -6,7 +6,7 @@ import { SectionHeader } from "@/components/section-header";
 import { useI18n } from "@/components/i18n-provider";
 import { site } from "@/data/site";
 import bakedFeed from "@/data/instagram-feed.json";
-import { normalizeInstagramFeed, type InstagramPost } from "@/lib/instagram-feed";
+import { mergeInstagramPosts, normalizeInstagramFeed, type InstagramPost } from "@/lib/instagram-feed";
 
 const FALLBACK_POSTS: InstagramPost[] = [
   { id: "sova", imageUrl: "/images/macrame-sova.jpg", permalink: site.instagram, caption: "", isVideo: false },
@@ -18,11 +18,11 @@ const FALLBACK_POSTS: InstagramPost[] = [
 ];
 
 const feedUrl = process.env.NEXT_PUBLIC_INSTAGRAM_FEED_URL || site.instagramFeedUrl;
-const INITIAL_VISIBLE = 2;
+const INITIAL_VISIBLE = 6;
 
 export function InstagramFeed() {
   const { t } = useI18n();
-  const baked = normalizeInstagramFeed(bakedFeed);
+  const baked = mergeInstagramPosts(normalizeInstagramFeed(bakedFeed));
   const [posts, setPosts] = useState<InstagramPost[]>(baked);
   const [expanded, setExpanded] = useState(false);
 
@@ -33,7 +33,7 @@ export function InstagramFeed() {
     fetch(feedUrl)
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
       .then((data) => {
-        const next = normalizeInstagramFeed(data);
+        const next = mergeInstagramPosts(normalizeInstagramFeed(data));
         if (!cancelled && next.length > 0) setPosts(next);
       })
       .catch(() => {
@@ -58,11 +58,7 @@ export function InstagramFeed() {
           description={t("ig.desc")}
         />
 
-        <div
-          className={`mt-8 grid gap-3 sm:gap-4 ${
-            expanded ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2"
-          }`}
-        >
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
           {visibleItems.map((post, i) => (
             <a
               key={post.id}

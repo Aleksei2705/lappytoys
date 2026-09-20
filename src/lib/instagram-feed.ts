@@ -6,6 +6,40 @@ export type InstagramPost = {
   isVideo: boolean;
 };
 
+/** Posts Instagram still has, but Behold has not started returning yet. */
+export const PINNED_INSTAGRAM_POSTS: InstagramPost[] = [
+  {
+    id: "DdB-wVnoztI",
+    imageUrl: "/images/instagram/DdB-wVnoztI.jpg",
+    permalink: "https://www.instagram.com/reel/DdB-wVnoztI/",
+    caption: "Работа ученицы за год обучения",
+    isVideo: true,
+  },
+];
+
+function postKey(post: InstagramPost): string {
+  const match = post.permalink.match(/\/(?:reel|p|tv)\/([^/?#]+)/i);
+  return (match?.[1] || post.id).toLowerCase();
+}
+
+export function mergeInstagramPosts(
+  live: InstagramPost[],
+  pinned: InstagramPost[] = PINNED_INSTAGRAM_POSTS,
+): InstagramPost[] {
+  const seen = new Set<string>();
+  const posts: InstagramPost[] = [];
+
+  for (const post of [...pinned, ...live]) {
+    const key = postKey(post);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    posts.push(post);
+    if (posts.length >= 12) break;
+  }
+
+  return posts;
+}
+
 type UnknownRecord = Record<string, unknown>;
 
 function asRecord(value: unknown): UnknownRecord | null {
@@ -58,7 +92,7 @@ export function normalizeInstagramFeed(data: unknown): InstagramPost[] {
       caption: asString(rec.caption),
       isVideo,
     });
-    if (posts.length >= 6) break;
+    if (posts.length >= 12) break;
   }
 
   return posts;
