@@ -29,6 +29,8 @@ export const site = {
     "https://www.google.com/maps/search/?api=1&query=%D0%A8%D1%83%D0%B3%D0%B0%D0%B5%D0%B2%D0%B0%204%2C%20%D0%A1%D0%B5%D0%BC%D0%B5%D0%B9",
   ogImage: "/images/og.jpg?v=2",
   instagramFeedUrl: "https://feeds.behold.so/hno6PmalWozM7koH7u5G",
+  yandexVerification: "bb0e61aa39a334bc",
+  indexNowKey: "c3e91a7b4d6f4028a1c5e9b2d7f0a4c8",
 } as const;
 
 export const navLinks = [

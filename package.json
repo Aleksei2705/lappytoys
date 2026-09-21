@@ -8,7 +8,8 @@
     "start": "next start",
     "preview": "next build && npx serve@latest out -l 3000",
     "lint": "next lint",
-    "fetch-instagram": "node scripts/fetch-instagram.mjs"
+    "fetch-instagram": "node scripts/fetch-instagram.mjs",
+    "submit-indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",

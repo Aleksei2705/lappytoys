@@ -57,3 +57,7 @@ jobs:
             echo "PLESK_DEPLOY_WEBHOOK_URL not set — skip auto pull"
           fi
         continue-on-error: true
+
+      - name: Ask Yandex and IndexNow to recrawl the sitemap
+        run: npm run submit-indexnow
+        continue-on-error: true

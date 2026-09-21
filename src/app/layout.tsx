@@ -89,6 +89,9 @@ export const metadata: Metadata = {
       "Творческие занятия: вязание, макраме, вышивка и шитьё игрушек в Семее. Запись к Ольге.",
     images: [site.ogImage],
   },
+  verification: {
+    yandex: site.yandexVerification,
+  },
 };
 
 export const viewport: Viewport = {
