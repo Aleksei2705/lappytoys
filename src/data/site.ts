@@ -23,8 +23,7 @@ export const site = {
   addressShort: "ул. Шугаева 4, каб. 304",
   mapEmbedUrl:
     "https://yandex.ru/map-widget/v1/?ll=80.259144%2C50.412858&z=17&pt=80.259144%2C50.412858%2Cpm2rdm&l=map&lang=ru_RU",
-  mapLink:
-    "https://yandex.kz/maps/165/semey/?ll=80.259144%2C50.412858&z=17&pt=80.259144%2C50.412858",
+  mapLink: "https://yandex.kz/maps/org/lappy_art/19680322262/",
   map2gis: "https://2gis.kz/semey/geo/70000001117566804",
   mapGoogle:
     "https://www.google.com/maps/search/?api=1&query=%D0%A8%D1%83%D0%B3%D0%B0%D0%B5%D0%B2%D0%B0%204%2C%20%D0%A1%D0%B5%D0%BC%D0%B5%D0%B9",
