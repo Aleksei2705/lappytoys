@@ -118,8 +118,8 @@ const jsonLd = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 50.412858,
-    longitude: 80.259144,
+    latitude: 50.412826,
+    longitude: 80.259372,
   },
   hasMap: site.mapLink,
   areaServed: {
