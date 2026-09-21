@@ -22,7 +22,7 @@ export const site = {
   address: "Казахстан, г. Семей, ул. Шугаева 4, каб. 304",
   addressShort: "ул. Шугаева 4, каб. 304",
   mapEmbedUrl:
-    "https://yandex.ru/map-widget/v1/?ll=80.259372%2C50.412826&z=17&oid=124787708385&ol=biz&l=map&lang=ru_RU",
+    "https://yandex.ru/map-widget/v1/?ll=80.259372%2C50.412826&z=17&pt=80.259372%2C50.412826%2Cpm2rdm&l=map&lang=ru_RU",
   mapLink: "https://yandex.kz/maps/-/CXALURZO",
   map2gis: "https://2gis.kz/semey/geo/70000001117566804",
   mapGoogle:
