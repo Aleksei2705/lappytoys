@@ -1,0 +1,8 @@
+User-Agent: *
+Allow: /
+
+User-Agent: TelegramBot
+Allow: /
+
+Host: https://lappytoys.kz
+Sitemap: https://lappytoys.kz/sitemap.xml
