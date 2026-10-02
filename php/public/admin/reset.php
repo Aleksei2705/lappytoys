@@ -12,9 +12,15 @@ if (Auth::user() !== null) {
 $token = (string) ($_GET['token'] ?? $_POST['token'] ?? '');
 $error = '';
 $valid = false;
+$accountEmail = '';
 
 try {
-    $valid = PasswordReset::userIdForToken($token) !== null;
+    $userId = PasswordReset::userIdForToken($token);
+    $valid = $userId !== null;
+    if ($valid) {
+        $account = Database::fetchOne('SELECT email FROM users WHERE id = ? AND is_active = 1', [$userId]);
+        $accountEmail = (string) ($account['email'] ?? '');
+    }
     if (Admin::isPost()) {
         Admin::verifyPost();
         $password = (string) ($_POST['password'] ?? '');
@@ -55,9 +61,13 @@ try {
         <p class="text-sm text-red-600" role="alert"><?= $error !== '' ? e($error) : 'Ссылка недействительна или устарела. Запросите новую.' ?></p>
         <p class="text-center text-sm"><a href="/admin/forgot.php" class="text-brand-700 underline">Запросить ссылку</a></p>
     <?php else: ?>
-        <form method="post" class="space-y-5">
+        <form method="post" action="/admin/reset.php" autocomplete="on" class="space-y-5">
             <?= Security::csrfField() ?>
             <input type="hidden" name="token" value="<?= e($token) ?>">
+            <div>
+                <label for="username" class="mb-2 block text-sm font-medium text-warm-700">E-mail</label>
+                <input id="username" name="username" type="email" autocomplete="username" value="<?= e($accountEmail) ?>" readonly class="input-field">
+            </div>
             <div>
                 <label for="password" class="mb-2 block text-sm font-medium text-warm-700">Новый пароль</label>
                 <div class="flex gap-2">

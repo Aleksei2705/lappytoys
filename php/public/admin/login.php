@@ -49,7 +49,7 @@ try {
     <link rel="stylesheet" href="<?= e(asset('assets/app.css')) ?>">
 </head>
 <body class="is-admin flex min-h-screen items-center justify-center bg-cream px-4 text-warm-900">
-<form method="post" class="card-soft w-full max-w-sm space-y-5 p-7 shadow-lg">
+<form method="post" action="/admin/login.php" autocomplete="on" class="card-soft w-full max-w-sm space-y-5 p-7 shadow-lg">
     <div class="text-center">
         <p class="font-heading text-2xl font-bold text-brand-700">Lappy Art</p>
         <p class="mt-1 text-sm text-warm-500">Вход в админку</p>
@@ -57,13 +57,14 @@ try {
     <?= Security::csrfField() ?>
     <div>
         <label for="email" class="mb-2 block text-sm font-medium text-warm-700">E-mail</label>
-        <input id="email" name="email" type="email" required autocomplete="username" maxlength="190"
+        <input id="email" name="email" type="email" required autocomplete="username" inputmode="email"
+               autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="190"
                value="<?= e($email) ?>" class="input-field" autofocus>
     </div>
     <div>
         <label for="password" class="mb-2 block text-sm font-medium text-warm-700">Пароль</label>
         <div class="flex gap-2">
-            <input id="password" name="password" type="password" required autocomplete="current-password" class="input-field">
+            <input id="password" name="password" type="password" required autocomplete="current-password" class="input-field min-w-0 flex-1">
             <button type="button" class="btn-secondary" data-password-toggle="password" aria-pressed="false" aria-label="Показать пароль">
                 <span data-eye-show><?= icon('eye', 'size-5') ?></span>
                 <span data-eye-hide hidden><?= icon('eye-off', 'size-5') ?></span>

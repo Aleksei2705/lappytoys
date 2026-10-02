@@ -47,7 +47,7 @@ try {
     <link rel="stylesheet" href="<?= e(asset('assets/app.css')) ?>">
 </head>
 <body class="is-admin flex min-h-screen items-center justify-center bg-cream px-4 text-warm-900">
-<form method="post" class="card-soft w-full max-w-sm space-y-5 p-7 shadow-lg">
+<form method="post" action="/admin/forgot.php" autocomplete="on" class="card-soft w-full max-w-sm space-y-5 p-7 shadow-lg">
     <div class="text-center">
         <p class="font-heading text-2xl font-bold text-brand-700">Lappy Art</p>
         <p class="mt-1 text-sm text-warm-500">Ссылка для нового пароля придёт на почту администратора</p>
@@ -55,7 +55,8 @@ try {
     <?= Security::csrfField() ?>
     <div>
         <label for="email" class="mb-2 block text-sm font-medium text-warm-700">E-mail</label>
-        <input id="email" name="email" type="email" required autocomplete="username" maxlength="190" class="input-field" autofocus>
+        <input id="email" name="email" type="email" required autocomplete="username" inputmode="email"
+               autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="190" class="input-field" autofocus>
     </div>
     <?php if ($notice !== ''): ?>
         <p class="text-sm text-green-700" role="status"><?= e($notice) ?></p>
