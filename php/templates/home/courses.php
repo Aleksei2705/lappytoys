@@ -1,7 +1,7 @@
 <?php /** @var list<array<string, mixed>> $courses */ ?>
 <section id="courses" class="page-section section-stitch">
     <div class="container-main">
-        <?= revealStart() ?>
+        <?= revealStart(0, '', 'right') ?>
             <?php
             render('partials/section-header', [
                 'eyebrow' => t('courses.eyebrow'),

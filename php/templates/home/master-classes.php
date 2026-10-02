@@ -1,6 +1,6 @@
 <?php /** @var list<array<string, mixed>> $masterClasses */ ?>
 <?php if ($masterClasses !== []): ?>
-<?= revealStart() ?>
+<?= revealStart(0, '', 'left') ?>
 <section id="master-classes" class="page-section section-alt" data-mc-carousel>
     <div class="container-main">
         <?php

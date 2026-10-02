@@ -5,7 +5,7 @@ $iconClass = 'size-10 shrink-0';
 ?>
 <section id="contacts" class="page-section section-stitch">
     <div class="container-main">
-        <?= revealStart() ?>
+        <?= revealStart(0, '', 'left') ?>
             <?php
             render('partials/section-header', [
                 'eyebrow' => t('contacts.eyebrow'),
@@ -16,7 +16,7 @@ $iconClass = 'size-10 shrink-0';
         </div>
 
         <div class="mt-12 grid gap-8 lg:grid-cols-2 lg:items-start">
-            <?= revealStart() ?>
+            <?= revealStart(0, '', 'right') ?>
                 <div class="space-y-3">
                     <a href="tel:<?= e((string) site('phone')) ?>" class="contact-card">
                         <div class="flex size-12 shrink-0 items-center justify-center"><img src="/images/phone.png" alt="" width="48" height="48" class="<?= $iconClass ?>" aria-hidden="true"></div>
@@ -61,7 +61,7 @@ $iconClass = 'size-10 shrink-0';
                 </div>
             </div>
 
-            <?= revealStart(100) ?>
+            <?= revealStart(100, '', 'up') ?>
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2">
                         <a href="<?= e((string) site('map_2gis')) ?>" target="_blank" rel="noopener noreferrer" class="<?= $mapButton ?>">

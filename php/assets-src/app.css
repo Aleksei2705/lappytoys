@@ -646,34 +646,46 @@ body {
 
 .reveal-block {
   opacity: 0;
-  transform: translate3d(0, 22px, 0);
+  transform: translate3d(0, 28px, 0);
   transition:
-    opacity 0.7s ease,
-    transform 0.7s ease;
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.reveal-block-in {
+.reveal-block.reveal-from-left {
+  transform: translate3d(-44px, 0, 0);
+}
+
+.reveal-block.reveal-from-right {
+  transform: translate3d(44px, 0, 0);
+}
+
+.reveal-block.reveal-from-up {
+  transform: translate3d(0, -36px, 0);
+}
+
+.reveal-block.reveal-block-in {
   opacity: 1;
-  transform: translate3d(0, 0, 0);
+  transform: none;
 }
 
 .hero-copy > *:nth-child(1) {
-  animation: hero-fade-up 0.8s ease-out both;
+  animation: hero-from-left 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .hero-copy > *:nth-child(2) {
-  animation: hero-fade-up 0.8s ease-out 0.08s both;
+  animation: hero-from-right 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
 }
 .hero-copy > *:nth-child(3) {
-  animation: hero-fade-up 0.8s ease-out 0.16s both;
+  animation: hero-fade-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both;
 }
 .hero-copy > *:nth-child(4) {
-  animation: hero-fade-up 0.8s ease-out 0.24s both;
+  animation: hero-from-left 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
 }
 .hero-copy > *:nth-child(5) {
-  animation: hero-fade-up 0.8s ease-out 0.32s both;
+  animation: hero-from-right 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
 }
 .hero-copy > *:nth-child(6) {
-  animation: hero-fade-up 0.8s ease-out 0.4s both;
+  animation: hero-fade-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
 }
 
 .hero-heading {
@@ -910,7 +922,29 @@ body {
 @keyframes hero-fade-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 18px, 0);
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-from-left {
+  from {
+    opacity: 0;
+    transform: translate3d(-36px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-from-right {
+  from {
+    opacity: 0;
+    transform: translate3d(36px, 0, 0);
   }
   to {
     opacity: 1;
@@ -932,7 +966,10 @@ body {
     animation: none;
   }
 
-  .reveal-block {
+  .reveal-block,
+  .reveal-block.reveal-from-left,
+  .reveal-block.reveal-from-right,
+  .reveal-block.reveal-from-up {
     opacity: 1;
     transform: none;
     transition: none;

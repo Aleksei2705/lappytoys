@@ -38,7 +38,7 @@ $previewCount = 3;
                 </div>
             </div>
 
-            <?= revealStart(120) ?>
+            <?= revealStart(120, '', 'left') ?>
                 <div class="space-y-6">
                     <?php
                     render('partials/section-header', [

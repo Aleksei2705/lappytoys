@@ -120,10 +120,11 @@ function icon(string $name, string $class = 'size-5'): string
 }
 
 /** Opens a block that fades in when scrolled into view (see site.js). Close with </div>. */
-function revealStart(int $delayMs = 0, string $class = ''): string
+function revealStart(int $delayMs = 0, string $class = '', string $from = ''): string
 {
     $style = $delayMs > 0 ? ' style="transition-delay:' . $delayMs . 'ms"' : '';
-    return '<div class="reveal-block ' . Security::escape($class) . '" data-reveal' . $style . '>';
+    $direction = in_array($from, ['left', 'right', 'up'], true) ? ' reveal-from-' . $from : '';
+    return '<div class="reveal-block' . $direction . ' ' . Security::escape($class) . '" data-reveal' . $style . '>';
 }
 
 /** Render a template from templates/ with extracted variables. */

@@ -1,7 +1,7 @@
 <?php $tiktokUsername = ltrim((string) site('tiktok_handle'), '@'); ?>
 <section id="tiktok" class="page-section">
     <div class="container-main">
-        <?= revealStart() ?>
+        <?= revealStart(0, '', 'right') ?>
             <?php render('partials/section-header', [
                 'eyebrow' => t('tt.eyebrow'),
                 'titleHtml' => t('tt.title'),

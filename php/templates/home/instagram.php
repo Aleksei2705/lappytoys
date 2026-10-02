@@ -1,6 +1,6 @@
 <section id="instagram" class="page-section section-alt">
     <div class="container-main">
-        <?= revealStart() ?>
+        <?= revealStart(0, '', 'left') ?>
             <?php render('partials/section-header', [
                 'eyebrow' => t('ig.eyebrow'),
                 'titleHtml' => t('ig.title'),

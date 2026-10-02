@@ -1,4 +1,4 @@
-<?= revealStart() ?>
+<?= revealStart(0, '', 'right') ?>
 <section id="schedule" class="page-section section-alt">
     <div class="container-main">
         <?php

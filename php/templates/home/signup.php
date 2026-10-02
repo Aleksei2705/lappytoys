@@ -21,7 +21,7 @@ $waLabels = [
 ?>
 <section id="signup" class="page-section section-alt">
     <div class="container-main">
-        <?= revealStart(0, 'mx-auto max-w-xl') ?>
+        <?= revealStart(0, 'mx-auto max-w-xl', 'up') ?>
             <?php
             render('partials/section-header', [
                 'eyebrow' => t('signup.eyebrow'),

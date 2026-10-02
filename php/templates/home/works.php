@@ -6,7 +6,7 @@ $firstVideoTitle = $videos === [] ? '' : loc($videos[0], 'title');
 ?>
 <section id="works" class="page-section">
     <div class="container-main">
-        <?= revealStart() ?>
+        <?= revealStart(0, '', 'up') ?>
             <?php render('partials/section-header', [
                 'eyebrow' => t('works.eyebrow'),
                 'titleHtml' => t('works.title.before'),

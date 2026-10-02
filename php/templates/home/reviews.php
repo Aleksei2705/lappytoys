@@ -8,7 +8,7 @@ $hiddenCount = max(0, count($reviews) - $visibleCount);
 $flash = $_SESSION['review_flash'] ?? null;
 unset($_SESSION['review_flash']);
 ?>
-<?= revealStart() ?>
+<?= revealStart(0, '', 'left') ?>
 <section id="reviews" class="page-section">
     <div class="container-main">
         <?php

@@ -1,4 +1,4 @@
-<?= revealStart() ?>
+<?= revealStart(0, '', 'right') ?>
 <section id="faq" class="page-section">
     <div class="container-main mx-auto max-w-3xl">
         <?php
