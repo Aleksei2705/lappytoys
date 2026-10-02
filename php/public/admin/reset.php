@@ -60,17 +60,24 @@ try {
             <input type="hidden" name="token" value="<?= e($token) ?>">
             <div>
                 <label for="password" class="mb-2 block text-sm font-medium text-warm-700">Новый пароль</label>
-                <input id="password" name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password" class="input-field" autofocus>
+                <div class="flex gap-2">
+                    <input id="password" name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password" class="input-field" autofocus>
+                    <button type="button" class="btn-secondary shrink-0 !px-3" data-password-toggle="password" aria-pressed="false">Показать</button>
+                </div>
             </div>
             <div>
                 <label for="password_repeat" class="mb-2 block text-sm font-medium text-warm-700">Пароль ещё раз</label>
-                <input id="password_repeat" name="password_repeat" type="password" required minlength="8" maxlength="72" autocomplete="new-password" class="input-field">
+                <div class="flex gap-2">
+                    <input id="password_repeat" name="password_repeat" type="password" required minlength="8" maxlength="72" autocomplete="new-password" class="input-field">
+                    <button type="button" class="btn-secondary shrink-0 !px-3" data-password-toggle="password_repeat" aria-pressed="false">Показать</button>
+                </div>
             </div>
             <?php if ($error !== ''): ?>
                 <p class="text-sm text-red-600" role="alert"><?= e($error) ?></p>
             <?php endif; ?>
             <button type="submit" class="btn-primary h-11 w-full">Сохранить пароль</button>
         </form>
+        <script src="<?= e(asset('assets/admin.js')) ?>" defer></script>
     <?php endif; ?>
 </div>
 </body>

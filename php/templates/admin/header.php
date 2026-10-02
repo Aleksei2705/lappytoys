@@ -39,9 +39,10 @@ $displayName = $adminUser['name'] !== '' ? $adminUser['name'] : $adminUser['emai
 <div class="lg:flex lg:min-h-screen">
     <aside class="border-b border-brand-100 bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r">
         <a href="/admin/" class="block px-4 py-4 font-heading text-lg font-bold text-brand-700">Lappy Art</a>
-        <nav class="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-1 lg:flex-col lg:overflow-visible lg:px-3 lg:pb-4">
+        <nav class="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-1 lg:flex-col lg:overflow-visible lg:px-3 lg:pb-4" data-admin-nav>
             <?php foreach ($navItems as $key => [$href, $label, $badge]): ?>
                 <a href="<?= e($href) ?>"
+                   <?= $key === $adminSection ? 'aria-current="page"' : '' ?>
                    class="inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium <?= $key === $adminSection ? 'bg-brand-100 text-brand-800' : 'text-warm-700 hover:bg-brand-50' ?>">
                     <?= e($label) ?>
                     <?php if ($badge > 0): ?>

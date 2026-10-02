@@ -1,4 +1,21 @@
 (() => {
+  const nav = document.querySelector("[data-admin-nav]");
+  const current = nav?.querySelector("[aria-current='page']");
+  if (nav && current && nav.scrollWidth > nav.clientWidth + 8) {
+    nav.scrollLeft = current.offsetLeft - (nav.clientWidth - current.offsetWidth) / 2;
+  }
+
+  document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const input = document.getElementById(button.dataset.passwordToggle);
+      if (!input) return;
+      const shown = input.type === "text";
+      input.type = shown ? "password" : "text";
+      button.textContent = shown ? "Показать" : "Скрыть";
+      button.setAttribute("aria-pressed", String(!shown));
+    });
+  });
+
   document.addEventListener("submit", (event) => {
     const message = event.target.dataset?.confirm;
     if (message && !window.confirm(message)) event.preventDefault();

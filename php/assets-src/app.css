@@ -1063,3 +1063,18 @@ body.is-admin aside nav a.bg-brand-100 {
   box-shadow: inset 0 0 0 1.5px #b06a88;
   color: #5c2340;
 }
+
+@media (max-width: 1023px) {
+  body.is-admin aside {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    max-width: 100%;
+    background: #fff;
+  }
+
+  body.is-admin [data-admin-nav] {
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+  }
+}
