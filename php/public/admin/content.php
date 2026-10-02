@@ -4,8 +4,18 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/app/bootstrap.php';
 
 $adminUser = Admin::guard();
-$adminTitle = 'Тексты сайта';
-$adminSection = 'content';
+$part = Admin::text($_GET, 'part');
+if (Admin::isPost()) {
+    $posted = Admin::text($_POST, 'block');
+    if ($posted !== '') {
+        $part = $posted;
+    }
+}
+if (!in_array($part, ['about', 'faq', 'contacts'], true)) {
+    $part = 'about';
+}
+$adminSection = $part;
+$adminTitle = ['about' => 'Обо мне', 'faq' => 'Вопросы и ответы', 'contacts' => 'Контакты'][$part];
 $errors = [];
 
 function contentHttps(string $value): bool
@@ -59,7 +69,7 @@ try {
             }
             SiteContent::saveFaq($rows);
             Admin::flash('success', 'Вопросы сохранены.');
-            Admin::redirect('/admin/content.php#faq');
+            Admin::redirect('/admin/content.php?part=faq');
         }
 
         if ($action === 'about') {
@@ -98,7 +108,7 @@ try {
                 'paragraphs' => $paragraphs,
             ]);
             Admin::flash('success', 'Блок «Обо мне» сохранён.');
-            Admin::redirect('/admin/content.php#about');
+            Admin::redirect('/admin/content.php?part=about');
         }
 
         if ($action === 'contacts') {
@@ -132,7 +142,7 @@ try {
             if ($errors === []) {
                 SiteContent::saveContacts($settings);
                 Admin::flash('success', 'Контакты сохранены.');
-                Admin::redirect('/admin/content.php#contacts');
+                Admin::redirect('/admin/content.php?part=contacts');
             }
         }
     }
@@ -169,6 +179,7 @@ require APP_ROOT . '/templates/admin/header.php';
     </ul>
 <?php endif; ?>
 
+<?php if ($part === 'faq'): ?>
 <section id="faq" class="mb-10">
     <h2 class="mb-3 font-heading text-xl font-bold">Вопросы и ответы</h2>
     <form method="post" class="space-y-3">
@@ -195,7 +206,22 @@ require APP_ROOT . '/templates/admin/header.php';
         </div>
     </form>
 </section>
+<template id="faq-template">
+    <div class="card-soft grid gap-3 p-4" data-row>
+        <input name="q_ru[]" maxlength="200" placeholder="Вопрос (рус.)" class="input-field">
+        <input name="q_kk[]" maxlength="200" placeholder="Сұрақ (қаз.)" class="input-field">
+        <textarea name="a_ru[]" maxlength="800" rows="2" placeholder="Ответ (рус.)" class="textarea-field"></textarea>
+        <textarea name="a_kk[]" maxlength="800" rows="2" placeholder="Жауап (қаз.)" class="textarea-field"></textarea>
+        <div class="flex gap-2">
+            <button type="button" class="btn-ghost !px-2 !py-1.5" data-move="up" aria-label="Выше">↑</button>
+            <button type="button" class="btn-ghost !px-2 !py-1.5" data-move="down" aria-label="Ниже">↓</button>
+            <button type="button" class="text-sm text-red-600 underline" data-remove-row>Убрать</button>
+        </div>
+    </div>
+</template>
+<?php endif; ?>
 
+<?php if ($part === 'about'): ?>
 <section id="about" class="mb-10">
     <h2 class="mb-3 font-heading text-xl font-bold">Обо мне</h2>
     <form method="post" enctype="multipart/form-data" class="card-soft space-y-4 p-4">
@@ -227,7 +253,16 @@ require APP_ROOT . '/templates/admin/header.php';
         </div>
     </form>
 </section>
+<template id="about-template">
+    <div class="grid gap-3 sm:grid-cols-2" data-row>
+        <textarea name="paragraph_ru[]" maxlength="2000" rows="3" placeholder="Абзац (рус.)" class="textarea-field"></textarea>
+        <textarea name="paragraph_kk[]" maxlength="2000" rows="3" placeholder="Абзац (қаз.)" class="textarea-field"></textarea>
+        <button type="button" class="text-left text-sm text-red-600 underline" data-remove-row>Убрать абзац</button>
+    </div>
+</template>
+<?php endif; ?>
 
+<?php if ($part === 'contacts'): ?>
 <section id="contacts">
     <h2 class="mb-3 font-heading text-xl font-bold">Контакты</h2>
     <form method="post" class="card-soft grid gap-4 p-4 sm:grid-cols-2">
@@ -263,25 +298,5 @@ require APP_ROOT . '/templates/admin/header.php';
         </div>
     </form>
 </section>
-
-<template id="faq-template">
-    <div class="card-soft grid gap-3 p-4" data-row>
-        <input name="q_ru[]" maxlength="200" placeholder="Вопрос (рус.)" class="input-field">
-        <input name="q_kk[]" maxlength="200" placeholder="Сұрақ (қаз.)" class="input-field">
-        <textarea name="a_ru[]" maxlength="800" rows="2" placeholder="Ответ (рус.)" class="textarea-field"></textarea>
-        <textarea name="a_kk[]" maxlength="800" rows="2" placeholder="Жауап (қаз.)" class="textarea-field"></textarea>
-        <div class="flex gap-2">
-            <button type="button" class="btn-ghost !px-2 !py-1.5" data-move="up" aria-label="Выше">↑</button>
-            <button type="button" class="btn-ghost !px-2 !py-1.5" data-move="down" aria-label="Ниже">↓</button>
-            <button type="button" class="text-sm text-red-600 underline" data-remove-row>Убрать</button>
-        </div>
-    </div>
-</template>
-<template id="about-template">
-    <div class="grid gap-3 sm:grid-cols-2" data-row>
-        <textarea name="paragraph_ru[]" maxlength="2000" rows="3" placeholder="Абзац (рус.)" class="textarea-field"></textarea>
-        <textarea name="paragraph_kk[]" maxlength="2000" rows="3" placeholder="Абзац (қаз.)" class="textarea-field"></textarea>
-        <button type="button" class="text-left text-sm text-red-600 underline" data-remove-row>Убрать абзац</button>
-    </div>
-</template>
+<?php endif; ?>
 <?php require APP_ROOT . '/templates/admin/footer.php';

@@ -64,7 +64,10 @@ try {
         <label for="password" class="mb-2 block text-sm font-medium text-warm-700">Пароль</label>
         <div class="flex gap-2">
             <input id="password" name="password" type="password" required autocomplete="current-password" class="input-field">
-            <button type="button" class="btn-secondary shrink-0 !px-3" data-password-toggle="password" aria-pressed="false">Показать</button>
+            <button type="button" class="btn-secondary" data-password-toggle="password" aria-pressed="false" aria-label="Показать пароль">
+                <span data-eye-show><?= icon('eye', 'size-5') ?></span>
+                <span data-eye-hide hidden><?= icon('eye-off', 'size-5') ?></span>
+            </button>
         </div>
     </div>
     <?php if ($notice !== ''): ?>

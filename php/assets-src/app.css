@@ -1078,3 +1078,13 @@ body.is-admin aside nav a.bg-brand-100 {
     overscroll-behavior-x: contain;
   }
 }
+
+body.is-admin [data-password-toggle] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  flex: 0 0 auto;
+}

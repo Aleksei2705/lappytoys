@@ -4,7 +4,6 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/app/bootstrap.php';
 
 $adminUser = Admin::guard();
-$adminSection = 'classes';
 
 const CLASS_KINDS = ['course' => 'Курс', 'master_class' => 'Мастер-класс'];
 
@@ -67,7 +66,7 @@ try {
     $existing = $id > 0 ? Database::fetchOne('SELECT * FROM classes WHERE id = ?', [$id]) : null;
     if ($id > 0 && $existing === null) {
         Admin::flash('error', 'Запись не найдена.');
-        Admin::redirect('/admin/classes.php');
+        Admin::redirect('/admin/classes.php?kind=course');
     }
     $categories = Database::fetchAll('SELECT id, title_ru FROM categories ORDER BY sort_order, id');
 
@@ -185,7 +184,8 @@ try {
                 Admin::deleteUploadedImage($oldImage);
             }
             Admin::flash('success', 'Сохранено.');
-            Admin::redirect('/admin/classes.php');
+            $returnKind = isset(CLASS_KINDS[$form['kind'] ?? '']) ? $form['kind'] : 'course';
+            Admin::redirect('/admin/classes.php?kind=' . $returnKind);
         }
     }
 } catch (RuntimeException) {
@@ -206,7 +206,10 @@ $localeField = static function (string $name, string $label, int $max, bool $are
     </div>
     <?php
 };
-$adminTitle = $existing === null ? 'Новая запись' : 'Редактирование: ' . ($existing['title_ru'] ?? '');
+$adminSection = (($form['kind'] ?? 'course') === 'master_class') ? 'master' : 'courses';
+$adminTitle = $existing === null
+    ? ($adminSection === 'master' ? 'Новый мастер-класс' : 'Новое занятие')
+    : 'Редактирование: ' . ($existing['title_ru'] ?? '');
 require APP_ROOT . '/templates/admin/header.php';
 ?>
 <?php if ($errors !== []): ?>
@@ -311,7 +314,7 @@ require APP_ROOT . '/templates/admin/header.php';
 
     <div class="flex gap-3">
         <button type="submit" class="btn-primary h-11 px-8">Сохранить</button>
-        <a href="/admin/classes.php" class="btn-secondary h-11 px-6">Отмена</a>
+        <a href="/admin/classes.php?kind=<?= e((string) ($form['kind'] ?? 'course')) ?>" class="btn-secondary h-11 px-6">Отмена</a>
     </div>
 </form>
 <?php require APP_ROOT . '/templates/admin/footer.php';

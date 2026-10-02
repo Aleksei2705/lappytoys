@@ -9,10 +9,14 @@
     button.addEventListener("click", () => {
       const input = document.getElementById(button.dataset.passwordToggle);
       if (!input) return;
-      const shown = input.type === "text";
-      input.type = shown ? "password" : "text";
-      button.textContent = shown ? "Показать" : "Скрыть";
-      button.setAttribute("aria-pressed", String(!shown));
+      const reveal = input.type === "password";
+      input.type = reveal ? "text" : "password";
+      button.setAttribute("aria-pressed", String(reveal));
+      button.setAttribute("aria-label", reveal ? "Скрыть пароль" : "Показать пароль");
+      const openEye = button.querySelector("[data-eye-show]");
+      const closedEye = button.querySelector("[data-eye-hide]");
+      if (openEye) openEye.hidden = reveal;
+      if (closedEye) closedEye.hidden = !reveal;
     });
   });
 

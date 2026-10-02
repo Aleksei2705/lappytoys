@@ -13,14 +13,16 @@ try {
 }
 
 $navItems = [
-    'dashboard' => ['/admin/', 'Обзор', 0],
-    'bookings' => ['/admin/bookings.php', 'Заявки', $counters['bookings']],
-    'reviews' => ['/admin/reviews.php', 'Отзывы', $counters['reviews']],
-    'classes' => ['/admin/classes.php', 'Курсы и МК', 0],
-    'categories' => ['/admin/categories.php', 'Категории', 0],
+    'about' => ['/admin/content.php?part=about', 'Обо мне', 0],
+    'courses' => ['/admin/classes.php?kind=course', 'Виды занятий', 0],
+    'master' => ['/admin/classes.php?kind=master_class', 'Мастер-классы', 0],
     'schedule' => ['/admin/schedule.php', 'Расписание', 0],
-    'gallery' => ['/admin/gallery.php', 'Галерея', 0],
-    'content' => ['/admin/content.php', 'Тексты', 0],
+    'works' => ['/admin/gallery.php', 'Работы учеников', 0],
+    'reviews' => ['/admin/reviews.php', 'Отзывы', $counters['reviews']],
+    'faq' => ['/admin/content.php?part=faq', 'Вопросы и ответы', 0],
+    'contacts' => ['/admin/content.php?part=contacts', 'Контакты', 0],
+    'bookings' => ['/admin/bookings.php', 'Заявки', $counters['bookings']],
+    'categories' => ['/admin/categories.php', 'Категории', 0],
 ];
 $flash = Admin::takeFlash();
 $displayName = $adminUser['name'] !== '' ? $adminUser['name'] : $adminUser['email'];
