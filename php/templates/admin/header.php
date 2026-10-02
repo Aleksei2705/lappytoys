@@ -50,21 +50,11 @@ $displayName = $adminUser['name'] !== '' ? $adminUser['name'] : $adminUser['emai
                 </a>
             <?php endforeach; ?>
         </nav>
-        <div class="hidden items-center gap-3 border-t border-brand-100 px-4 py-4 text-sm lg:flex">
-            <div class="min-w-0 flex-1">
-                <p class="truncate font-medium"><?= e($displayName) ?></p>
-                <a href="/" target="_blank" rel="noopener" class="text-warm-500 hover:text-brand-700">Открыть сайт</a>
-            </div>
-            <form method="post" action="/admin/logout.php">
-                <?= Security::csrfField() ?>
-                <button type="submit" class="btn-ghost !px-3 !py-1.5">Выйти</button>
-            </form>
-        </div>
     </aside>
     <div class="min-w-0 flex-1">
-        <div class="flex items-center justify-end gap-3 border-b border-brand-100 bg-white/80 px-4 py-2 text-sm lg:hidden">
-            <a href="/" target="_blank" rel="noopener" class="text-warm-500">Сайт</a>
-            <span class="truncate text-warm-500"><?= e($displayName) ?></span>
+        <div class="flex items-center justify-end gap-3 border-b border-brand-100 bg-white px-4 py-2 text-sm">
+            <span class="mr-auto truncate text-warm-500"><?= e($displayName) ?></span>
+            <a href="/" target="_blank" rel="noopener" class="font-medium text-brand-700">На сайт</a>
             <form method="post" action="/admin/logout.php">
                 <?= Security::csrfField() ?>
                 <button type="submit" class="btn-ghost !px-3 !py-1.5">Выйти</button>
