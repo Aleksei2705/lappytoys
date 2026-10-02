@@ -26,6 +26,29 @@ final class Notifier
         return Telegram::send(implode("\n", $lines));
     }
 
+    /** @param array{name: string, phone: string, direction: string, preferred_date: ?string, message: ?string} $booking */
+    public static function bookingEmail(array $booking): bool
+    {
+        $lines = [
+            'Новая заявка — lappytoys.kz',
+            '',
+            'Имя: ' . $booking['name'],
+            'Телефон: ' . $booking['phone'],
+            'Направление: ' . $booking['direction'],
+        ];
+        if ($booking['preferred_date'] !== null) {
+            $lines[] = 'Желаемая дата: ' . date('d.m.Y', (int) strtotime($booking['preferred_date']));
+        }
+        if ($booking['message'] !== null && $booking['message'] !== '') {
+            $lines[] = '';
+            $lines[] = $booking['message'];
+        }
+        $lines[] = '';
+        $lines[] = date('d.m.Y H:i');
+
+        return Mail::send((string) site('notify_email'), 'Новая заявка — ' . $booking['name'], implode("\n", $lines));
+    }
+
     /** @param array{name: string, course: string, rating: int, text: string} $review */
     public static function review(array $review): bool
     {

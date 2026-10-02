@@ -92,9 +92,12 @@ try {
         $ipHash,
     );
 
-    // The booking is already saved: a Telegram outage must not turn into an error for the visitor.
+    // The booking is already saved: a Telegram or mail outage must not turn into an error for the visitor.
     if (Notifier::booking($booking)) {
         BookingRepository::markTelegramSent($bookingId);
+    }
+    if (!Notifier::bookingEmail($booking)) {
+        error_log('[booking-submit] email copy was not sent');
     }
 
     redirectToSignup('success', 'signup.thanks');
