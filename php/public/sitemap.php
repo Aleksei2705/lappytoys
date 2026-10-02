@@ -1,8 +1,13 @@
 <?php
 declare(strict_types=1);
 
+define('LAPPY_NO_SESSION', true);
+
 require dirname(__DIR__) . '/app/bootstrap.php';
 
+header_remove('Set-Cookie');
+header_remove('Expires');
+header_remove('Pragma');
 header('Content-Type: application/xml; charset=UTF-8');
 header('Cache-Control: public, max-age=3600');
 

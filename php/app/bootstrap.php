@@ -29,5 +29,7 @@ function e(?string $value): string
 
 if (PHP_SAPI !== 'cli') {
     Security::sendHeaders();
-    Security::startSession();
+    if (!defined('LAPPY_NO_SESSION')) {
+        Security::startSession();
+    }
 }
