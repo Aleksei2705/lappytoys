@@ -18,8 +18,12 @@ $navItems = [
     'reviews' => ['/admin/reviews.php', 'Отзывы', $counters['reviews']],
     'classes' => ['/admin/classes.php', 'Курсы и МК', 0],
     'categories' => ['/admin/categories.php', 'Категории', 0],
+    'schedule' => ['/admin/schedule.php', 'Расписание', 0],
+    'gallery' => ['/admin/gallery.php', 'Галерея', 0],
+    'content' => ['/admin/content.php', 'Тексты', 0],
 ];
 $flash = Admin::takeFlash();
+$displayName = $adminUser['name'] !== '' ? $adminUser['name'] : $adminUser['email'];
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -32,13 +36,13 @@ $flash = Admin::takeFlash();
     <link rel="stylesheet" href="<?= e(asset('assets/app.css')) ?>">
 </head>
 <body class="min-h-screen bg-cream text-warm-900">
-<header class="border-b border-brand-100 bg-white">
-    <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-        <a href="/admin/" class="font-heading text-lg font-bold text-brand-700">Lappy Art · админка</a>
-        <nav class="flex flex-1 flex-wrap items-center gap-1 text-sm">
+<div class="lg:flex lg:min-h-screen">
+    <aside class="border-b border-brand-100 bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r">
+        <a href="/admin/" class="block px-4 py-4 font-heading text-lg font-bold text-brand-700">Lappy Art</a>
+        <nav class="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-1 lg:flex-col lg:overflow-visible lg:px-3 lg:pb-4">
             <?php foreach ($navItems as $key => [$href, $label, $badge]): ?>
                 <a href="<?= e($href) ?>"
-                   class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-medium <?= $key === $adminSection ? 'bg-brand-100 text-brand-800' : 'text-warm-700 hover:bg-brand-50' ?>">
+                   class="inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium <?= $key === $adminSection ? 'bg-brand-100 text-brand-800' : 'text-warm-700 hover:bg-brand-50' ?>">
                     <?= e($label) ?>
                     <?php if ($badge > 0): ?>
                         <span class="rounded-full bg-brand-600 px-1.5 text-xs leading-5 text-white"><?= $badge ?></span>
@@ -46,18 +50,28 @@ $flash = Admin::takeFlash();
                 </a>
             <?php endforeach; ?>
         </nav>
-        <div class="flex items-center gap-3 text-sm">
-            <a href="/" target="_blank" rel="noopener" class="text-warm-500 hover:text-brand-700">Сайт ↗</a>
-            <span class="hidden text-warm-500 sm:inline"><?= e($adminUser['name'] !== '' ? $adminUser['name'] : $adminUser['email']) ?></span>
+        <div class="hidden items-center gap-3 border-t border-brand-100 px-4 py-4 text-sm lg:flex">
+            <div class="min-w-0 flex-1">
+                <p class="truncate font-medium"><?= e($displayName) ?></p>
+                <a href="/" target="_blank" rel="noopener" class="text-warm-500 hover:text-brand-700">Открыть сайт</a>
+            </div>
             <form method="post" action="/admin/logout.php">
                 <?= Security::csrfField() ?>
                 <button type="submit" class="btn-ghost !px-3 !py-1.5">Выйти</button>
             </form>
         </div>
-    </div>
-</header>
-<main class="mx-auto max-w-6xl px-4 py-8">
-    <h1 class="mb-6 font-heading text-2xl font-bold sm:text-3xl"><?= e($adminTitle) ?></h1>
-    <?php if ($flash !== null): ?>
-        <p class="mb-6 rounded-xl border px-4 py-3 text-sm <?= $flash['type'] === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-700' ?>" role="status"><?= e($flash['message']) ?></p>
-    <?php endif; ?>
+    </aside>
+    <div class="min-w-0 flex-1">
+        <div class="flex items-center justify-end gap-3 border-b border-brand-100 bg-white/80 px-4 py-2 text-sm lg:hidden">
+            <a href="/" target="_blank" rel="noopener" class="text-warm-500">Сайт</a>
+            <span class="truncate text-warm-500"><?= e($displayName) ?></span>
+            <form method="post" action="/admin/logout.php">
+                <?= Security::csrfField() ?>
+                <button type="submit" class="btn-ghost !px-3 !py-1.5">Выйти</button>
+            </form>
+        </div>
+        <main class="mx-auto max-w-5xl px-4 py-8">
+            <h1 class="mb-6 font-heading text-2xl font-bold sm:text-3xl"><?= e($adminTitle) ?></h1>
+            <?php if ($flash !== null): ?>
+                <p class="mb-6 rounded-xl border px-4 py-3 text-sm <?= $flash['type'] === 'success' ? 'border-green-200 bg-green-50 text-green-800' : 'border-red-200 bg-red-50 text-red-700' ?>" role="status"><?= e($flash['message']) ?></p>
+            <?php endif; ?>

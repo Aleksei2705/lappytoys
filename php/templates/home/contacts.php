@@ -81,7 +81,7 @@ $iconClass = 'size-10 shrink-0';
                     </div>
                     <a href="<?= e((string) site('map_link')) ?>" target="_blank" rel="noopener noreferrer"
                        class="block w-full overflow-hidden whitespace-nowrap text-center font-heading font-semibold leading-none text-brand-700 transition-colors hover:text-brand-800"
-                       style="font-size:clamp(0.72rem,3.4vw,1.25rem)"><?= t('contacts.address') ?></a>
+                       style="font-size:clamp(0.72rem,3.4vw,1.25rem)"><?= e(SiteContent::address()) ?></a>
                 </div>
             </div>
         </div>

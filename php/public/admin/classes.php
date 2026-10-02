@@ -27,7 +27,7 @@ try {
     }
 
     $classes = Database::fetchAll(
-        'SELECT c.id, c.slug, c.kind, c.title_ru, c.price_label, c.sort_order, c.is_published, cat.title_ru AS category
+        'SELECT c.id, c.slug, c.kind, c.title_ru, c.price_label, c.sort_order, c.is_published, c.image_path, c.emoji, cat.title_ru AS category
          FROM classes c LEFT JOIN categories cat ON cat.id = c.category_id
          ORDER BY c.kind, c.sort_order, c.id',
     );
@@ -50,10 +50,16 @@ require APP_ROOT . '/templates/admin/header.php';
     <div class="space-y-2">
         <?php foreach (array_filter($classes, static fn (array $c): bool => $c['kind'] === $kind) as $class): ?>
             <div class="card-soft flex flex-wrap items-center gap-x-4 gap-y-2 p-3 text-sm <?= (int) $class['is_published'] ? '' : 'opacity-60' ?>">
+                <?php if (!empty($class['image_path'])): ?>
+                    <img src="<?= e((string) $class['image_path']) ?>" alt="" class="size-14 shrink-0 rounded-xl object-cover">
+                <?php else: ?>
+                    <span class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-2xl"><?= e((string) ($class['emoji'] ?: '✦')) ?></span>
+                <?php endif; ?>
                 <div class="min-w-0 flex-1">
                     <p class="font-semibold"><?= e((string) $class['title_ru']) ?></p>
                     <p class="text-warm-500">
-                        <?= e((string) ($class['category'] ?? 'без категории')) ?> · <?= priceText((string) $class['price_label']) ?> · порядок <?= (int) $class['sort_order'] ?> · /<?= e((string) $class['slug']) ?>
+                        <?= e((string) ($class['category'] ?? 'без категории')) ?> · <?= priceText((string) $class['price_label']) ?>
+                        <?php if (!(int) $class['is_published']): ?> · скрыт<?php endif; ?>
                     </p>
                 </div>
                 <form method="post">

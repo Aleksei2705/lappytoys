@@ -6,6 +6,18 @@ function site(string $key)
 {
     static $site = null;
     $site ??= require APP_ROOT . '/config/site.php';
+    static $contactKeys = [
+        'phone' => true, 'phone_display' => true, 'telegram' => true, 'telegram_handle' => true,
+        'telegram_group' => true, 'whatsapp' => true, 'instagram' => true, 'instagram_handle' => true,
+        'tiktok' => true, 'tiktok_handle' => true, 'map_2gis' => true, 'map_google' => true,
+        'map_link' => true, 'map_embed_url' => true,
+    ];
+    if (isset($contactKeys[$key])) {
+        $override = SiteContent::contactValue($key);
+        if ($override !== null) {
+            return $override;
+        }
+    }
     return $site[$key] ?? null;
 }
 

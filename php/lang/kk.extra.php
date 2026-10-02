@@ -20,4 +20,7 @@ return [
     'page.toHome' => 'Басты бетке',
     'page.unavailable' => 'Сайт уақытша қолжетімсіз',
     'page.unavailableText' => 'Біз мәселені шешіп жатырмыз. Сәлден кейін қайта кіріп көріңіз.',
+    'weekday.mon' => 'Дүйсенбі',
+    'weekday.wed' => 'Сәрсенбі',
+    'weekday.fri' => 'Жұма',
 ];

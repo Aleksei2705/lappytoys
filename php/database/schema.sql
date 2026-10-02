@@ -118,3 +118,10 @@ CREATE TABLE bookings (
   CONSTRAINT fk_bookings_class FOREIGN KEY (class_id)
     REFERENCES classes(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE site_blocks (
+  block_key  VARCHAR(40) NOT NULL,
+  payload    LONGTEXT NOT NULL,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (block_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

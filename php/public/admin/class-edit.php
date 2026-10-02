@@ -43,6 +43,20 @@ function accentOptions(): array
     return $options;
 }
 
+function accentLabel(string $accent): string
+{
+    $names = [
+        'brand-50' => 'пудра',
+        'brand-100' => 'розовый',
+        'accent-50' => 'персик',
+        'accent-100' => 'тёплый',
+    ];
+    if (preg_match('/^from-(brand-50|brand-100|accent-50|accent-100) to-(brand-50|brand-100|accent-50|accent-100)$/', $accent, $match) !== 1) {
+        return $accent;
+    }
+    return $names[$match[1]] . ' → ' . $names[$match[2]];
+}
+
 $id = Admin::intParam($_GET, 'id');
 $errors = [];
 $existing = null;
@@ -179,6 +193,19 @@ try {
 }
 
 $val = static fn (string $name): string => e((string) ($form[$name] ?? ''));
+$localeField = static function (string $name, string $label, int $max, bool $area, bool $required = false) use ($val): void {
+    $locale = str_ends_with($name, '_kk') ? 'kk' : 'ru';
+    ?>
+    <div data-locale-field="<?= $locale ?>" <?= $locale === 'kk' ? 'hidden' : '' ?>>
+        <label for="<?= e($name) ?>" class="mb-2 block text-sm font-medium"><?= e($label) ?></label>
+        <?php if ($area): ?>
+            <textarea id="<?= e($name) ?>" name="<?= e($name) ?>" rows="4" maxlength="<?= $max ?>" <?= $required ? 'required' : '' ?> class="textarea-field"><?= $val($name) ?></textarea>
+        <?php else: ?>
+            <input id="<?= e($name) ?>" name="<?= e($name) ?>" maxlength="<?= $max ?>" <?= $required ? 'required' : '' ?> value="<?= $val($name) ?>" class="input-field">
+        <?php endif; ?>
+    </div>
+    <?php
+};
 $adminTitle = $existing === null ? 'Новая запись' : 'Редактирование: ' . ($existing['title_ru'] ?? '');
 require APP_ROOT . '/templates/admin/header.php';
 ?>
@@ -188,9 +215,22 @@ require APP_ROOT . '/templates/admin/header.php';
     </ul>
 <?php endif; ?>
 
-<form method="post" enctype="multipart/form-data" class="card-soft max-w-4xl space-y-6 p-6">
+<form method="post" enctype="multipart/form-data" class="card-soft max-w-4xl space-y-6 p-6" data-admin-tabs>
     <?= Security::csrfField() ?>
 
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-1">
+            <?php foreach (['main' => 'Основное', 'text' => 'Текст', 'lists' => 'Списки', 'photo' => 'Фото'] as $tab => $tabLabel): ?>
+                <button type="button" data-tab="<?= e($tab) ?>" class="rounded-lg px-3 py-1.5 text-sm font-medium" aria-selected="<?= $tab === 'main' ? 'true' : 'false' ?>"><?= e($tabLabel) ?></button>
+            <?php endforeach; ?>
+        </div>
+        <div class="flex gap-1" data-locale-switch>
+            <button type="button" data-locale="ru" class="rounded-lg px-3 py-1.5 text-sm font-medium" aria-pressed="true">Русский</button>
+            <button type="button" data-locale="kk" class="rounded-lg px-3 py-1.5 text-sm font-medium" aria-pressed="false">Қазақша</button>
+        </div>
+    </div>
+
+    <div data-panel="main" class="space-y-6">
     <div class="grid gap-5 sm:grid-cols-2">
         <div>
             <label for="kind" class="mb-2 block text-sm font-medium">Тип</label>
@@ -225,7 +265,7 @@ require APP_ROOT . '/templates/admin/header.php';
             <label for="accent" class="mb-2 block text-sm font-medium">Градиент карточки</label>
             <select id="accent" name="accent" class="input-field">
                 <?php foreach (accentOptions() as $option): ?>
-                    <option value="<?= e($option) ?>" <?= ($form['accent'] ?? '') === $option ? 'selected' : '' ?>><?= e($option) ?></option>
+                    <option value="<?= e($option) ?>" <?= ($form['accent'] ?? '') === $option ? 'selected' : '' ?>><?= e(accentLabel($option)) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -237,39 +277,31 @@ require APP_ROOT . '/templates/admin/header.php';
             <input type="checkbox" name="is_published" value="1" <?= !empty($form['is_published']) ? 'checked' : '' ?>> Показывать на сайте
         </label>
     </div>
-
     <div class="grid gap-5 sm:grid-cols-2">
-        <?php foreach (CLASS_TEXT_FIELDS as $name => [$label, $max, $required]): ?>
-            <div class="<?= str_starts_with($name, 'description') ? 'sm:col-span-2' : '' ?>">
-                <label for="<?= e($name) ?>" class="mb-2 block text-sm font-medium"><?= e($label) ?></label>
-                <?php if (str_starts_with($name, 'description')): ?>
-                    <textarea id="<?= e($name) ?>" name="<?= e($name) ?>" rows="2" maxlength="<?= $max ?>" <?= $required ? 'required' : '' ?> class="textarea-field"><?= $val($name) ?></textarea>
-                <?php else: ?>
-                    <input id="<?= e($name) ?>" name="<?= e($name) ?>" maxlength="<?= $max ?>" <?= $required ? 'required' : '' ?> value="<?= $val($name) ?>" class="input-field">
-                <?php endif; ?>
-            </div>
+        <?php foreach (['title_ru', 'title_kk', 'badge_ru', 'badge_kk', 'duration_ru', 'duration_kk', 'level_ru', 'level_kk'] as $name): ?>
+            <?php [$label, $max, $required] = CLASS_TEXT_FIELDS[$name]; $localeField($name, $label, $max, false, $required); ?>
+        <?php endforeach; ?>
+    </div>
+    </div>
+
+    <div data-panel="text" class="grid gap-5" hidden>
+        <?php foreach (['description_ru', 'description_kk'] as $name): ?>
+            <?php [$label, $max, $required] = CLASS_TEXT_FIELDS[$name]; $localeField($name, $label, $max, true, $required); ?>
+        <?php endforeach; ?>
+        <?php foreach (CLASS_LONG_FIELDS as $name => $label): ?>
+            <?php $localeField($name, $label, 5000, true); ?>
         <?php endforeach; ?>
     </div>
 
-    <?php foreach (CLASS_LONG_FIELDS as $name => $label): ?>
-        <div>
-            <label for="<?= e($name) ?>" class="mb-2 block text-sm font-medium"><?= e($label) ?></label>
-            <textarea id="<?= e($name) ?>" name="<?= e($name) ?>" rows="3" maxlength="5000" class="textarea-field"><?= $val($name) ?></textarea>
-        </div>
-    <?php endforeach; ?>
-
-    <div class="grid gap-5 sm:grid-cols-2">
+    <div data-panel="lists" class="space-y-5" hidden>
+        <p class="text-xs text-warm-500">Каждый пункт — с новой строки.</p>
         <?php foreach (CLASS_LIST_FIELDS as $name => $label): ?>
-            <div>
-                <label for="<?= e($name) ?>" class="mb-2 block text-sm font-medium"><?= e($label) ?></label>
-                <textarea id="<?= e($name) ?>" name="<?= e($name) ?>" rows="5" class="textarea-field"><?= $val($name) ?></textarea>
-                <p class="mt-1 text-xs text-warm-500">Каждый пункт — с новой строки.</p>
-            </div>
+            <?php $localeField($name, $label, 20000, true); ?>
         <?php endforeach; ?>
     </div>
 
-    <div>
-        <p class="mb-2 text-sm font-medium">Изображение (JPG, PNG, WebP, до 2 МБ)</p>
+    <div data-panel="photo" hidden>
+        <p class="mb-2 text-sm font-medium">Изображение (JPG, PNG, WebP, до 3 МБ)</p>
         <img id="image-preview" src="<?= $val('image_path') ?>" alt="" class="mb-3 max-h-40 rounded-xl <?= empty($form['image_path']) ? 'hidden' : '' ?>">
         <input type="file" name="image" accept="image/jpeg,image/png,image/webp" data-image-input="#image-preview" class="block text-sm">
         <?php if (!empty($existing['image_path'])): ?>

@@ -9,15 +9,15 @@
         ]);
         ?>
         <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <?php foreach (site('schedule') as $slot): ?>
+            <?php foreach (SiteContent::scheduleForPage() as $slot): ?>
                 <article class="card-soft flex flex-col px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                     <div class="flex items-center gap-2 text-brand-700">
                         <?= icon('calendar-days', 'size-4 shrink-0') ?>
-                        <p class="text-sm font-semibold"><?= t($slot['weekday']) ?></p>
+                        <p class="text-sm font-semibold"><?= e($slot['weekday']) ?></p>
                     </div>
                     <p class="mt-2 font-heading text-lg font-semibold text-warm-900"><?= e($slot['time']) ?></p>
                     <p class="mt-1 text-sm font-medium text-warm-800"><?= t('schedule.studio') ?></p>
-                    <p class="mt-1 text-xs text-warm-500"><?= t($slot['note']) ?></p>
+                    <p class="mt-1 text-xs text-warm-500"><?= e($slot['note']) ?></p>
                 </article>
             <?php endforeach; ?>
         </div>

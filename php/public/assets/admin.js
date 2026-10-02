@@ -22,4 +22,80 @@
       preview.classList.remove("hidden");
     }),
   );
+
+  const tabOn = ["bg-brand-100", "text-brand-800"];
+  const tabOff = ["text-warm-700"];
+
+  document.querySelectorAll("[data-admin-tabs]").forEach((root) => {
+    const buttons = [...root.querySelectorAll("[data-tab]")];
+    const panels = [...root.querySelectorAll("[data-panel]")];
+    const show = (name) => {
+      buttons.forEach((button) => {
+        const active = button.dataset.tab === name;
+        button.setAttribute("aria-selected", String(active));
+        button.classList.remove(...tabOn, ...tabOff);
+        button.classList.add(...(active ? tabOn : tabOff));
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== name;
+      });
+    };
+    buttons.forEach((button) => button.addEventListener("click", () => show(button.dataset.tab)));
+    show(buttons.find((button) => button.getAttribute("aria-selected") === "true")?.dataset.tab || buttons[0]?.dataset.tab);
+  });
+
+  document.querySelectorAll("[data-locale-switch]").forEach((root) => {
+    const buttons = [...root.querySelectorAll("[data-locale]")];
+    const apply = (locale) => {
+      buttons.forEach((button) => {
+        const active = button.dataset.locale === locale;
+        button.setAttribute("aria-pressed", String(active));
+        button.classList.remove(...tabOn, ...tabOff);
+        button.classList.add(...(active ? tabOn : tabOff));
+      });
+      document.querySelectorAll("[data-locale-field]").forEach((field) => {
+        field.hidden = field.dataset.localeField !== locale;
+      });
+    };
+    buttons.forEach((button) => button.addEventListener("click", () => apply(button.dataset.locale)));
+    apply("ru");
+  });
+
+  document.querySelectorAll("form").forEach((form) => {
+    form.addEventListener("invalid", (event) => {
+      const field = event.target;
+      const panel = field.closest?.("[data-panel]");
+      if (panel) {
+        const tabs = panel.closest("[data-admin-tabs]");
+        tabs?.querySelector(`[data-tab="${panel.dataset.panel}"]`)?.click();
+      }
+      const localeField = field.closest?.("[data-locale-field]");
+      if (localeField) {
+        document.querySelector(`[data-locale-switch] [data-locale="${localeField.dataset.localeField}"]`)?.click();
+      }
+    }, true);
+  });
+
+  document.querySelectorAll("[data-add-row]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const template = document.querySelector(button.dataset.addTemplate);
+      const list = document.querySelector(button.dataset.addRow);
+      if (!template || !list) return;
+      list.append(template.content.cloneNode(true));
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    const remove = event.target.closest?.("[data-remove-row]");
+    if (remove) {
+      remove.closest("[data-row]")?.remove();
+      return;
+    }
+    const move = event.target.closest?.("[data-move]");
+    if (!move) return;
+    const row = move.closest("[data-row]");
+    if (!row) return;
+    if (move.dataset.move === "up" && row.previousElementSibling) row.previousElementSibling.before(row);
+    if (move.dataset.move === "down" && row.nextElementSibling) row.nextElementSibling.after(row);
+  });
 })();

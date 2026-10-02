@@ -20,4 +20,7 @@ return [
     'page.toHome' => 'На главную',
     'page.unavailable' => 'Сайт временно недоступен',
     'page.unavailableText' => 'Мы уже разбираемся. Попробуйте зайти чуть позже.',
+    'weekday.mon' => 'Понедельник',
+    'weekday.wed' => 'Среда',
+    'weekday.fri' => 'Пятница',
 ];
