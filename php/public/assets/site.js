@@ -607,9 +607,23 @@
     if (document.querySelector(".instagram-media")) {
       load("https://www.instagram.com/embed.js", () => window.instgrm?.Embeds?.process?.());
     }
-    if (document.querySelector(".tiktok-embed")) {
-      load("https://www.tiktok.com/embed.js", () => window.tiktokEmbed?.lib?.render?.());
+    const tiktok = document.querySelector(".tiktok-embed");
+    if (!tiktok) return;
+    const startTikTok = () => {
+      const src = "https://www.tiktok.com/embed.js";
+      if (document.querySelector(`script[src="${src}"]`)) return;
+      load(src);
+    };
+    if (!("IntersectionObserver" in window)) {
+      startTikTok();
+      return;
     }
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      startTikTok();
+    }, { rootMargin: "480px 0px" });
+    observer.observe(tiktok);
   };
 
   const initKnitScarf = () => {
