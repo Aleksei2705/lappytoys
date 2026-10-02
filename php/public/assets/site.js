@@ -39,12 +39,18 @@
 
     toggle.addEventListener("click", () => setOpen(menu.hidden));
     menu.querySelectorAll("[data-menu-close]").forEach((node) =>
-      node.addEventListener("click", () => {
+      node.addEventListener("click", (event) => {
         if (node.tagName === "A") {
-          const hash = new URL(node.href, location.href).hash;
-          setOpen(false);
-          if (hash) requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView());
-          return;
+          const url = new URL(node.href, location.href);
+          const samePage = url.pathname === location.pathname;
+          const target = url.hash && samePage ? document.getElementById(url.hash.slice(1)) : null;
+          if (target) {
+            event.preventDefault();
+            setOpen(false);
+            history.pushState(null, "", url.hash);
+            requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+            return;
+          }
         }
         setOpen(false);
       }),

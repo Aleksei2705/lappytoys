@@ -125,7 +125,7 @@ ym(<?= (int) $metricaId ?>,"init",{clickmap:true,trackLinks:true,accurateTrackBo
             <?php endforeach; ?>
         </div>
         <div class="mobile-nav-cta">
-            <?php render('partials/booking-button', ['class' => 'h-11 w-full']); ?>
+            <?php render('partials/booking-button', ['class' => 'h-11 w-full', 'menuClose' => true]); ?>
         </div>
     </nav>
 </div>
