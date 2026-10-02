@@ -38,9 +38,17 @@ $displayName = $adminUser['name'] !== '' ? $adminUser['name'] : $adminUser['emai
     <link rel="stylesheet" href="<?= e(asset('assets/app.css')) ?>">
 </head>
 <body class="is-admin min-h-screen bg-cream text-warm-900">
-<div class="lg:flex lg:min-h-screen">
-    <aside class="border-b border-brand-100 bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r">
-        <a href="/admin/" class="block px-4 py-4 font-heading text-lg font-bold text-brand-700">Lappy Art</a>
+<div class="admin-shell">
+    <header class="admin-head">
+        <a href="/admin/" class="admin-logo">Lappy Art</a>
+        <div class="admin-session">
+            <span class="admin-user"><?= e($displayName) ?></span>
+            <a href="/" target="_blank" rel="noopener" class="admin-site-link">На сайт</a>
+            <form method="post" action="/admin/logout.php">
+                <?= Security::csrfField() ?>
+                <button type="submit" class="btn-ghost !px-3 !py-1.5">Выйти</button>
+            </form>
+        </div>
         <nav class="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-1 lg:flex-col lg:overflow-visible lg:px-3 lg:pb-4" data-admin-nav>
             <?php foreach ($navItems as $key => [$href, $label, $badge]): ?>
                 <a href="<?= e($href) ?>"
@@ -53,16 +61,8 @@ $displayName = $adminUser['name'] !== '' ? $adminUser['name'] : $adminUser['emai
                 </a>
             <?php endforeach; ?>
         </nav>
-    </aside>
-    <div class="min-w-0 flex-1">
-        <div class="flex items-center justify-end gap-3 border-b border-brand-100 bg-white px-4 py-2 text-sm">
-            <span class="mr-auto truncate text-warm-500"><?= e($displayName) ?></span>
-            <a href="/" target="_blank" rel="noopener" class="font-medium text-brand-700">На сайт</a>
-            <form method="post" action="/admin/logout.php">
-                <?= Security::csrfField() ?>
-                <button type="submit" class="btn-ghost !px-3 !py-1.5">Выйти</button>
-            </form>
-        </div>
+    </header>
+    <div class="admin-body">
         <main class="mx-auto max-w-5xl px-4 py-8">
             <h1 class="mb-6 font-heading text-2xl font-bold sm:text-3xl"><?= e($adminTitle) ?></h1>
             <?php if ($flash !== null): ?>
