@@ -46,7 +46,7 @@ try {
     <link rel="icon" href="/favicon-32.png" sizes="32x32">
     <link rel="stylesheet" href="<?= e(asset('assets/app.css')) ?>">
 </head>
-<body class="flex min-h-screen items-center justify-center bg-cream px-4 text-warm-900">
+<body class="is-admin flex min-h-screen items-center justify-center bg-cream px-4 text-warm-900">
 <form method="post" class="card-soft w-full max-w-sm space-y-5 p-7 shadow-lg">
     <div class="text-center">
         <p class="font-heading text-2xl font-bold text-brand-700">Lappy Art</p>

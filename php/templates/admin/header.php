@@ -35,7 +35,7 @@ $displayName = $adminUser['name'] !== '' ? $adminUser['name'] : $adminUser['emai
     <link rel="icon" href="/favicon-32.png" sizes="32x32">
     <link rel="stylesheet" href="<?= e(asset('assets/app.css')) ?>">
 </head>
-<body class="min-h-screen bg-cream text-warm-900">
+<body class="is-admin min-h-screen bg-cream text-warm-900">
 <div class="lg:flex lg:min-h-screen">
     <aside class="border-b border-brand-100 bg-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col lg:border-b-0 lg:border-r">
         <a href="/admin/" class="block px-4 py-4 font-heading text-lg font-bold text-brand-700">Lappy Art</a>

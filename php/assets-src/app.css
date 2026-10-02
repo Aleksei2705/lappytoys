@@ -987,3 +987,79 @@ body {
   opacity: 0.85;
   pointer-events: none;
 }
+
+/* Админка: те же компоненты, но с читаемыми рамками */
+body.is-admin {
+  background-color: #f4e4eb;
+}
+
+body.is-admin .card-soft,
+body.is-admin .card {
+  background: #fff;
+  border: 1px solid #e2b3c6;
+  box-shadow: 0 1px 2px rgb(125 50 84 / 0.08);
+}
+
+body.is-admin .input-field,
+body.is-admin .textarea-field {
+  background: #fff;
+  border: 1.5px solid #b06a88;
+  color: #1f161a;
+  box-shadow: inset 0 1px 2px rgb(31 22 26 / 0.05);
+}
+
+body.is-admin .input-field:focus,
+body.is-admin .textarea-field:focus {
+  border-color: #7d3254;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgb(168 74 111 / 0.28);
+}
+
+body.is-admin .btn-primary {
+  border: 1.5px solid #5c2340;
+  box-shadow: 0 1px 2px rgb(92 35 64 / 0.35);
+}
+
+body.is-admin .btn-secondary,
+body.is-admin .btn-ghost {
+  background: #fff;
+  border: 1.5px solid #a84a6f;
+  color: #7d3254;
+  box-shadow: none;
+}
+
+body.is-admin .btn-secondary:hover,
+body.is-admin .btn-ghost:hover {
+  background: #fdf2f6;
+  border-color: #5c2340;
+  color: #5c2340;
+}
+
+body.is-admin input[type="file"] {
+  display: block;
+  width: 100%;
+  border: 1.5px dashed #b06a88;
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 0.65rem 0.85rem;
+}
+
+body.is-admin [data-tab],
+body.is-admin [data-locale] {
+  border: 1.5px solid #d7a3b8;
+  background: #fff;
+  color: #34282e;
+}
+
+body.is-admin [data-tab][aria-selected="true"],
+body.is-admin [data-locale][aria-pressed="true"] {
+  border-color: #7d3254;
+  background: #f8cfe0;
+  color: #5c2340;
+}
+
+body.is-admin aside nav a.bg-brand-100 {
+  background: #f8cfe0;
+  box-shadow: inset 0 0 0 1.5px #b06a88;
+  color: #5c2340;
+}
