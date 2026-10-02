@@ -7,6 +7,11 @@ Admin::sendHeaders();
 
 $error = '';
 $email = '';
+$notice = '';
+$flash = Admin::takeFlash();
+if ($flash !== null && $flash['type'] === 'success') {
+    $notice = $flash['message'];
+}
 
 try {
     if (Auth::user() !== null) {
@@ -59,10 +64,14 @@ try {
         <label for="password" class="mb-2 block text-sm font-medium text-warm-700">Пароль</label>
         <input id="password" name="password" type="password" required autocomplete="current-password" class="input-field">
     </div>
+    <?php if ($notice !== ''): ?>
+        <p class="text-sm text-green-700" role="status"><?= e($notice) ?></p>
+    <?php endif; ?>
     <?php if ($error !== ''): ?>
         <p class="text-sm text-red-600" role="alert"><?= e($error) ?></p>
     <?php endif; ?>
     <button type="submit" class="btn-primary h-11 w-full">Войти</button>
+    <p class="text-center text-sm"><a href="/admin/forgot.php" class="text-brand-700 underline">Забыли пароль?</a></p>
 </form>
 </body>
 </html>
