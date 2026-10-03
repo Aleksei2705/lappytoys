@@ -824,7 +824,6 @@
         sessionStorage.setItem("lappy-assistant-opened", "1");
         if (input) input.readOnly = true;
         input?.blur();
-        root.dispatchEvent(new CustomEvent("assistant:open"));
       }
     };
 
@@ -898,201 +897,122 @@
 
     const holdHint = root.querySelector("[data-assistant-hold-hint]");
     const holdTime = root.querySelector("[data-assistant-hold-time]");
-    if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext && window.MediaRecorder) {
-      let stream = null;
-      let warmStream = null;
-      let recorder = null;
-      let chunks = [];
-      let session = 0;
+    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (voice && Speech && window.isSecureContext) {
+      let holding = false;
       let cancel = false;
       let startX = 0;
       let startedAt = 0;
       let clock = 0;
-      let armed = false;
-      let recording = false;
-      let wantStop = false;
-      let touchActive = false;
+      let heard = "";
+      let turn = 0;
+      let settled = false;
       const placeholder = input?.placeholder || "";
       const releaseText = holdHint?.textContent || "";
       const cancelText = data.cancel || "Отмена";
-      const warmMic = () => {
-        if (warmStream || !navigator.mediaDevices?.getUserMedia) return;
-        navigator.mediaDevices.getUserMedia({ audio: true }).then((next) => {
-          warmStream = next;
-        }).catch(() => {});
-      };
-      root.addEventListener("assistant:open", warmMic, { once: true });
-      warmMic();
+      const recognition = new Speech();
+      recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.addEventListener("result", (event) => {
+        heard = Array.from(event.results).map((item) => item[0].transcript).join(" ").trim();
+      });
+      recognition.addEventListener("end", () => {
+        if (!holding) return;
+        try {
+          recognition.start();
+        } catch {
+          /* Браузер ещё закрывает прошлый сеанс. */
+        }
+      });
       const paintTime = () => {
         const seconds = Math.floor((Date.now() - startedAt) / 1000);
         if (holdTime) holdTime.textContent = Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
       };
       const endHold = () => {
         window.clearInterval(clock);
-        armed = false;
-        recording = false;
-        wantStop = false;
-        touchActive = false;
         voice.classList.remove("is-listening");
         voice.setAttribute("aria-pressed", "false");
         form.classList.remove("is-recording", "is-cancel");
         if (input) input.placeholder = placeholder;
         if (holdHint) holdHint.textContent = releaseText;
       };
-      const stopStream = () => {
-        if (stream && stream !== warmStream) stream.getTracks().forEach((track) => track.stop());
-        stream = null;
-      };
-      const sendAudio = async (blob, mime) => {
-        const audio = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
-          reader.readAsDataURL(blob);
-        });
-        const pending = showTyping();
-        let body = null;
-        try {
-          const response = await fetch("/chat.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ _csrf: data.csrf, audio, mime, history: [], aside: asideCount }),
-          });
-          body = await response.json();
-        } catch {
-          body = null;
-        }
-        pending.remove();
-        if (body?.error === "busy" || !body?.text) {
-          addMessage(body?.error === "busy" ? (data.busy || data.unheard) : (data.unheard || placeholder), "bot");
-          return;
-        }
-        if (body.heard) addMessage(body.heard, "user");
-        addMessage(body.text, "bot", body.href, body.link);
-      };
-      const finishRecording = (mySession, mime) => {
-        const blob = new Blob(chunks, { type: mime });
-        stopStream();
-        endHold();
-        warmMic();
-        if (mySession !== session || cancel) return;
+      const settle = (turnId) => {
+        if (turnId !== turn || settled) return;
+        settled = true;
+        holding = false;
+        const text = cancel ? "" : heard.trim();
         const held = Date.now() - startedAt;
-        if (blob.size < 500 || held < 500) {
-          if (held >= 900) addMessage(data.unheard || placeholder, "bot");
-          return;
-        }
-        sendAudio(blob, mime);
+        heard = "";
+        endHold();
+        if (text) ask(text.slice(0, 240));
+        else if (!cancel && held > 700) addMessage(data.unheard || placeholder, "bot");
       };
-      const stopRecording = () => {
-        if (!armed) return;
-        wantStop = true;
-        if (recorder && recording && recorder.state === "recording") recorder.stop();
-      };
-      const attachRecorder = (mySession) => {
-        const preferred = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
+      const releaseHold = () => {
+        if (!holding) return;
+        holding = false;
+        const turnId = turn;
         try {
-          recorder = preferred ? new MediaRecorder(stream, { mimeType: preferred }) : new MediaRecorder(stream);
+          recognition.stop();
         } catch {
-          stopStream();
-          endHold();
-          warmMic();
-          addMessage(data.unheard || placeholder, "bot");
+          settle(turnId);
           return;
         }
-        const mime = (recorder.mimeType || preferred || "audio/webm").split(";")[0];
-        recorder.addEventListener("dataavailable", (event) => {
-          if (event.data.size) chunks.push(event.data);
-        });
-        recorder.addEventListener("stop", () => finishRecording(mySession, mime), { once: true });
-        recording = true;
-        recorder.start(250);
-        window.setTimeout(() => {
-          if (mySession === session && recording) stopRecording();
-        }, 20000);
-        if (wantStop) window.setTimeout(() => recorder.stop(), 120);
+        window.setTimeout(() => settle(turnId), 650);
       };
-      const beginHold = async (clientX, micPromise) => {
-        if (voice.classList.contains("is-send") || armed) return;
-        const mySession = session + 1;
-        session = mySession;
-        armed = true;
-        wantStop = false;
+      const pressHold = (clientX, pointerId) => {
+        if (voice.classList.contains("is-send") || holding) return;
+        holding = true;
+        settled = false;
         cancel = false;
+        heard = "";
+        turn += 1;
         startX = clientX;
         startedAt = Date.now();
-        chunks = [];
-        recorder = null;
-        recording = false;
         voice.classList.add("is-listening");
         voice.setAttribute("aria-pressed", "true");
         form.classList.add("is-recording");
         paintTime();
         clock = window.setInterval(paintTime, 250);
-        if (warmStream && warmStream.active) {
-          stream = warmStream;
-          warmStream = null;
-        } else {
+        try {
+          voice.setPointerCapture(pointerId);
+        } catch {
+          /* На части телефонов захват указателя недоступен. */
+        }
+        try {
+          recognition.start();
+        } catch {
           try {
-            stream = await micPromise;
+            recognition.abort();
           } catch {
-            if (mySession !== session) return;
-            endHold();
-            warmMic();
-            return;
+            /* Прошлый сеанс уже закрыт. */
           }
+          window.setTimeout(() => {
+            if (!holding) return;
+            try {
+              recognition.start();
+            } catch {
+              holding = false;
+              settled = true;
+              endHold();
+            }
+          }, 150);
         }
-        if (mySession !== session) {
-          stopStream();
-          return;
-        }
-        attachRecorder(mySession);
+        window.setTimeout(releaseHold, 20000);
       };
-      const onPress = (clientX, micPromise) => {
-        beginHold(clientX, micPromise);
-      };
-      voice.addEventListener("touchstart", (event) => {
-        if (voice.classList.contains("is-send") || touchActive) return;
-        touchActive = true;
-        const micPromise = navigator.mediaDevices.getUserMedia({ audio: true });
-        onPress(event.touches[0]?.clientX || 0, micPromise);
-        event.preventDefault();
-      }, { passive: false });
-      voice.addEventListener("touchmove", (event) => {
-        if (!armed) return;
-        event.preventDefault();
-        const x = event.touches[0]?.clientX || 0;
-        cancel = startX - x > 72;
-        form.classList.toggle("is-cancel", cancel);
-        if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
-      }, { passive: false });
-      voice.addEventListener("touchend", (event) => {
-        if (!touchActive) return;
-        event.preventDefault();
-        stopRecording();
-      });
-      voice.addEventListener("touchcancel", () => {
-        cancel = true;
-        stopRecording();
-      });
       voice.addEventListener("pointerdown", (event) => {
-        if (voice.classList.contains("is-send") || touchActive || event.pointerType === "touch") return;
+        if (voice.classList.contains("is-send")) return;
         if (event.pointerType === "mouse" && event.button !== 0) return;
         event.preventDefault();
-        const micPromise = navigator.mediaDevices.getUserMedia({ audio: true });
-        onPress(event.clientX, micPromise);
-        try {
-          voice.setPointerCapture(event.pointerId);
-        } catch {
-          /* Захват указателя недоступен. */
-        }
+        pressHold(event.clientX, event.pointerId);
       });
       voice.addEventListener("pointermove", (event) => {
-        if (!armed || event.pointerType === "touch") return;
+        if (!holding) return;
         cancel = startX - event.clientX > 72;
         form.classList.toggle("is-cancel", cancel);
         if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
       });
       voice.addEventListener("pointerup", (event) => {
-        if (event.pointerType === "touch") return;
         if (voice.hasPointerCapture?.(event.pointerId)) {
           try {
             voice.releasePointerCapture(event.pointerId);
@@ -1100,11 +1020,24 @@
             /* Указатель уже отпущен. */
           }
         }
-        stopRecording();
+        if (cancel) {
+          turn += 1;
+          holding = false;
+          heard = "";
+          try {
+            recognition.abort();
+          } catch {
+            /* Распознавание уже остановлено. */
+          }
+          settled = true;
+          endHold();
+          return;
+        }
+        releaseHold();
       });
       voice.addEventListener("pointercancel", () => {
         cancel = true;
-        stopRecording();
+        releaseHold();
       });
       voice.addEventListener("contextmenu", (event) => event.preventDefault());
     }
