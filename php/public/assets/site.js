@@ -874,44 +874,75 @@
     });
 
     const voice = root.querySelector("[data-assistant-voice]");
-    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (voice && Speech && window.isSecureContext) {
-      const recognition = new Speech();
-      recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
-      recognition.interimResults = true;
-      recognition.continuous = false;
-      let heard = "";
+    if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext) {
       voice.hidden = false;
-      voice.addEventListener("click", () => {
-        if (voice.classList.contains("is-listening")) {
-          recognition.stop();
+      let recorder = null;
+      let chunks = [];
+      const placeholder = input?.placeholder || "";
+      const finishListen = () => {
+        voice.classList.remove("is-listening");
+        voice.setAttribute("aria-pressed", "false");
+        if (input) input.placeholder = placeholder;
+      };
+      voice.addEventListener("click", async () => {
+        if (recorder && recorder.state === "recording") {
+          recorder.stop();
           return;
         }
-        heard = "";
+        let stream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch {
+          if (input) input.placeholder = data.unheard || placeholder;
+          return;
+        }
+        const preferred = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) => MediaRecorder.isTypeSupported(type));
+        recorder = preferred ? new MediaRecorder(stream, { mimeType: preferred }) : new MediaRecorder(stream);
+        chunks = [];
+        recorder.addEventListener("dataavailable", (event) => {
+          if (event.data.size) chunks.push(event.data);
+        });
+        recorder.addEventListener("stop", async () => {
+          stream.getTracks().forEach((track) => track.stop());
+          finishListen();
+          const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+          if (blob.size < 800) {
+            if (input) input.placeholder = data.unheard || placeholder;
+            return;
+          }
+          const audio = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+            reader.readAsDataURL(blob);
+          });
+          const mime = (recorder.mimeType || "audio/webm").split(";")[0];
+          const pending = showTyping();
+          let body = null;
+          try {
+            const response = await fetch("/chat.php", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ _csrf: data.csrf, audio, mime, history: [], aside: asideCount }),
+            });
+            body = await response.json();
+          } catch {
+            body = null;
+          }
+          pending.remove();
+          if (!body?.heard || !body?.text) {
+            if (input) input.placeholder = data.unheard || placeholder;
+            return;
+          }
+          addMessage(body.heard, "user");
+          addMessage(body.text, "bot", body.href, body.link);
+        });
         voice.classList.add("is-listening");
         voice.setAttribute("aria-pressed", "true");
-        try {
-          recognition.start();
-        } catch {
-          voice.classList.remove("is-listening");
-          voice.setAttribute("aria-pressed", "false");
-        }
-      });
-      recognition.addEventListener("result", (event) => {
-        heard = Array.from(event.results).map((item) => item[0].transcript).join(" ").trim();
-        if (input) input.value = heard.slice(0, 240);
-      });
-      recognition.addEventListener("end", () => {
-        voice.classList.remove("is-listening");
-        voice.setAttribute("aria-pressed", "false");
-        if (!heard) return;
-        ask(heard.slice(0, 240));
-        heard = "";
-        if (input) input.value = "";
-      });
-      recognition.addEventListener("error", () => {
-        voice.classList.remove("is-listening");
-        voice.setAttribute("aria-pressed", "false");
+        if (input) input.placeholder = data.hearing || placeholder;
+        recorder.start();
+        window.setTimeout(() => {
+          if (recorder && recorder.state === "recording") recorder.stop();
+        }, 12000);
       });
     }
   };

@@ -15,6 +15,31 @@ final class Assistant
         return Config::get('ASSISTANT_API_KEY') !== '';
     }
 
+    public static function transcribe(string $audio, string $mime): ?string
+    {
+        if (!self::enabled() || !str_starts_with($mime, 'audio/')) {
+            return null;
+        }
+        $body = [
+            'contents' => [[
+                'role' => 'user',
+                'parts' => [
+                    ['text' => 'Расшифруй эту короткую речь. Верни только сказанные слова, без пояснений и кавычек. Если речи нет, верни пустую строку.'],
+                    ['inlineData' => ['mimeType' => $mime, 'data' => $audio]],
+                ],
+            ]],
+            'generationConfig' => ['temperature' => 0],
+        ];
+        $raw = self::request($body, true);
+        if ($raw === null) {
+            return null;
+        }
+        $decoded = json_decode($raw, true);
+        $text = trim((string) ($decoded['candidates'][0]['content']['parts'][0]['text'] ?? ''));
+        $text = trim($text, "\"'«»");
+        return $text !== '' ? mb_substr($text, 0, 240) : null;
+    }
+
     public static function answer(string $question, array $history): ?array
     {
         if (!self::enabled()) {
@@ -218,14 +243,14 @@ final class Assistant
     }
 
     /** @param array<string, mixed> $payload */
-    private static function request(array $payload): ?string
+    private static function request(array $payload, bool $ready = false): ?string
     {
         $url = self::endpoint();
         $headers = ['Content-Type: application/json'];
         $key = Config::get('ASSISTANT_API_KEY');
         if (self::isGemini($url)) {
             $headers[] = 'x-goog-api-key: ' . $key;
-            $body = self::geminiBody($payload);
+            $body = $ready ? $payload : self::geminiBody($payload);
             $urls = self::geminiUrls($url);
         } else {
             $headers[] = 'Authorization: Bearer ' . $key;

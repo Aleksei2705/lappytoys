@@ -31,6 +31,23 @@ if (count($hits) >= 20) {
 $hits[] = $now;
 $_SESSION['assistant_hits'] = $hits;
 
+$audio = (string) ($payload['audio'] ?? '');
+$mime = (string) ($payload['mime'] ?? '');
+if ($audio !== '') {
+    if (strlen($audio) > 600000 || !in_array($mime, ['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav', 'audio/mpeg'], true)) {
+        http_response_code(422);
+        echo '{}';
+        exit;
+    }
+    $heard = Assistant::transcribe($audio, $mime);
+    if ($heard === null) {
+        http_response_code(422);
+        echo json_encode(['error' => 'unheard'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    $payload['q'] = $heard;
+}
+
 $question = trim((string) ($payload['q'] ?? $payload['message'] ?? ''));
 if ($question === '' || mb_strlen($question) > 240) {
     http_response_code(422);
@@ -48,4 +65,7 @@ if ($answer === null) {
     exit;
 }
 
+if ($audio !== '') {
+    $answer['heard'] = trim((string) ($payload['q'] ?? ''));
+}
 echo json_encode($answer, JSON_UNESCAPED_UNICODE);
