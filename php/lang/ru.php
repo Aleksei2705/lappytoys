@@ -368,7 +368,7 @@ return [
     'course.trial.duration' => '30 мин / 1,5 ч',
     'course.trial.level' => 'для всех',
     'assistant.title' => 'Мила',
-    'assistant.role' => 'Консультант, пока Ольга не на связи',
+    'assistant.role' => 'Консультант',
     'assistant.open' => 'Открыть помощника',
     'assistant.close' => 'Закрыть помощника',
     'assistant.greeting' => 'Здравствуйте, я Мила. Пока Ольги нет на связи, помогу с записью, занятиями, ценами и студией.',

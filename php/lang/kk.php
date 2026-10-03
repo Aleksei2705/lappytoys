@@ -368,7 +368,7 @@ return [
     'course.trial.duration' => '30 мин / 1,5 сағ',
     'course.trial.level' => 'барлығына',
     'assistant.title' => 'Мила',
-    'assistant.role' => 'Ольга байланыста болмағанда кеңес беремін',
+    'assistant.role' => 'Кеңесші',
     'assistant.open' => 'Көмекшіні ашу',
     'assistant.close' => 'Көмекшіні жабу',
     'assistant.greeting' => 'Сәлеметсіз бе, мен Миламын. Ольга байланыста болмағанда жазылу, сабақ, баға және студия бойынша көмектесемін.',
