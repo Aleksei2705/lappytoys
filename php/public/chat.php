@@ -44,7 +44,7 @@ $question .= "\n[Посторонних вопросов до этого: {$asid
 $answer = Assistant::answer($question, $history);
 if ($answer === null) {
     http_response_code(503);
-    echo '{}';
+    echo json_encode(['error' => Assistant::lastError()], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

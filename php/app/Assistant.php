@@ -4,6 +4,12 @@ declare(strict_types=1);
 /** Answers visitor questions from studio facts via a configured chat model. */
 final class Assistant
 {
+    private static string $lastError = '';
+
+    public static function lastError(): string
+    {
+        return self::$lastError;
+    }
     public static function enabled(): bool
     {
         return Config::get('ASSISTANT_API_KEY') !== '';
@@ -35,8 +41,9 @@ final class Assistant
         $content = $decoded['choices'][0]['message']['content']
             ?? $decoded['candidates'][0]['content']['parts'][0]['text']
             ?? '';
-        $answer = is_string($content) ? json_decode($content, true) : null;
+        $answer = is_string($content) ? json_decode(self::jsonText($content), true) : null;
         if (!is_array($answer)) {
+            self::$lastError = self::$lastError !== '' ? self::$lastError : 'model-format';
             return null;
         }
 
@@ -240,8 +247,36 @@ final class Assistant
         ]);
         $response = curl_exec($handle);
         $status = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($handle);
         curl_close($handle);
-        return is_string($response) && $status >= 200 && $status < 300 ? $response : null;
+        if (is_string($response) && $status >= 200 && $status < 300) {
+            self::$lastError = '';
+            return $response;
+        }
+        self::$lastError = self::safeError($status, is_string($response) ? $response : $curlError);
+        error_log('[assistant] ' . self::$lastError);
+        return null;
+    }
+
+    private static function jsonText(string $content): string
+    {
+        $content = trim($content);
+        if (str_starts_with($content, '```')) {
+            $content = preg_replace('/^```(?:json)?\s*|\s*```$/', '', $content) ?? $content;
+        }
+        return trim($content);
+    }
+
+    private static function safeError(int $status, string $body): string
+    {
+        $decoded = json_decode($body, true);
+        $message = is_array($decoded) ? (string) ($decoded['error']['message'] ?? '') : '';
+        if ($message === '') {
+            $message = trim($body) !== '' ? trim($body) : 'no-response';
+        }
+        $message = preg_replace('/AIza[\w\-]+/', '[key]', $message) ?? $message;
+        $message = preg_replace('/key=[^&\s]+/', 'key=[key]', $message) ?? $message;
+        return $status . ' ' . mb_substr($message, 0, 180);
     }
 
     private static function endpoint(): string
