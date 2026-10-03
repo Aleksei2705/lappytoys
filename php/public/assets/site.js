@@ -896,6 +896,7 @@
       let heard = "";
       let finishTimer = 0;
       let autoStopTimer = 0;
+      let dictationStartedAt = 0;
       const placeholder = input?.placeholder || "";
       const recognition = new Speech();
       recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
@@ -910,11 +911,21 @@
           input.value = line.slice(0, 240);
         }
       });
+      recognition.addEventListener("error", (event) => {
+        if (!dictating || event.error === "aborted") return;
+        endDictation();
+        if (event.error === "not-allowed") addMessage(data.micDenied || data.unheard || placeholder, "bot");
+        else addMessage(data.unheard || placeholder, "bot");
+      });
       const clearDictationTimers = () => {
         window.clearTimeout(finishTimer);
         window.clearTimeout(autoStopTimer);
         finishTimer = 0;
         autoStopTimer = 0;
+      };
+      const failDictation = () => {
+        endDictation();
+        addMessage(data.unheard || placeholder, "bot");
       };
       const endDictation = () => {
         clearDictationTimers();
@@ -936,18 +947,28 @@
       };
       const stopDictation = () => {
         if (!dictating) return;
+        if (Date.now() - dictationStartedAt < 450) return;
         try {
           recognition.stop();
         } catch {
           finishDictation();
           return;
         }
-        finishTimer = window.setTimeout(finishDictation, 700);
+        finishTimer = window.setTimeout(finishDictation, 800);
+      };
+      const launchRecognition = () => {
+        try {
+          recognition.start();
+          return true;
+        } catch {
+          return false;
+        }
       };
       const startDictation = () => {
         if (voice.classList.contains("is-send") || dictating) return;
         clearDictationTimers();
         dictating = true;
+        dictationStartedAt = Date.now();
         heard = "";
         if (input) {
           input.readOnly = false;
@@ -957,35 +978,47 @@
         voice.classList.add("is-listening");
         voice.setAttribute("aria-pressed", "true");
         form.classList.add("is-recording");
+        if (launchRecognition()) {
+          autoStopTimer = window.setTimeout(stopDictation, 20000);
+          return;
+        }
+        recognition.addEventListener(
+          "end",
+          () => {
+            if (!dictating) return;
+            if (launchRecognition()) autoStopTimer = window.setTimeout(stopDictation, 20000);
+            else failDictation();
+          },
+          { once: true },
+        );
         try {
           recognition.abort();
         } catch {
-          /* Сеанс уже закрыт. */
+          if (!launchRecognition()) failDictation();
         }
-        window.setTimeout(() => {
-          if (!dictating) return;
-          try {
-            recognition.start();
-          } catch {
-            endDictation();
-            addMessage(data.unheard || placeholder, "bot");
-          }
-        }, 120);
-        autoStopTimer = window.setTimeout(stopDictation, 20000);
       };
-      voice.addEventListener("click", (event) => {
+      const toggleDictation = () => {
         if (voice.classList.contains("is-send")) {
           sendText();
           return;
         }
-        event.preventDefault();
         if (dictating) stopDictation();
         else startDictation();
+      };
+      voice.addEventListener("click", (event) => {
+        event.preventDefault();
+        toggleDictation();
       });
       voice.addEventListener("contextmenu", (event) => event.preventDefault());
     } else {
       voice?.addEventListener("click", () => {
         if (voice.classList.contains("is-send")) sendText();
+        else {
+          if (input) {
+            input.readOnly = false;
+            input.focus();
+          }
+        }
       });
     }
   };
