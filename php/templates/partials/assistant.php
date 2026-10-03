@@ -8,6 +8,9 @@ $scheduleText = t('assistant.a.schedulePrefix') . ' ' . implode('; ', $slots) . 
 $payload = [
     'greeting' => t('assistant.greeting'),
     'fallback' => t('assistant.fallback'),
+    'thinking' => t('assistant.thinking'),
+    'ai' => Assistant::enabled(),
+    'csrf' => Security::csrfToken(),
     'answers' => [
         ['keys' => ['запис', 'заяв', 'пробн', 'бесплат', 'жазыл', 'өтінім', 'тегін', 'signup'], 'text' => t('assistant.a.signup'), 'href' => bookingUrl(), 'link' => t('assistant.link.signup')],
         ['keys' => ['адрес', 'где', 'шуга', 'шуға', 'семе', 'семея', 'семей', 'карт', 'мекен'], 'text' => t('assistant.a.address'), 'href' => (string) site('map_link'), 'link' => t('assistant.link.map')],
