@@ -896,74 +896,39 @@
 
     const holdHint = root.querySelector("[data-assistant-hold-hint]");
     const holdTime = root.querySelector("[data-assistant-hold-time]");
-    if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext && window.AudioContext) {
+    if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext && window.MediaRecorder) {
       let stream = null;
-      let holding = false;
+      let recorder = null;
+      let chunks = [];
+      let session = 0;
       let cancel = false;
       let startX = 0;
       let startedAt = 0;
       let clock = 0;
-      let stopCapture = () => {};
+      let armed = false;
+      let recording = false;
+      let wantStop = false;
       const placeholder = input?.placeholder || "";
       const releaseText = holdHint?.textContent || "";
       const cancelText = data.cancel || "Отмена";
-      const stopTracks = () => {
-        stream?.getTracks().forEach((track) => track.stop());
-        stream = null;
-      };
-      const wavBlob = (pieces, sampleRate) => {
-        const length = pieces.reduce((sum, piece) => sum + piece.length, 0);
-        const pcm = new Float32Array(length);
-        let offset = 0;
-        pieces.forEach((piece) => {
-          pcm.set(piece, offset);
-          offset += piece.length;
-        });
-        const rate = 16000;
-        const count = Math.max(1, Math.floor((pcm.length * rate) / sampleRate));
-        const data = new Int16Array(count);
-        for (let index = 0; index < count; index += 1) {
-          const sample = pcm[Math.min(pcm.length - 1, Math.floor((index * sampleRate) / rate))] || 0;
-          const clamped = Math.max(-1, Math.min(1, sample));
-          data[index] = clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff;
-        }
-        const buffer = new ArrayBuffer(44 + data.length * 2);
-        const view = new DataView(buffer);
-        const mark = (at, text) => {
-          for (let index = 0; index < text.length; index += 1) view.setUint8(at + index, text.charCodeAt(index));
-        };
-        mark(0, "RIFF");
-        view.setUint32(4, 36 + data.length * 2, true);
-        mark(8, "WAVE");
-        mark(12, "fmt ");
-        view.setUint32(16, 16, true);
-        view.setUint16(20, 1, true);
-        view.setUint16(22, 1, true);
-        view.setUint32(24, rate, true);
-        view.setUint32(28, rate * 2, true);
-        view.setUint16(32, 2, true);
-        view.setUint16(34, 16, true);
-        mark(36, "data");
-        view.setUint32(40, data.length * 2, true);
-        let cursor = 44;
-        data.forEach((sample) => {
-          view.setInt16(cursor, sample, true);
-          cursor += 2;
-        });
-        return new Blob([buffer], { type: "audio/wav" });
-      };
       const paintTime = () => {
         const seconds = Math.floor((Date.now() - startedAt) / 1000);
         if (holdTime) holdTime.textContent = Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
       };
       const endHold = () => {
         window.clearInterval(clock);
-        holding = false;
+        armed = false;
+        recording = false;
+        wantStop = false;
         voice.classList.remove("is-listening");
         voice.setAttribute("aria-pressed", "false");
         form.classList.remove("is-recording", "is-cancel");
         if (input) input.placeholder = placeholder;
         if (holdHint) holdHint.textContent = releaseText;
+      };
+      const stopStream = () => {
+        stream?.getTracks().forEach((track) => track.stop());
+        stream = null;
       };
       const sendAudio = async (blob, mime) => {
         const audio = await new Promise((resolve) => {
@@ -984,215 +949,113 @@
           body = null;
         }
         pending.remove();
-        if (body?.error === "busy" || !body?.heard || !body?.text) {
+        if (body?.error === "busy" || !body?.text) {
           addMessage(body?.error === "busy" ? (data.busy || data.unheard) : (data.unheard || placeholder), "bot");
           return;
         }
-        addMessage(body.heard, "user");
+        if (body.heard) addMessage(body.heard, "user");
         addMessage(body.text, "bot", body.href, body.link);
       };
-      const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-      let recognition = null;
-      let heard = "";
-      let speechSettled = true;
-      let turn = 0;
-      let recorder = null;
-      let recordChunks = [];
-      let recordStream = null;
-      const stopMic = () => {
-        recordStream?.getTracks().forEach((track) => track.stop());
-        recordStream = null;
-      };
-      const startMic = () => {
-        recordChunks = [];
-        recorder = null;
-        if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return;
-        navigator.mediaDevices.getUserMedia({ audio: true }).then((next) => {
-          if (!holding) {
-            next.getTracks().forEach((track) => track.stop());
-            return;
-          }
-          recordStream = next;
-          const preferred = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
-          recorder = preferred ? new MediaRecorder(next, { mimeType: preferred }) : new MediaRecorder(next);
-          recorder.addEventListener("dataavailable", (event) => {
-            if (event.data.size) recordChunks.push(event.data);
-          });
-          recorder.start();
-        }).catch(() => {});
-      };
-      if (Speech) {
-        recognition = new Speech();
-        recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.addEventListener("result", (event) => {
-          heard = Array.from(event.results).map((item) => item[0].transcript).join(" ").trim();
-        });
-        recognition.addEventListener("end", () => {
-          if (!holding) return;
-          try {
-            recognition.start();
-          } catch {
-            /* Телефон ещё закрывает прошлый сеанс. */
-          }
-        });
-      }
-      const finishSpeech = () => {
-        if (!recognition || speechSettled) return;
-        speechSettled = true;
-        const turnId = turn;
-        holding = false;
+      const finishRecording = (mySession, mime) => {
+        const blob = new Blob(chunks, { type: mime });
+        stopStream();
         endHold();
-        if (cancel) {
-          speechSettled = true;
-          heard = "";
-          try {
-            recognition.abort();
-          } catch {
-            /* Распознавание уже остановлено. */
-          }
-          if (recorder && recorder.state === "recording") recorder.stop();
-          stopMic();
+        if (mySession !== session || cancel) return;
+        if (blob.size < 500 || Date.now() - startedAt < 400) {
+          addMessage(data.unheard || placeholder, "bot");
           return;
         }
-        try {
-          recognition.stop();
-        } catch {
-          /* Распознавание уже остановлено. */
+        sendAudio(blob, mime);
+      };
+      const stopRecording = () => {
+        wantStop = true;
+        if (recorder && recording && recorder.state === "recording") {
+          recorder.stop();
+          return;
         }
-        window.setTimeout(() => {
-          if (turnId !== turn || holding) return;
-          const text = heard.trim();
-          heard = "";
-          const mime = (recorder?.mimeType || "audio/webm").split(";")[0];
-          let delivered = false;
-          const deliver = () => {
-            if (delivered || turnId !== turn) return;
-            delivered = true;
-            speechSettled = true;
-            if (text) {
-              stopMic();
-              ask(text.slice(0, 240));
-              return;
-            }
-            const blob = new Blob(recordChunks, { type: mime });
-            stopMic();
-            if (blob.size > 400) sendAudio(blob, mime);
-            else addMessage(data.unheard || placeholder, "bot");
-          };
-          if (recorder && recorder.state === "recording") {
-            recorder.addEventListener("stop", deliver, { once: true });
-            recorder.stop();
-            return;
-          }
-          deliver();
-        }, 400);
+        if (armed) session += 1;
+        stopStream();
+        endHold();
       };
-      const release = () => {
-        if (!holding) return;
-        holding = false;
-        stopCapture();
-      };
-      const begin = async (clientX, mic) => {
-        holding = true;
+      const startRecording = async (clientX, pointerId) => {
+        if (voice.classList.contains("is-send") || armed) return;
+        const mySession = session + 1;
+        session = mySession;
+        armed = true;
+        wantStop = false;
         cancel = false;
         startX = clientX;
+        startedAt = Date.now();
+        chunks = [];
+        recorder = null;
         voice.classList.add("is-listening");
         voice.setAttribute("aria-pressed", "true");
         form.classList.add("is-recording");
-        startedAt = Date.now();
         paintTime();
         clock = window.setInterval(paintTime, 250);
-        const context = new AudioContext();
-        context.resume().catch(() => {});
-        let next;
         try {
-          next = await mic;
+          voice.setPointerCapture(pointerId);
         } catch {
-          context.close();
+          /* На части телефонов захват указателя недоступен. */
+        }
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch {
+          if (mySession !== session) return;
+          stopRecording();
+          return;
+        }
+        if (mySession !== session || wantStop) {
+          stopStream();
           endHold();
           return;
         }
-        if (!holding) {
-          next.getTracks().forEach((track) => track.stop());
-          context.close();
+        const preferred = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
+        try {
+          recorder = preferred ? new MediaRecorder(stream, { mimeType: preferred }) : new MediaRecorder(stream);
+        } catch {
+          stopStream();
           endHold();
+          addMessage(data.unheard || placeholder, "bot");
           return;
         }
-        await context.resume().catch(() => {});
-        stream = next;
-        const pieces = [];
-        const source = context.createMediaStreamSource(stream);
-        const processor = context.createScriptProcessor(4096, 1, 1);
-        const mute = context.createGain();
-        mute.gain.value = 0;
-        processor.onaudioprocess = (event) => {
-          pieces.push(new Float32Array(event.inputBuffer.getChannelData(0)));
-        };
-        source.connect(processor);
-        processor.connect(mute);
-        mute.connect(context.destination);
-        let stopped = false;
-        stopCapture = () => {
-          if (stopped) return;
-          stopped = true;
-          processor.onaudioprocess = null;
-          source.disconnect();
-          processor.disconnect();
-          mute.disconnect();
-          const discarded = cancel || Date.now() - startedAt < 450;
-          const blob = wavBlob(pieces, context.sampleRate || 48000);
-          stopTracks();
-          context.close();
-          endHold();
-          stopCapture = () => {};
-          if (discarded || pieces.length === 0) {
-            if (!discarded && pieces.length === 0 && Date.now() - startedAt >= 1500) addMessage(data.unheard || placeholder, "bot");
-            return;
-          }
-          sendAudio(blob, "audio/wav");
-        };
-        if (!holding) stopCapture();
-        window.setTimeout(stopCapture, 20000);
+        const mime = (recorder.mimeType || preferred || "audio/webm").split(";")[0];
+        recorder.addEventListener("dataavailable", (event) => {
+          if (event.data.size) chunks.push(event.data);
+        });
+        recorder.addEventListener("stop", () => finishRecording(mySession, mime), { once: true });
+        recording = true;
+        recorder.start(250);
+        window.setTimeout(() => {
+          if (mySession === session && recording) stopRecording();
+        }, 20000);
+        if (wantStop) stopRecording();
       };
-      const press = (clientX) => {
-        if (voice.classList.contains("is-send") || holding) return;
-        const mic = navigator.mediaDevices.getUserMedia({ audio: true });
-        begin(clientX, mic);
-      };
-      voice.addEventListener("touchstart", (event) => {
-        press(event.touches[0]?.clientX || 0);
-        event.preventDefault();
-      }, { passive: false });
-      voice.addEventListener("touchmove", (event) => {
-        if (!holding) return;
-        event.preventDefault();
-        const x = event.touches[0]?.clientX || 0;
-        cancel = startX - x > 72;
-        form.classList.toggle("is-cancel", cancel);
-        if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
-      }, { passive: false });
-      voice.addEventListener("touchend", (event) => {
-        event.preventDefault();
-        release();
-      });
-      window.addEventListener("touchend", release);
       voice.addEventListener("pointerdown", (event) => {
-        if (event.pointerType === "touch") return;
-        if (event.button !== 0) return;
+        if (voice.classList.contains("is-send")) return;
+        if (event.pointerType === "mouse" && event.button !== 0) return;
         event.preventDefault();
-        press(event.clientX);
+        startRecording(event.clientX, event.pointerId);
       });
-      window.addEventListener("pointerup", (event) => {
-        if (event.pointerType === "touch") return;
-        release();
-      });
-      window.addEventListener("pointermove", (event) => {
-        if (!holding || event.pointerType === "touch") return;
+      voice.addEventListener("pointermove", (event) => {
+        if (!armed) return;
         cancel = startX - event.clientX > 72;
         form.classList.toggle("is-cancel", cancel);
         if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
+      });
+      voice.addEventListener("pointerup", (event) => {
+        if (voice.hasPointerCapture?.(event.pointerId)) {
+          try {
+            voice.releasePointerCapture(event.pointerId);
+          } catch {
+            /* Указатель уже отпущен. */
+          }
+        }
+        stopRecording();
+      });
+      voice.addEventListener("pointercancel", () => {
+        cancel = true;
+        stopRecording();
       });
       voice.addEventListener("contextmenu", (event) => event.preventDefault());
     }
