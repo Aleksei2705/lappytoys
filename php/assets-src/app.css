@@ -150,31 +150,6 @@
   height: 2rem;
 }
 
-.assistant-faces {
-  position: relative;
-  display: inline-flex;
-  flex: 0 0 auto;
-}
-
-.assistant-mascot {
-  position: absolute;
-  right: -0.35rem;
-  bottom: -0.2rem;
-  width: 1.55rem;
-  height: 1.55rem;
-  border-radius: 999px;
-  object-fit: cover;
-  background: #fff;
-  box-shadow: 0 0 0 2px #fff;
-}
-
-.assistant-mascot-sm {
-  width: 1.15rem;
-  height: 1.15rem;
-  right: -0.28rem;
-  bottom: -0.15rem;
-}
-
 .assistant-role {
   margin: 0.1rem 0 0;
   color: #7d3254;

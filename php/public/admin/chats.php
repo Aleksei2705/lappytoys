@@ -80,7 +80,7 @@ $chatLines = static function (string $transcript): array {
                 ?>
                 <div class="chat-line">
                     <?php if ($line['role'] === 'mila'): ?>
-                        <img class="chat-avatar" src="/images/assistant-avatar.jpg" alt="" width="36" height="36">
+                        <img class="chat-avatar" src="/images/assistant-avatar.jpg?v=2" alt="" width="36" height="36">
                         <p class="chat-mila"><?= e($line['text']) ?></p>
                     <?php else: ?>
                         <span class="chat-avatar chat-guest-avatar" style="background: <?= e($guestColor) ?>" aria-hidden="true">

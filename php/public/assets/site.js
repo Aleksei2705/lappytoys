@@ -688,7 +688,7 @@
     const avatar = () => {
       const image = document.createElement("img");
       image.className = "assistant-avatar";
-      image.src = "/images/assistant-avatar.jpg";
+      image.src = "/images/assistant-avatar.jpg?v=2";
       image.alt = "";
       image.width = 30;
       image.height = 30;

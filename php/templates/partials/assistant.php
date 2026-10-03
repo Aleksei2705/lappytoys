@@ -41,10 +41,7 @@ $payload = [
 <div class="assistant" data-assistant>
         <div class="assistant-panel" id="assistant-panel" hidden data-assistant-panel>
         <div class="assistant-head">
-            <span class="assistant-faces">
-                <img class="assistant-avatar" src="/images/assistant-avatar.jpg" alt="" width="44" height="44">
-                <img class="assistant-mascot" src="/images/studio-bunny.jpg" alt="" width="28" height="28">
-            </span>
+            <img class="assistant-avatar" src="/images/assistant-avatar.jpg?v=2" alt="" width="44" height="44">
             <div class="min-w-0">
                 <p class="assistant-title"><?= t('assistant.title') ?></p>
                 <p class="assistant-role"><?= t('assistant.role') ?></p>
@@ -63,14 +60,11 @@ $payload = [
         </form>
     </div>
     <button type="button" class="assistant-nudge" hidden data-assistant-nudge>
-        <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg" alt="" width="32" height="32">
+        <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg?v=2" alt="" width="32" height="32">
         <span><?= t('assistant.idle') ?></span>
     </button>
     <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel">
-        <span class="assistant-faces">
-            <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg" alt="" width="32" height="32">
-            <img class="assistant-mascot assistant-mascot-sm" src="/images/studio-bunny.jpg" alt="" width="22" height="22">
-        </span>
+        <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg?v=2" alt="" width="32" height="32">
         <span><?= t('assistant.title') ?></span>
     </button>
     <script type="application/json" data-assistant-data><?= json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
