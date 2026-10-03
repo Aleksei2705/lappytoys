@@ -30,6 +30,30 @@
     if (button && !window.confirm(button.dataset.confirmClick)) event.preventDefault();
   });
 
+  document.querySelectorAll("[data-chat-bulk]").forEach((form) => {
+    const all = form.querySelector("[data-chat-all]");
+    const picks = Array.from(form.querySelectorAll("[data-chat-pick]"));
+    const remove = form.querySelector("[data-chat-delete]");
+    const sync = () => {
+      const chosen = picks.filter((box) => box.checked).length;
+      if (remove) remove.disabled = chosen === 0;
+      if (all) all.checked = chosen > 0 && chosen === picks.length;
+    };
+    all?.addEventListener("change", () => {
+      picks.forEach((box) => {
+        box.checked = all.checked;
+      });
+      sync();
+    });
+    picks.forEach((box) => box.addEventListener("change", sync));
+    form.addEventListener("submit", (event) => {
+      const chosen = picks.filter((box) => box.checked).length;
+      if (chosen === 0 || !window.confirm(`Удалить выбранные разговоры (${chosen}) безвозвратно?`)) {
+        event.preventDefault();
+      }
+    });
+  });
+
   document.querySelectorAll("[data-autosubmit]").forEach((element) =>
     element.addEventListener("change", () => element.form?.submit()),
   );

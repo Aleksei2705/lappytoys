@@ -12,10 +12,15 @@ try {
     if (Admin::isPost()) {
         Admin::verifyPost();
         Admin::guard('admin');
-        $id = Admin::intParam($_POST, 'id');
-        if (Admin::text($_POST, 'action') === 'delete' && $id > 0) {
-            Database::execute('DELETE FROM assistant_chats WHERE id = ?', [$id]);
-            Admin::flash('success', 'Разговор удалён.');
+        $action = Admin::text($_POST, 'action');
+        $ids = array_values(array_unique(array_filter(
+            array_map(static fn ($value): int => (int) $value, (array) ($_POST['ids'] ?? [])),
+            static fn (int $id): bool => $id > 0,
+        )));
+        if ($action === 'delete' && $ids !== []) {
+            $placeholders = implode(', ', array_fill(0, count($ids), '?'));
+            Database::execute('DELETE FROM assistant_chats WHERE id IN (' . $placeholders . ')', $ids);
+            Admin::flash('success', 'Удалено разговоров: ' . count($ids) . '.');
         }
         Admin::redirect('/admin/chats.php');
     }
@@ -47,14 +52,32 @@ $chatLines = static function (string $transcript): array {
 <?php if ($chats === []): ?>
     <p class="card-soft p-6 text-sm text-warm-500">Разговоров пока нет.</p>
 <?php endif; ?>
+<?php if ($chats !== [] && $adminUser['role'] === 'admin'): ?>
+<form method="post" action="/admin/chats.php" data-chat-bulk>
+    <?= Security::csrfField() ?>
+    <input type="hidden" name="action" value="delete">
+    <div class="mb-4 flex flex-wrap items-center gap-4 text-sm">
+        <label class="inline-flex items-center gap-2">
+            <input type="checkbox" data-chat-all>
+            Выбрать все
+        </label>
+        <button type="submit" class="text-sm text-red-600 underline" data-chat-delete disabled>Удалить выбранные</button>
+    </div>
+<?php endif; ?>
 <div class="space-y-3">
     <?php foreach ($chats as $chat): ?>
+        <?php $lines = $chatLines((string) $chat['transcript']); ?>
         <article class="card-soft p-4 text-sm">
-            <p class="text-warm-500">#<?= (int) $chat['id'] ?> · <?= e(Admin::dt((string) $chat['updated_at'])) ?></p>
+            <div class="flex items-center gap-3">
+                <?php if ($adminUser['role'] === 'admin'): ?>
+                    <input type="checkbox" name="ids[]" value="<?= (int) $chat['id'] ?>" data-chat-pick aria-label="Выбрать разговор #<?= (int) $chat['id'] ?>">
+                <?php endif; ?>
+                <p class="text-warm-500">#<?= (int) $chat['id'] ?> · <?= e(Admin::dt((string) $chat['updated_at'])) ?></p>
+            </div>
             <?php
             $guestColor = $guestColors[abs(crc32((string) $chat['public_id'])) % count($guestColors)];
-            foreach ($chatLines((string) $chat['transcript']) as $line):
-            ?>
+            $renderLine = static function (array $line) use ($guestColor): void {
+                ?>
                 <div class="chat-line">
                     <?php if ($line['role'] === 'mila'): ?>
                         <img class="chat-avatar" src="/images/assistant-avatar.jpg" alt="" width="36" height="36">
@@ -66,16 +89,25 @@ $chatLines = static function (string $transcript): array {
                         <p class="chat-guest"><?= e($line['text']) ?></p>
                     <?php endif; ?>
                 </div>
-            <?php endforeach; ?>
-            <?php if ($adminUser['role'] === 'admin'): ?>
-                <form class="mt-3" method="post" action="/admin/chats.php" data-confirm="Удалить разговор безвозвратно?">
-                    <?= Security::csrfField() ?>
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value="<?= (int) $chat['id'] ?>">
-                    <button type="submit" class="text-sm text-red-600 underline">Удалить</button>
-                </form>
+                <?php
+            };
+            foreach (array_slice($lines, 0, 4) as $line) {
+                $renderLine($line);
+            }
+            $rest = array_slice($lines, 4);
+            if ($rest !== []):
+            ?>
+                <details class="chat-fold">
+                    <summary>Показать весь разговор (<?= count($lines) ?>)</summary>
+                    <?php foreach ($rest as $line) {
+                        $renderLine($line);
+                    } ?>
+                </details>
             <?php endif; ?>
         </article>
     <?php endforeach; ?>
 </div>
+<?php if ($chats !== [] && $adminUser['role'] === 'admin'): ?>
+</form>
+<?php endif; ?>
 <?php require APP_ROOT . '/templates/admin/footer.php';

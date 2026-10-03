@@ -1341,6 +1341,16 @@ body.is-admin .chat-guest {
   color: #1d4ed8;
 }
 
+body.is-admin .chat-fold {
+  margin-top: 0.35rem;
+}
+
+body.is-admin .chat-fold summary {
+  cursor: pointer;
+  color: #7d3254;
+  font-weight: 650;
+}
+
 body.is-admin {
   background-color: #f4e4eb;
 }
