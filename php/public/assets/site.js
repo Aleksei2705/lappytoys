@@ -996,6 +996,31 @@
       let heard = "";
       let speechSettled = true;
       let turn = 0;
+      let recorder = null;
+      let recordChunks = [];
+      let recordStream = null;
+      const stopMic = () => {
+        recordStream?.getTracks().forEach((track) => track.stop());
+        recordStream = null;
+      };
+      const startMic = () => {
+        recordChunks = [];
+        recorder = null;
+        if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return;
+        navigator.mediaDevices.getUserMedia({ audio: true }).then((next) => {
+          if (!holding) {
+            next.getTracks().forEach((track) => track.stop());
+            return;
+          }
+          recordStream = next;
+          const preferred = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
+          recorder = preferred ? new MediaRecorder(next, { mimeType: preferred }) : new MediaRecorder(next);
+          recorder.addEventListener("dataavailable", (event) => {
+            if (event.data.size) recordChunks.push(event.data);
+          });
+          recorder.start();
+        }).catch(() => {});
+      };
       if (Speech) {
         recognition = new Speech();
         recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
@@ -1026,6 +1051,8 @@
           } catch {
             /* Распознавание уже остановлено. */
           }
+          if (recorder && recorder.state === "recording") recorder.stop();
+          stopMic();
           return;
         }
         try {
@@ -1035,12 +1062,29 @@
         }
         window.setTimeout(() => {
           if (turnId !== turn || holding) return;
-          speechSettled = true;
           const text = heard.trim();
           heard = "";
-          if (text) ask(text.slice(0, 240));
-          else addMessage(data.unheard || placeholder, "bot");
-        }, 900);
+          const mime = (recorder?.mimeType || "audio/webm").split(";")[0];
+          const deliver = () => {
+            if (turnId !== turn) return;
+            speechSettled = true;
+            if (text) {
+              stopMic();
+              ask(text.slice(0, 240));
+              return;
+            }
+            const blob = new Blob(recordChunks, { type: mime });
+            stopMic();
+            if (blob.size > 400) sendAudio(blob, mime);
+            else addMessage(data.unheard || placeholder, "bot");
+          };
+          if (recorder && recorder.state === "recording") {
+            recorder.addEventListener("stop", deliver, { once: true });
+            recorder.stop();
+            return;
+          }
+          deliver();
+        }, 400);
       };
       const release = () => {
         if (recognition && !speechSettled) {
@@ -1127,6 +1171,7 @@
           startedAt = Date.now();
           paintTime();
           clock = window.setInterval(paintTime, 250);
+          startMic();
           try {
             recognition.start();
           } catch {

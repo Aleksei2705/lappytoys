@@ -118,8 +118,11 @@ final class Assistant
         }
         $heard = trim((string) ($answer['heard'] ?? ''));
         $text = trim((string) ($answer['text'] ?? ''));
-        if ($heard === '' || $text === '') {
+        if ($text === '') {
             return null;
+        }
+        if ($heard === '') {
+            $heard = 'Голосовое сообщение';
         }
         $href = self::allowedLink((string) ($answer['href'] ?? ''));
         return [
