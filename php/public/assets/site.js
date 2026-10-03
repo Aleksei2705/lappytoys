@@ -1019,18 +1019,31 @@
       }
       const finishSpeech = () => {
         if (!recognition || speechSettled) return;
-        const text = cancel ? "" : heard.trim();
-        speechSettled = true;
-        heard = "";
         holding = false;
         endHold();
+        if (cancel) {
+          speechSettled = true;
+          heard = "";
+          try {
+            recognition.abort();
+          } catch {
+            /* Распознавание уже остановлено. */
+          }
+          return;
+        }
         try {
           recognition.stop();
         } catch {
           /* Распознавание уже остановлено. */
         }
-        if (text) ask(text.slice(0, 240));
-        else if (!cancel) addMessage(data.unheard || placeholder, "bot");
+        window.setTimeout(() => {
+          if (speechSettled) return;
+          speechSettled = true;
+          const text = heard.trim();
+          heard = "";
+          if (text) ask(text.slice(0, 240));
+          else addMessage(data.unheard || placeholder, "bot");
+        }, 1200);
       };
       const release = () => {
         if (recognition && !speechSettled) {
