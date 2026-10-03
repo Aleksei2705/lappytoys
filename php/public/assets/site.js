@@ -945,24 +945,20 @@
         }
         pending.remove();
         if (!body?.heard || !body?.text) {
-          if (input) input.placeholder = data.unheard || placeholder;
+          addMessage(data.unheard || placeholder, "bot");
           return;
         }
         addMessage(body.heard, "user");
         addMessage(body.text, "bot", body.href, body.link);
       };
-      voice.addEventListener("pointerdown", async (event) => {
-        if (voice.classList.contains("is-send")) return;
-        if ((event.pointerType === "mouse" && event.button !== 0) || holding || (recorder && recorder.state === "recording")) return;
-        event.preventDefault();
+      const release = () => {
+        holding = false;
+        if (recorder && recorder.state === "recording") recorder.stop();
+      };
+      const begin = async (clientX) => {
         holding = true;
         cancel = false;
-        startX = event.clientX;
-        try {
-          voice.setPointerCapture(event.pointerId);
-        } catch {
-          /* Палец уже ушёл, запись всё равно остановится по отпусканию. */
-        }
+        startX = clientX;
         voice.classList.add("is-listening");
         voice.setAttribute("aria-pressed", "true");
         form.classList.add("is-recording");
@@ -974,7 +970,7 @@
           next = await navigator.mediaDevices.getUserMedia({ audio: true });
         } catch {
           endHold();
-          if (input) input.placeholder = data.unheard || placeholder;
+          addMessage(data.unheard || placeholder, "bot");
           return;
         }
         if (!holding) {
@@ -983,8 +979,15 @@
           return;
         }
         stream = next;
-        const preferred = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
-        recorder = preferred ? new MediaRecorder(stream, { mimeType: preferred }) : new MediaRecorder(stream);
+        const preferred = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
+        try {
+          recorder = preferred ? new MediaRecorder(stream, { mimeType: preferred }) : new MediaRecorder(stream);
+        } catch {
+          stopTracks();
+          endHold();
+          addMessage(data.unheard || placeholder, "bot");
+          return;
+        }
         chunks = [];
         const mime = (recorder.mimeType || preferred || "audio/webm").split(";")[0];
         recorder.addEventListener("dataavailable", (chunk) => {
@@ -996,24 +999,56 @@
           stopTracks();
           endHold();
           if (discarded || blob.size < 200) {
-            if (!discarded && input) input.placeholder = data.unheard || placeholder;
+            if (!discarded) addMessage(data.unheard || placeholder, "bot");
             return;
           }
           sendAudio(blob, mime);
         });
-        recorder.start(200);
+        try {
+          recorder.start();
+        } catch {
+          stopTracks();
+          endHold();
+          addMessage(data.unheard || placeholder, "bot");
+          return;
+        }
+        if (!holding) recorder.stop();
         window.setTimeout(() => {
           if (recorder && recorder.state === "recording") recorder.stop();
         }, 20000);
-      });
-      const release = () => {
-        holding = false;
-        if (recorder && recorder.state === "recording") recorder.stop();
       };
-      window.addEventListener("pointerup", release);
-      window.addEventListener("pointercancel", release);
-      window.addEventListener("pointermove", (event) => {
+      const press = (clientX) => {
+        if (voice.classList.contains("is-send") || holding || (recorder && recorder.state === "recording")) return;
+        begin(clientX);
+      };
+      voice.addEventListener("touchstart", (event) => {
+        event.preventDefault();
+        press(event.touches[0]?.clientX || 0);
+      }, { passive: false });
+      voice.addEventListener("touchmove", (event) => {
         if (!holding) return;
+        event.preventDefault();
+        const x = event.touches[0]?.clientX || 0;
+        cancel = startX - x > 72;
+        form.classList.toggle("is-cancel", cancel);
+        if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
+      }, { passive: false });
+      voice.addEventListener("touchend", (event) => {
+        event.preventDefault();
+        release();
+      });
+      voice.addEventListener("pointerdown", (event) => {
+        if (event.pointerType === "touch") return;
+        if (event.button !== 0) return;
+        event.preventDefault();
+        press(event.clientX);
+      });
+      window.addEventListener("pointerup", (event) => {
+        if (event.pointerType === "touch") return;
+        release();
+      });
+      window.addEventListener("pointermove", (event) => {
+        if (!holding || event.pointerType === "touch") return;
         cancel = startX - event.clientX > 72;
         form.classList.toggle("is-cancel", cancel);
         if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
