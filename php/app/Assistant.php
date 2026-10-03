@@ -15,31 +15,6 @@ final class Assistant
         return Config::get('ASSISTANT_API_KEY') !== '';
     }
 
-    public static function transcribe(string $audio, string $mime): ?string
-    {
-        if (!self::enabled() || !str_starts_with($mime, 'audio/')) {
-            return null;
-        }
-        $body = [
-            'contents' => [[
-                'role' => 'user',
-                'parts' => [
-                    ['text' => 'Расшифруй эту короткую речь. Верни только сказанные слова, без пояснений и кавычек. Если речи нет, верни пустую строку.'],
-                    ['inlineData' => ['mimeType' => $mime, 'data' => $audio]],
-                ],
-            ]],
-            'generationConfig' => ['temperature' => 0],
-        ];
-        $raw = self::request($body, true);
-        if ($raw === null) {
-            return null;
-        }
-        $decoded = json_decode($raw, true);
-        $text = trim((string) ($decoded['candidates'][0]['content']['parts'][0]['text'] ?? ''));
-        $text = trim($text, "\"'«»");
-        return $text !== '' ? mb_substr($text, 0, 240) : null;
-    }
-
     public static function answer(string $question, array $history): ?array
     {
         if (!self::enabled()) {
@@ -82,54 +57,6 @@ final class Assistant
             'text' => mb_substr($text, 0, 700),
             'href' => $href,
             'link' => $href === '' ? '' : self::linkLabel($href),
-        ];
-    }
-
-    /** One model call: speech in, transcript and answer out. */
-    public static function answerFromAudio(string $audio, string $mime, int $aside): ?array
-    {
-        if (!self::enabled() || !str_starts_with($mime, 'audio/')) {
-            return null;
-        }
-        $body = [
-            'systemInstruction' => ['parts' => [['text' => self::instructions() . ' В JSON добавь поле heard: дословная расшифровка речи. Если речи нет, heard и text оставь пустыми.']]],
-            'contents' => [[
-                'role' => 'user',
-                'parts' => [
-                    ['text' => 'Посторонних вопросов до этого: ' . $aside . '. Если это число уже 2 или больше и вопрос не про студию, не отвечай по существу.'],
-                    ['inlineData' => ['mimeType' => $mime, 'data' => $audio]],
-                ],
-            ]],
-            'generationConfig' => [
-                'temperature' => 0.4,
-                'responseMimeType' => 'application/json',
-            ],
-        ];
-        $raw = self::request($body, true);
-        if ($raw === null) {
-            return null;
-        }
-        $decoded = json_decode($raw, true);
-        $content = (string) ($decoded['candidates'][0]['content']['parts'][0]['text'] ?? '');
-        $answer = json_decode(self::jsonText($content), true);
-        if (!is_array($answer)) {
-            self::$lastError = self::$lastError !== '' ? self::$lastError : 'model-format';
-            return null;
-        }
-        $heard = trim((string) ($answer['heard'] ?? ''));
-        $text = trim((string) ($answer['text'] ?? ''));
-        if ($text === '') {
-            return null;
-        }
-        if ($heard === '') {
-            $heard = 'Голосовое сообщение';
-        }
-        $href = self::allowedLink((string) ($answer['href'] ?? ''));
-        return [
-            'text' => mb_substr($text, 0, 700),
-            'href' => $href,
-            'link' => $href === '' ? '' : self::linkLabel($href),
-            'heard' => mb_substr($heard, 0, 240),
         ];
     }
 

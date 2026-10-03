@@ -22,12 +22,6 @@ $payload = [
     'signupHref' => bookingUrl(),
     'signupLink' => t('assistant.link.signup'),
     'thinking' => t('assistant.thinking'),
-    'hearing' => t('assistant.hearing'),
-    'release' => t('assistant.release'),
-    'cancel' => t('assistant.cancel'),
-    'unheard' => t('assistant.unheard'),
-    'micDenied' => t('assistant.micDenied'),
-    'busy' => t('assistant.busy'),
     'ai' => Assistant::enabled(),
     'csrf' => Security::csrfToken(),
     'answers' => [
@@ -62,15 +56,7 @@ $payload = [
         </div>
         <form class="assistant-form" data-assistant-form>
             <input class="assistant-input" type="text" name="q" maxlength="240" autocomplete="off" readonly placeholder="<?= e(t('assistant.placeholder')) ?>" aria-label="<?= e(t('assistant.placeholder')) ?>">
-            <div class="assistant-hold" data-assistant-hold>
-                <span class="assistant-hold-dot" aria-hidden="true"></span>
-                <span data-assistant-hold-time>0:00</span>
-                <span class="assistant-hold-hint" data-assistant-hold-hint><?= t('assistant.release') ?></span>
-            </div>
-            <button type="button" class="assistant-voice" data-assistant-voice data-label-voice="<?= e(t('assistant.voice')) ?>" data-label-send="<?= e(t('assistant.send')) ?>" aria-pressed="false" aria-label="<?= e(t('assistant.voice')) ?>">
-                <span class="assistant-icon-mic"><?= icon('mic', 'size-4') ?></span>
-                <span class="assistant-icon-send"><?= icon('send', 'size-4') ?></span>
-            </button>
+            <button type="submit" class="assistant-send"><?= t('assistant.send') ?></button>
         </form>
     </div>
     <div class="assistant-offer" hidden data-assistant-nudge>
