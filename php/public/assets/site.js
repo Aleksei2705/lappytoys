@@ -650,6 +650,16 @@
     const data = JSON.parse(dataNode.textContent || "{}");
     const input = form.querySelector("input");
 
+    const avatar = () => {
+      const image = document.createElement("img");
+      image.className = "assistant-avatar";
+      image.src = "/images/assistant-avatar.jpg";
+      image.alt = "";
+      image.width = 30;
+      image.height = 30;
+      return image;
+    };
+
     const addMessage = (text, role, href, link) => {
       const item = document.createElement("p");
       item.className = `assistant-msg assistant-msg-${role}`;
@@ -665,52 +675,73 @@
         }
         item.append(document.createElement("br"), anchor);
       }
-      log.append(item);
+      if (role === "user") {
+        log.append(item);
+      } else {
+        const row = document.createElement("div");
+        row.className = "assistant-row";
+        row.append(avatar(), item);
+        log.append(row);
+      }
       log.scrollTop = log.scrollHeight;
     };
 
-    const localReply = (question) => {
+    const showTyping = () => {
+      const bubble = document.createElement("p");
+      bubble.className = "assistant-msg assistant-msg-bot";
+      bubble.innerHTML = '<span class="assistant-typing" aria-hidden="true"><span></span><span></span><span></span></span>';
+      const row = document.createElement("div");
+      row.className = "assistant-row";
+      row.append(avatar(), bubble);
+      log.append(row);
+      log.scrollTop = log.scrollHeight;
+      return row;
+    };
+
+    const pause = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+    const localAnswer = (question) => {
       const query = question.toLocaleLowerCase("ru").replaceAll("ё", "е");
       const match = (data.answers || []).find((answer) =>
         (answer.keys || []).some((key) => query.includes(String(key).toLocaleLowerCase("ru"))),
       );
-      addMessage(match?.text || data.fallback || "", "bot", match?.href, match?.link);
+      return {
+        text: match?.text || data.fallback || "",
+        href: match?.href || "",
+        link: match?.link || "",
+      };
     };
 
     const reply = async (question) => {
-      if (!data.ai) {
-        localReply(question);
-        return;
-      }
-      const pending = document.createElement("p");
-      pending.className = "assistant-msg assistant-msg-bot";
-      pending.textContent = data.thinking || "…";
-      log.append(pending);
-      log.scrollTop = log.scrollHeight;
-      const history = Array.from(log.querySelectorAll(".assistant-msg"))
-        .filter((node) => node !== pending)
-        .slice(0, -1)
-        .slice(-6)
-        .map((node) => ({
-          role: node.classList.contains("assistant-msg-user") ? "user" : "assistant",
-          text: node.childNodes[0]?.textContent || "",
-        }));
-      try {
-        const response = await fetch("/assistant.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ _csrf: data.csrf, q: question, history }),
-        });
-        const body = response.ok ? await response.json() : null;
-        pending.remove();
-        if (body?.text) {
-          addMessage(body.text, "bot", body.href, body.link);
-          return;
+      const pending = showTyping();
+      const started = performance.now();
+      let answer = null;
+      if (data.ai) {
+        const history = Array.from(log.querySelectorAll(".assistant-msg"))
+          .filter((node) => !node.querySelector(".assistant-typing"))
+          .slice(0, -1)
+          .slice(-6)
+          .map((node) => ({
+            role: node.classList.contains("assistant-msg-user") ? "user" : "assistant",
+            text: node.childNodes[0]?.textContent || "",
+          }));
+        try {
+          const response = await fetch("/assistant.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ _csrf: data.csrf, q: question, history }),
+          });
+          const body = response.ok ? await response.json() : null;
+          if (body?.text) answer = body;
+        } catch {
+          answer = null;
         }
-      } catch {
-        pending.remove();
       }
-      localReply(question);
+      const wait = 900 + Math.round(Math.random() * 700) - (performance.now() - started);
+      if (wait > 0) await pause(wait);
+      pending.remove();
+      const ready = answer || localAnswer(question);
+      addMessage(ready.text, "bot", ready.href, ready.link);
     };
 
     const ask = (question) => {
@@ -724,7 +755,13 @@
       panel.hidden = !open;
       toggle.setAttribute("aria-expanded", String(open));
       if (nudge) nudge.hidden = true;
-      if (open && !log.childElementCount) addMessage(data.greeting || "", "bot");
+      if (open && !log.childElementCount) {
+        const pending = showTyping();
+        pause(800).then(() => {
+          pending.remove();
+          addMessage(data.greeting || "", "bot");
+        });
+      }
       if (open) {
         sessionStorage.setItem("lappy-assistant-opened", "1");
         input?.focus();
