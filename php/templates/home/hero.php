@@ -12,8 +12,6 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
             <div class="hero-shimmer absolute inset-0"></div>
         </div>
     </div>
-    <canvas data-knit-scarf aria-hidden="true" class="pointer-events-none absolute inset-0 h-full w-full" style="z-index:1"></canvas>
-
     <div class="container-main relative z-10 w-full pb-10 pt-16 sm:pb-14 sm:pt-20 md:pb-16">
         <div class="hero-copy flex w-full max-w-2xl flex-col items-start text-left">
             <p class="font-heading text-5xl font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-6xl lg:text-7xl"><?= e((string) site('brand_title')) ?></p>

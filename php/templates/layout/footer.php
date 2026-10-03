@@ -14,8 +14,8 @@ $socialClass = 'flex size-11 items-center justify-center rounded-full border bor
                 <a href="tel:<?= e((string) site('phone')) ?>" class="mt-4 inline-block font-semibold text-brand-700 transition-colors hover:text-brand-800"><?= e((string) site('phone_display')) ?></a>
 
                 <div class="mt-5 flex flex-wrap gap-3">
-                    <a href="<?= e((string) site('telegram_group')) ?>" target="_blank" rel="noopener noreferrer"
-                       aria-label="<?= t('contacts.telegramGroup') ?>"
+                    <a href="<?= e((string) site('telegram')) ?>" target="_blank" rel="noopener noreferrer"
+                       aria-label="<?= t('contacts.telegram') ?>"
                        class="<?= $socialClass ?> hover:border-sky-200 hover:bg-sky-50">
                         <img src="/images/telegram.svg" alt="" width="128" height="128" class="size-5" aria-hidden="true">
                     </a>
