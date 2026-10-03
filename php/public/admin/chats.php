@@ -26,6 +26,23 @@ try {
 }
 
 require APP_ROOT . '/templates/admin/header.php';
+
+$guestColors = ['#2563eb', '#0f766e', '#b45309', '#7c3aed', '#be123c', '#0369a1', '#4d7c0f', '#c2410c', '#6d28d9', '#0e7490'];
+
+$chatLines = static function (string $transcript): array {
+    $lines = [];
+    foreach (preg_split("/\n\n(?=Мила: |Гость: )/u", $transcript) ?: [] as $part) {
+        $part = trim($part);
+        if (str_starts_with($part, 'Мила: ')) {
+            $lines[] = ['role' => 'mila', 'text' => substr($part, strlen('Мила: '))];
+        } elseif (str_starts_with($part, 'Гость: ')) {
+            $lines[] = ['role' => 'guest', 'text' => substr($part, strlen('Гость: '))];
+        } elseif ($part !== '') {
+            $lines[] = ['role' => 'guest', 'text' => $part];
+        }
+    }
+    return $lines;
+};
 ?>
 <?php if ($chats === []): ?>
     <p class="card-soft p-6 text-sm text-warm-500">Разговоров пока нет.</p>
@@ -34,7 +51,22 @@ require APP_ROOT . '/templates/admin/header.php';
     <?php foreach ($chats as $chat): ?>
         <article class="card-soft p-4 text-sm">
             <p class="text-warm-500">#<?= (int) $chat['id'] ?> · <?= e(Admin::dt((string) $chat['updated_at'])) ?></p>
-            <p class="mt-2 whitespace-pre-line"><?= e((string) $chat['transcript']) ?></p>
+            <?php
+            $guestColor = $guestColors[abs(crc32((string) $chat['public_id'])) % count($guestColors)];
+            foreach ($chatLines((string) $chat['transcript']) as $line):
+            ?>
+                <div class="chat-line">
+                    <?php if ($line['role'] === 'mila'): ?>
+                        <img class="chat-avatar" src="/images/assistant-avatar.jpg" alt="" width="36" height="36">
+                        <p class="chat-mila"><?= e($line['text']) ?></p>
+                    <?php else: ?>
+                        <span class="chat-avatar chat-guest-avatar" style="background: <?= e($guestColor) ?>" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="9" r="3.2"/><path d="M6.5 18.5a5.5 5.5 0 0 1 11 0"/></svg>
+                        </span>
+                        <p class="chat-guest"><?= e($line['text']) ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
             <?php if ($adminUser['role'] === 'admin'): ?>
                 <form class="mt-3" method="post" action="/admin/chats.php" data-confirm="Удалить разговор безвозвратно?">
                     <?= Security::csrfField() ?>
