@@ -218,42 +218,42 @@ final class Assistant
     }
 
     /** @param array<string, mixed> $payload */
-    private static function request(array $payload, bool $ready = false): ?string
+    private static function request(array $payload): ?string
     {
-        $url = self::endpoint();
-        $headers = ['Content-Type: application/json'];
-        $key = Config::get('ASSISTANT_API_KEY');
-        if (self::isGemini($url)) {
-            $headers[] = 'x-goog-api-key: ' . $key;
-            $body = $ready ? $payload : self::geminiBody($payload);
-            $urls = self::geminiUrls($url);
-        } else {
-            $headers[] = 'Authorization: Bearer ' . $key;
-            if (str_contains($url, 'openrouter.ai')) {
-                $headers[] = 'HTTP-Referer: ' . site('url');
-                $headers[] = 'X-Title: Lappy Art';
-            }
-            $body = $payload;
-            $urls = [$url];
+        if (Config::get('ASSISTANT_API_KEY') === '') {
+            self::$lastError = '0 no-key';
+            return null;
         }
-        $encoded = json_encode($body, JSON_UNESCAPED_UNICODE);
-        foreach ($urls as $target) {
+        $url = self::endpoint();
+        $headers = [
+            'Content-Type: application/json',
+            'x-goog-api-key: ' . Config::get('ASSISTANT_API_KEY'),
+        ];
+        $encoded = json_encode(self::geminiBody($payload), JSON_UNESCAPED_UNICODE);
+        foreach (self::geminiUrls($url) as $target) {
             $result = self::post($target, $headers, $encoded);
             if ($result !== null) {
                 return $result;
             }
-            if (!str_starts_with(self::$lastError, '503') && !str_starts_with(self::$lastError, '404')) {
+            if (!self::shouldTryNextGeminiModel(self::$lastError)) {
                 break;
             }
         }
         return null;
     }
 
+    private static function shouldTryNextGeminiModel(string $error): bool
+    {
+        return str_starts_with($error, '503')
+            || str_starts_with($error, '404')
+            || str_starts_with($error, '429');
+    }
+
     /** @return list<string> */
     private static function geminiUrls(string $primary): array
     {
         $urls = [$primary];
-        foreach (['gemini-flash-latest'] as $model) {
+        foreach (['gemini-2.5-flash', 'gemini-3-flash', 'gemini-flash-latest'] as $model) {
             $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent';
             if (!in_array($url, $urls, true)) {
                 $urls[] = $url;
@@ -324,11 +324,6 @@ final class Assistant
             $model = $configured;
         }
         return 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent';
-    }
-
-    private static function isGemini(string $url): bool
-    {
-        return str_contains($url, 'generativelanguage.googleapis.com');
     }
 
     /** @param array<string, mixed> $payload */

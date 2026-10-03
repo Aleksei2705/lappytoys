@@ -761,8 +761,12 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ _csrf: data.csrf, q: question, history, aside: asideCount }),
           });
-          const body = response.ok ? await response.json() : null;
-          if (body?.text) answer = body;
+          const body = await response.json();
+          if (body?.text) {
+            answer = body;
+          } else if (response.status === 429 || body?.error === "busy") {
+            answer = { text: data.busy || choose(data.fallbacks, "fallback"), href: "", link: "" };
+          }
         } catch {
           answer = null;
         }

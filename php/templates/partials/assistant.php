@@ -22,6 +22,7 @@ $payload = [
     'signupHref' => bookingUrl(),
     'signupLink' => t('assistant.link.signup'),
     'thinking' => t('assistant.thinking'),
+    'busy' => t('assistant.busy'),
     'ai' => Assistant::enabled(),
     'csrf' => Security::csrfToken(),
     'answers' => [
