@@ -762,14 +762,21 @@
           addMessage(data.greeting || "", "bot");
         });
       }
-      if (open) input?.focus();
+      if (open) {
+        sessionStorage.setItem("lappy-assistant-opened", "1");
+        input?.focus();
+      }
     };
 
-    if (nudge) {
+    if (nudge && sessionStorage.getItem("lappy-assistant-opened") !== "1") {
+      const sinceKey = "lappy-assistant-since";
+      const since = Number(sessionStorage.getItem(sinceKey) || Date.now());
+      sessionStorage.setItem(sinceKey, String(since));
+      const delay = Math.max(0, 20000 - (Date.now() - since));
       window.setTimeout(() => {
-        if (!panel.hidden) return;
+        if (!panel.hidden || sessionStorage.getItem("lappy-assistant-opened") === "1") return;
         nudge.hidden = false;
-      }, 20000);
+      }, delay);
       nudge.addEventListener("click", () => setOpen(true));
     }
 
