@@ -1149,7 +1149,7 @@
           endHold();
           stopCapture = () => {};
           if (discarded || pieces.length === 0) {
-            if (!discarded) addMessage(data.unheard || placeholder, "bot");
+            if (!discarded && pieces.length === 0 && Date.now() - startedAt >= 1500) addMessage(data.unheard || placeholder, "bot");
             return;
           }
           sendAudio(blob, "audio/wav");
@@ -1178,7 +1178,6 @@
         release();
       });
       window.addEventListener("touchend", release);
-      window.addEventListener("touchcancel", release);
       voice.addEventListener("pointerdown", (event) => {
         if (event.pointerType === "touch") return;
         if (event.button !== 0) return;
