@@ -65,18 +65,37 @@
 }
 
 .assistant-nudge {
-  max-width: 16rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: 17rem;
   border: 1px solid #e2b3c6;
-  border-radius: 1rem;
+  border-radius: 1.15rem;
   background: #fff;
-  padding: 0.65rem 0.8rem;
+  padding: 0.55rem 0.75rem 0.55rem 0.5rem;
   color: #34282e;
   font: inherit;
   font-size: 0.85rem;
   line-height: 1.35;
   text-align: left;
-  box-shadow: 0 10px 24px rgb(125 50 84 / 0.14);
+  box-shadow: 0 10px 24px rgb(125 50 84 / 0.16);
   cursor: pointer;
+  animation: assistant-nudge-in 0.35s ease-out;
+}
+
+.assistant-nudge[hidden] {
+  display: none;
+}
+
+@keyframes assistant-nudge-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .assistant-toggle {

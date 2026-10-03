@@ -46,7 +46,10 @@ $payload = [
             <button type="submit" class="assistant-send"><?= t('assistant.send') ?></button>
         </form>
     </div>
-    <button type="button" class="assistant-nudge" hidden data-assistant-nudge><?= t('assistant.idle') ?></button>
+    <button type="button" class="assistant-nudge" hidden data-assistant-nudge>
+        <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg" alt="" width="32" height="32">
+        <span><?= t('assistant.idle') ?></span>
+    </button>
     <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel">
         <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg" alt="" width="32" height="32">
         <span><?= t('assistant.title') ?></span>
