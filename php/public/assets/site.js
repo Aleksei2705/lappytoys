@@ -782,6 +782,33 @@
       reply(text);
     };
 
+    const chime = () => {
+      const audio = new AudioContext();
+      const tone = audio.createOscillator();
+      const level = audio.createGain();
+      tone.type = "sine";
+      tone.frequency.setValueAtTime(620, audio.currentTime);
+      tone.frequency.exponentialRampToValueAtTime(880, audio.currentTime + 0.14);
+      level.gain.setValueAtTime(0.0001, audio.currentTime);
+      level.gain.exponentialRampToValueAtTime(0.06, audio.currentTime + 0.04);
+      level.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.4);
+      tone.connect(level);
+      level.connect(audio.destination);
+      tone.start();
+      tone.stop(audio.currentTime + 0.42);
+      audio.resume().catch(() => {});
+    };
+
+    window.setTimeout(() => {
+      toggle.classList.add("is-in");
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      try {
+        chime();
+      } catch {
+        /* Браузер может запретить звук до первого нажатия. */
+      }
+    }, 2500);
+
     const setOpen = (open) => {
       panel.hidden = !open;
       toggle.setAttribute("aria-expanded", String(open));
