@@ -685,16 +685,6 @@
       }).catch(() => {});
     };
 
-    const avatar = () => {
-      const image = document.createElement("img");
-      image.className = "assistant-avatar";
-      image.src = "/images/assistant-avatar.jpg?v=2";
-      image.alt = "";
-      image.width = 30;
-      image.height = 30;
-      return image;
-    };
-
     const addMessage = (text, role, href, link) => {
       const item = document.createElement("p");
       item.className = `assistant-msg assistant-msg-${role}`;
@@ -715,14 +705,7 @@
         }
         item.append(document.createElement("br"), anchor);
       }
-      if (role === "user") {
-        log.append(item);
-      } else {
-        const row = document.createElement("div");
-        row.className = "assistant-row";
-        row.append(avatar(), item);
-        log.append(row);
-      }
+      log.append(item);
       log.scrollTop = log.scrollHeight;
       if (role === "bot") shareChat();
     };
@@ -731,12 +714,9 @@
       const bubble = document.createElement("p");
       bubble.className = "assistant-msg assistant-msg-bot";
       bubble.innerHTML = '<span class="assistant-typing" aria-hidden="true"><span></span><span></span><span></span></span>';
-      const row = document.createElement("div");
-      row.className = "assistant-row";
-      row.append(avatar(), bubble);
-      log.append(row);
+      log.append(bubble);
       log.scrollTop = log.scrollHeight;
-      return row;
+      return bubble;
     };
 
     const pause = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));

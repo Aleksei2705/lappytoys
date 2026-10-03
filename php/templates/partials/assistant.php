@@ -60,7 +60,6 @@ $payload = [
         </form>
     </div>
     <button type="button" class="assistant-nudge" hidden data-assistant-nudge>
-        <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg?v=2" alt="" width="32" height="32">
         <span><?= t('assistant.idle') ?></span>
     </button>
     <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel">
