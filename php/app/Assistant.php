@@ -32,7 +32,9 @@ final class Assistant
         }
 
         $decoded = json_decode($raw, true);
-        $content = $decoded['choices'][0]['message']['content'] ?? '';
+        $content = $decoded['choices'][0]['message']['content']
+            ?? $decoded['candidates'][0]['content']['parts'][0]['text']
+            ?? '';
         $answer = is_string($content) ? json_decode($content, true) : null;
         if (!is_array($answer)) {
             return null;
@@ -211,21 +213,19 @@ final class Assistant
     /** @param array<string, mixed> $payload */
     private static function request(array $payload): ?string
     {
-        $allowed = [
-            'https://api.openai.com/v1/chat/completions',
-            'https://openrouter.ai/api/v1/chat/completions',
-        ];
-        $url = Config::get('ASSISTANT_API_URL', $allowed[0]);
-        if (!in_array($url, $allowed, true)) {
-            $url = $allowed[0];
-        }
-        $headers = [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . Config::get('ASSISTANT_API_KEY'),
-        ];
-        if (str_contains($url, 'openrouter.ai')) {
-            $headers[] = 'HTTP-Referer: ' . site('url');
-            $headers[] = 'X-Title: Lappy Art';
+        $url = self::endpoint();
+        $headers = ['Content-Type: application/json'];
+        $key = Config::get('ASSISTANT_API_KEY');
+        if (self::isGemini($url)) {
+            $headers[] = 'x-goog-api-key: ' . $key;
+            $body = self::geminiBody($payload);
+        } else {
+            $headers[] = 'Authorization: Bearer ' . $key;
+            if (str_contains($url, 'openrouter.ai')) {
+                $headers[] = 'HTTP-Referer: ' . site('url');
+                $headers[] = 'X-Title: Lappy Art';
+            }
+            $body = $payload;
         }
         $handle = curl_init($url);
         if ($handle === false) {
@@ -236,11 +236,62 @@ final class Assistant
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 20,
             CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            CURLOPT_POSTFIELDS => json_encode($body, JSON_UNESCAPED_UNICODE),
         ]);
-        $body = curl_exec($handle);
+        $response = curl_exec($handle);
         $status = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
         curl_close($handle);
-        return is_string($body) && $status >= 200 && $status < 300 ? $body : null;
+        return is_string($response) && $status >= 200 && $status < 300 ? $response : null;
+    }
+
+    private static function endpoint(): string
+    {
+        $model = Config::get('ASSISTANT_MODEL', 'gemini-2.5-flash');
+        $gemini = 'https://generativelanguage.googleapis.com/v1beta/models/'
+            . (str_starts_with($model, 'gemini-') ? $model : 'gemini-2.5-flash')
+            . ':generateContent';
+        $url = Config::get('ASSISTANT_API_URL', $gemini);
+        if ($url === '' || self::isGemini($url)) {
+            return preg_match('#^https://generativelanguage\.googleapis\.com/v1beta/models/gemini-[a-z0-9.\-]+:generateContent$#', $url) === 1
+                ? $url
+                : $gemini;
+        }
+        $allowed = [
+            'https://api.openai.com/v1/chat/completions',
+            'https://openrouter.ai/api/v1/chat/completions',
+        ];
+        return in_array($url, $allowed, true) ? $url : $gemini;
+    }
+
+    private static function isGemini(string $url): bool
+    {
+        return str_contains($url, 'generativelanguage.googleapis.com');
+    }
+
+    /** @param array<string, mixed> $payload */
+    private static function geminiBody(array $payload): array
+    {
+        $system = '';
+        $contents = [];
+        foreach ($payload['messages'] as $message) {
+            $role = (string) ($message['role'] ?? 'user');
+            $text = (string) ($message['content'] ?? '');
+            if ($role === 'system') {
+                $system = $text;
+                continue;
+            }
+            $contents[] = [
+                'role' => $role === 'assistant' ? 'model' : 'user',
+                'parts' => [['text' => $text]],
+            ];
+        }
+        return [
+            'systemInstruction' => ['parts' => [['text' => $system]]],
+            'contents' => $contents,
+            'generationConfig' => [
+                'temperature' => 0.8,
+                'responseMimeType' => 'application/json',
+            ],
+        ];
     }
 }
