@@ -1017,16 +1017,24 @@
           else if (!cancel) addMessage(data.unheard || placeholder, "bot");
         });
       }
+      const finishSpeech = () => {
+        if (!recognition || speechSettled) return;
+        const text = cancel ? "" : heard.trim();
+        speechSettled = true;
+        heard = "";
+        holding = false;
+        endHold();
+        try {
+          recognition.stop();
+        } catch {
+          /* Распознавание уже остановлено. */
+        }
+        if (text) ask(text.slice(0, 240));
+        else if (!cancel) addMessage(data.unheard || placeholder, "bot");
+      };
       const release = () => {
         if (recognition && !speechSettled) {
-          holding = false;
-          try {
-            if (cancel) recognition.abort();
-            else recognition.stop();
-          } catch {
-            speechSettled = true;
-            endHold();
-          }
+          finishSpeech();
           return;
         }
         holding = false;
@@ -1135,6 +1143,8 @@
         event.preventDefault();
         release();
       });
+      window.addEventListener("touchend", release);
+      window.addEventListener("touchcancel", release);
       voice.addEventListener("pointerdown", (event) => {
         if (event.pointerType === "touch") return;
         if (event.button !== 0) return;
