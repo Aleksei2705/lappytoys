@@ -826,7 +826,27 @@
         if (!panel.hidden || sessionStorage.getItem("lappy-assistant-opened") === "1") return;
         nudge.hidden = false;
       }, delay);
-      nudge.addEventListener("click", () => setOpen(true));
+      nudge.addEventListener("click", () => {
+        if (nudge.dataset.swiped === "1") {
+          nudge.dataset.swiped = "";
+          return;
+        }
+        setOpen(true);
+      });
+      let startX = 0;
+      nudge.addEventListener("pointerdown", (event) => {
+        startX = event.clientX;
+      });
+      nudge.addEventListener("pointerup", (event) => {
+        if (Math.abs(event.clientX - startX) < 48) return;
+        nudge.dataset.swiped = "1";
+        sessionStorage.setItem("lappy-assistant-opened", "1");
+        nudge.style.transform = `translateX(${event.clientX - startX > 0 ? 120 : -120}%)`;
+        nudge.style.opacity = "0";
+        window.setTimeout(() => {
+          nudge.hidden = true;
+        }, 180);
+      });
     }
 
     log.addEventListener("click", (event) => {
