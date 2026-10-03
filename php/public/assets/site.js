@@ -995,30 +995,27 @@
       let recognition = null;
       let heard = "";
       let speechSettled = true;
+      let turn = 0;
       if (Speech) {
         recognition = new Speech();
         recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
-        recognition.continuous = true;
+        recognition.continuous = false;
         recognition.interimResults = true;
         recognition.addEventListener("result", (event) => {
           heard = Array.from(event.results).map((item) => item[0].transcript).join(" ").trim();
         });
-        recognition.addEventListener("error", (event) => {
-          if (event.error === "aborted" || event.error === "no-speech") return;
-          heard = "";
-        });
         recognition.addEventListener("end", () => {
-          if (speechSettled) return;
-          speechSettled = true;
-          const text = cancel ? "" : heard.trim();
-          heard = "";
-          endHold();
-          if (text) ask(text.slice(0, 240));
-          else if (!cancel) addMessage(data.unheard || placeholder, "bot");
+          if (!holding) return;
+          try {
+            recognition.start();
+          } catch {
+            /* Телефон ещё закрывает прошлый сеанс. */
+          }
         });
       }
       const finishSpeech = () => {
         if (!recognition || speechSettled) return;
+        const turnId = turn;
         holding = false;
         endHold();
         if (cancel) {
@@ -1037,13 +1034,13 @@
           /* Распознавание уже остановлено. */
         }
         window.setTimeout(() => {
-          if (speechSettled) return;
+          if (turnId !== turn || holding) return;
           speechSettled = true;
           const text = heard.trim();
           heard = "";
           if (text) ask(text.slice(0, 240));
           else addMessage(data.unheard || placeholder, "bot");
-        }, 1200);
+        }, 900);
       };
       const release = () => {
         if (recognition && !speechSettled) {
@@ -1122,6 +1119,7 @@
           cancel = false;
           speechSettled = false;
           heard = "";
+          turn += 1;
           startX = clientX;
           voice.classList.add("is-listening");
           voice.setAttribute("aria-pressed", "true");
@@ -1132,9 +1130,19 @@
           try {
             recognition.start();
           } catch {
-            speechSettled = true;
-            endHold();
-            addMessage(data.unheard || placeholder, "bot");
+            try {
+              recognition.abort();
+            } catch {
+              /* Прошлый сеанс уже закрыт. */
+            }
+            window.setTimeout(() => {
+              if (!holding) return;
+              try {
+                recognition.start();
+              } catch {
+                /* Кнопка остаётся нажатой, повтор не мешает отпустить. */
+              }
+            }, 200);
           }
           return;
         }
