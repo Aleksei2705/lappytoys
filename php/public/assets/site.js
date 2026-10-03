@@ -896,21 +896,61 @@
 
     const holdHint = root.querySelector("[data-assistant-hold-hint]");
     const holdTime = root.querySelector("[data-assistant-hold-time]");
-    if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext && window.MediaRecorder) {
-      let recorder = null;
+    if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext && window.AudioContext) {
       let stream = null;
-      let chunks = [];
       let holding = false;
       let cancel = false;
       let startX = 0;
       let startedAt = 0;
       let clock = 0;
+      let stopCapture = () => {};
       const placeholder = input?.placeholder || "";
       const releaseText = holdHint?.textContent || "";
       const cancelText = data.cancel || "Отмена";
       const stopTracks = () => {
         stream?.getTracks().forEach((track) => track.stop());
         stream = null;
+      };
+      const wavBlob = (pieces, sampleRate) => {
+        const length = pieces.reduce((sum, piece) => sum + piece.length, 0);
+        const pcm = new Float32Array(length);
+        let offset = 0;
+        pieces.forEach((piece) => {
+          pcm.set(piece, offset);
+          offset += piece.length;
+        });
+        const rate = 16000;
+        const count = Math.max(1, Math.floor((pcm.length * rate) / sampleRate));
+        const data = new Int16Array(count);
+        for (let index = 0; index < count; index += 1) {
+          const sample = pcm[Math.min(pcm.length - 1, Math.floor((index * sampleRate) / rate))] || 0;
+          const clamped = Math.max(-1, Math.min(1, sample));
+          data[index] = clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff;
+        }
+        const buffer = new ArrayBuffer(44 + data.length * 2);
+        const view = new DataView(buffer);
+        const mark = (at, text) => {
+          for (let index = 0; index < text.length; index += 1) view.setUint8(at + index, text.charCodeAt(index));
+        };
+        mark(0, "RIFF");
+        view.setUint32(4, 36 + data.length * 2, true);
+        mark(8, "WAVE");
+        mark(12, "fmt ");
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, rate, true);
+        view.setUint32(28, rate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        mark(36, "data");
+        view.setUint32(40, data.length * 2, true);
+        let cursor = 44;
+        data.forEach((sample) => {
+          view.setInt16(cursor, sample, true);
+          cursor += 2;
+        });
+        return new Blob([buffer], { type: "audio/wav" });
       };
       const paintTime = () => {
         const seconds = Math.floor((Date.now() - startedAt) / 1000);
@@ -953,7 +993,7 @@
       };
       const release = () => {
         holding = false;
-        if (recorder && recorder.state === "recording") recorder.stop();
+        stopCapture();
       };
       const begin = async (clientX) => {
         holding = true;
@@ -965,60 +1005,60 @@
         startedAt = Date.now();
         paintTime();
         clock = window.setInterval(paintTime, 250);
+        const context = new AudioContext();
+        context.resume().catch(() => {});
         let next;
         try {
           next = await navigator.mediaDevices.getUserMedia({ audio: true });
         } catch {
+          context.close();
           endHold();
           addMessage(data.unheard || placeholder, "bot");
           return;
         }
         if (!holding) {
           next.getTracks().forEach((track) => track.stop());
+          context.close();
           endHold();
           return;
         }
         stream = next;
-        const preferred = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
-        try {
-          recorder = preferred ? new MediaRecorder(stream, { mimeType: preferred }) : new MediaRecorder(stream);
-        } catch {
-          stopTracks();
-          endHold();
-          addMessage(data.unheard || placeholder, "bot");
-          return;
-        }
-        chunks = [];
-        const mime = (recorder.mimeType || preferred || "audio/webm").split(";")[0];
-        recorder.addEventListener("dataavailable", (chunk) => {
-          if (chunk.data.size) chunks.push(chunk.data);
-        });
-        recorder.addEventListener("stop", () => {
-          const blob = new Blob(chunks, { type: mime });
+        const pieces = [];
+        const source = context.createMediaStreamSource(stream);
+        const processor = context.createScriptProcessor(4096, 1, 1);
+        const mute = context.createGain();
+        mute.gain.value = 0;
+        processor.onaudioprocess = (event) => {
+          pieces.push(new Float32Array(event.inputBuffer.getChannelData(0)));
+        };
+        source.connect(processor);
+        processor.connect(mute);
+        mute.connect(context.destination);
+        let stopped = false;
+        stopCapture = () => {
+          if (stopped) return;
+          stopped = true;
+          processor.onaudioprocess = null;
+          source.disconnect();
+          processor.disconnect();
+          mute.disconnect();
           const discarded = cancel || Date.now() - startedAt < 450;
+          const blob = wavBlob(pieces, context.sampleRate || 48000);
           stopTracks();
+          context.close();
           endHold();
-          if (discarded || blob.size < 200) {
+          stopCapture = () => {};
+          if (discarded || pieces.length === 0) {
             if (!discarded) addMessage(data.unheard || placeholder, "bot");
             return;
           }
-          sendAudio(blob, mime);
-        });
-        try {
-          recorder.start();
-        } catch {
-          stopTracks();
-          endHold();
-          addMessage(data.unheard || placeholder, "bot");
-          return;
-        }
-        if (!holding) recorder.stop();
-        window.setTimeout(() => {
-          if (recorder && recorder.state === "recording") recorder.stop();
-        }, 20000);
+          sendAudio(blob, "audio/wav");
+        };
+        if (!holding) stopCapture();
+        window.setTimeout(stopCapture, 20000);
       };
       const press = (clientX) => {
-        if (voice.classList.contains("is-send") || holding || (recorder && recorder.state === "recording")) return;
+        if (voice.classList.contains("is-send") || holding) return;
         begin(clientX);
       };
       voice.addEventListener("touchstart", (event) => {
