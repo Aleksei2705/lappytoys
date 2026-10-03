@@ -1094,7 +1094,7 @@
         holding = false;
         stopCapture();
       };
-      const begin = async (clientX) => {
+      const begin = async (clientX, mic) => {
         holding = true;
         cancel = false;
         startX = clientX;
@@ -1108,11 +1108,10 @@
         context.resume().catch(() => {});
         let next;
         try {
-          next = await navigator.mediaDevices.getUserMedia({ audio: true });
+          next = await mic;
         } catch {
           context.close();
           endHold();
-          addMessage(data.unheard || placeholder, "bot");
           return;
         }
         if (!holding) {
@@ -1159,11 +1158,12 @@
       };
       const press = (clientX) => {
         if (voice.classList.contains("is-send") || holding) return;
-        begin(clientX);
+        const mic = navigator.mediaDevices.getUserMedia({ audio: true });
+        begin(clientX, mic);
       };
       voice.addEventListener("touchstart", (event) => {
-        event.preventDefault();
         press(event.touches[0]?.clientX || 0);
+        event.preventDefault();
       }, { passive: false });
       voice.addEventListener("touchmove", (event) => {
         if (!holding) return;
