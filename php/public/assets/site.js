@@ -646,6 +646,8 @@
     const form = root?.querySelector("[data-assistant-form]");
     const toggle = root?.querySelector("[data-assistant-toggle]");
     const nudge = root?.querySelector("[data-assistant-nudge]");
+    const offer = root?.querySelector("[data-assistant-offer]");
+    const dismiss = root?.querySelector("[data-assistant-dismiss]");
     if (!root || !dataNode || !panel || !log || !form || !toggle) return;
     const data = JSON.parse(dataNode.textContent || "{}");
     const input = form.querySelector("input");
@@ -805,21 +807,32 @@
       window.setTimeout(() => {
         if (!panel.hidden || sessionStorage.getItem("lappy-assistant-opened") === "1") return;
         nudge.hidden = false;
+        window.setTimeout(() => {
+          if (dismiss && !nudge.hidden) dismiss.hidden = false;
+        }, 2500);
       }, delay);
-      nudge.addEventListener("click", () => {
-        if (nudge.dataset.swiped === "1") {
-          nudge.dataset.swiped = "";
+      const hideOffer = () => {
+        sessionStorage.setItem("lappy-assistant-opened", "1");
+        nudge.hidden = true;
+      };
+      offer?.addEventListener("click", () => {
+        if (offer.dataset.swiped === "1") {
+          offer.dataset.swiped = "";
           return;
         }
         setOpen(true);
       });
+      dismiss?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        hideOffer();
+      });
       let startX = 0;
-      nudge.addEventListener("pointerdown", (event) => {
+      offer?.addEventListener("pointerdown", (event) => {
         startX = event.clientX;
       });
-      nudge.addEventListener("pointerup", (event) => {
+      offer?.addEventListener("pointerup", (event) => {
         if (Math.abs(event.clientX - startX) < 48) return;
-        nudge.dataset.swiped = "1";
+        offer.dataset.swiped = "1";
         sessionStorage.setItem("lappy-assistant-opened", "1");
         nudge.style.transform = `translateX(${event.clientX - startX > 0 ? 120 : -120}%)`;
         nudge.style.opacity = "0";
