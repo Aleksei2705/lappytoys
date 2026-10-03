@@ -26,6 +26,7 @@ $payload = [
     'release' => t('assistant.release'),
     'cancel' => t('assistant.cancel'),
     'unheard' => t('assistant.unheard'),
+    'busy' => t('assistant.busy'),
     'ai' => Assistant::enabled(),
     'csrf' => Security::csrfToken(),
     'answers' => [

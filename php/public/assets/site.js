@@ -944,8 +944,8 @@
           body = null;
         }
         pending.remove();
-        if (!body?.heard || !body?.text) {
-          addMessage(data.unheard || placeholder, "bot");
+        if (body?.error === "busy" || !body?.heard || !body?.text) {
+          addMessage(body?.error === "busy" ? (data.busy || data.unheard) : (data.unheard || placeholder), "bot");
           return;
         }
         addMessage(body.heard, "user");

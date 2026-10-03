@@ -41,8 +41,9 @@ if ($audio !== '') {
     }
     $heard = Assistant::transcribe($audio, $mime);
     if ($heard === null) {
-        http_response_code(422);
-        echo json_encode(['error' => 'unheard'], JSON_UNESCAPED_UNICODE);
+        $busy = str_starts_with(Assistant::lastError(), '429');
+        http_response_code($busy ? 429 : 422);
+        echo json_encode(['error' => $busy ? 'busy' : 'unheard'], JSON_UNESCAPED_UNICODE);
         exit;
     }
     $payload['q'] = $heard;
@@ -60,8 +61,9 @@ $aside = max(0, (int) ($payload['aside'] ?? 0));
 $question .= "\n[Посторонних вопросов до этого: {$aside}. Если это число уже 2 или больше и вопрос не про студию, не отвечай по существу.]";
 $answer = Assistant::answer($question, $history);
 if ($answer === null) {
-    http_response_code(503);
-    echo json_encode(['error' => Assistant::lastError()], JSON_UNESCAPED_UNICODE);
+    $busy = str_starts_with(Assistant::lastError(), '429');
+    http_response_code($busy ? 429 : 503);
+    echo json_encode(['error' => $busy ? 'busy' : Assistant::lastError()], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
