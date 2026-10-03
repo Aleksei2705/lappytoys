@@ -85,6 +85,51 @@ final class Assistant
         ];
     }
 
+    /** One model call: speech in, transcript and answer out. */
+    public static function answerFromAudio(string $audio, string $mime, int $aside): ?array
+    {
+        if (!self::enabled() || !str_starts_with($mime, 'audio/')) {
+            return null;
+        }
+        $body = [
+            'systemInstruction' => ['parts' => [['text' => self::instructions() . ' В JSON добавь поле heard: дословная расшифровка речи. Если речи нет, heard и text оставь пустыми.']]],
+            'contents' => [[
+                'role' => 'user',
+                'parts' => [
+                    ['text' => 'Посторонних вопросов до этого: ' . $aside . '. Если это число уже 2 или больше и вопрос не про студию, не отвечай по существу.'],
+                    ['inlineData' => ['mimeType' => $mime, 'data' => $audio]],
+                ],
+            ]],
+            'generationConfig' => [
+                'temperature' => 0.4,
+                'responseMimeType' => 'application/json',
+            ],
+        ];
+        $raw = self::request($body, true);
+        if ($raw === null) {
+            return null;
+        }
+        $decoded = json_decode($raw, true);
+        $content = (string) ($decoded['candidates'][0]['content']['parts'][0]['text'] ?? '');
+        $answer = json_decode(self::jsonText($content), true);
+        if (!is_array($answer)) {
+            self::$lastError = self::$lastError !== '' ? self::$lastError : 'model-format';
+            return null;
+        }
+        $heard = trim((string) ($answer['heard'] ?? ''));
+        $text = trim((string) ($answer['text'] ?? ''));
+        if ($heard === '' || $text === '') {
+            return null;
+        }
+        $href = self::allowedLink((string) ($answer['href'] ?? ''));
+        return [
+            'text' => mb_substr($text, 0, 700),
+            'href' => $href,
+            'link' => $href === '' ? '' : self::linkLabel($href),
+            'heard' => mb_substr($heard, 0, 240),
+        ];
+    }
+
     private static function instructions(): string
     {
         return "Ты Мила, вежливый консультант творческой студии Lappy Art в Семее. Ольга сейчас не на связи, ты отвечаешь вместо неё. "
@@ -278,7 +323,7 @@ final class Assistant
     private static function geminiUrls(string $primary): array
     {
         $urls = [$primary];
-        foreach (['gemini-3.8-flash', 'gemini-3-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest'] as $model) {
+        foreach (['gemini-flash-latest'] as $model) {
             $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent';
             if (!in_array($url, $urls, true)) {
                 $urls[] = $url;

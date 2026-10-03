@@ -39,14 +39,16 @@ if ($audio !== '') {
         echo '{}';
         exit;
     }
-    $heard = Assistant::transcribe($audio, $mime);
-    if ($heard === null) {
+    $aside = max(0, (int) ($payload['aside'] ?? 0));
+    $answer = Assistant::answerFromAudio($audio, $mime, $aside);
+    if ($answer === null) {
         $busy = str_starts_with(Assistant::lastError(), '429');
         http_response_code($busy ? 429 : 422);
         echo json_encode(['error' => $busy ? 'busy' : 'unheard'], JSON_UNESCAPED_UNICODE);
         exit;
     }
-    $payload['q'] = $heard;
+    echo json_encode($answer, JSON_UNESCAPED_UNICODE);
+    exit;
 }
 
 $question = trim((string) ($payload['q'] ?? $payload['message'] ?? ''));
@@ -67,7 +69,4 @@ if ($answer === null) {
     exit;
 }
 
-if ($audio !== '') {
-    $answer['heard'] = trim((string) ($payload['q'] ?? ''));
-}
 echo json_encode($answer, JSON_UNESCAPED_UNICODE);
