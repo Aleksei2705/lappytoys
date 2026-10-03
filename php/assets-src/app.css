@@ -110,7 +110,6 @@
   text-align: left;
   box-shadow: 0 10px 24px rgb(125 50 84 / 0.16);
   cursor: pointer;
-  touch-action: pan-y;
   animation: assistant-nudge-in 0.35s ease-out;
   transition: transform 0.18s ease, opacity 0.18s ease;
 }

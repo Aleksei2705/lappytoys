@@ -815,30 +815,10 @@
         sessionStorage.setItem("lappy-assistant-opened", "1");
         nudge.hidden = true;
       };
-      offer?.addEventListener("click", () => {
-        if (offer.dataset.swiped === "1") {
-          offer.dataset.swiped = "";
-          return;
-        }
-        setOpen(true);
-      });
+      offer?.addEventListener("click", () => setOpen(true));
       dismiss?.addEventListener("click", (event) => {
         event.stopPropagation();
         hideOffer();
-      });
-      let startX = 0;
-      offer?.addEventListener("pointerdown", (event) => {
-        startX = event.clientX;
-      });
-      offer?.addEventListener("pointerup", (event) => {
-        if (Math.abs(event.clientX - startX) < 48) return;
-        offer.dataset.swiped = "1";
-        sessionStorage.setItem("lappy-assistant-opened", "1");
-        nudge.style.transform = `translateX(${event.clientX - startX > 0 ? 120 : -120}%)`;
-        nudge.style.opacity = "0";
-        window.setTimeout(() => {
-          nudge.hidden = true;
-        }, 180);
       });
     }
 
