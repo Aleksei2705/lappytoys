@@ -875,8 +875,9 @@
       voice?.classList.remove("is-send");
       if (voice) voice.setAttribute("aria-label", voice.dataset.labelVoice || "");
     };
+    let dictating = false;
     const syncAction = () => {
-      if (!voice) return;
+      if (!voice || dictating) return;
       const hasText = (input?.value || "").trim() !== "";
       voice.classList.toggle("is-send", hasText);
       voice.setAttribute("aria-label", hasText ? voice.dataset.labelSend || "" : voice.dataset.labelVoice || "");
@@ -890,183 +891,102 @@
       event.preventDefault();
       sendText();
     });
-    voice?.addEventListener("click", (event) => {
-      if (voice.classList.contains("is-send")) sendText();
-      else event.preventDefault();
-    });
-
-    const holdHint = root.querySelector("[data-assistant-hold-hint]");
-    const holdTime = root.querySelector("[data-assistant-hold-time]");
     const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (voice && Speech && window.isSecureContext) {
-      let holding = false;
-      let cancel = false;
-      let startX = 0;
-      let startedAt = 0;
-      let clock = 0;
       let heard = "";
-      let turn = 0;
-      let settleTimer = 0;
-      let maxHoldTimer = 0;
+      let finishTimer = 0;
+      let autoStopTimer = 0;
       const placeholder = input?.placeholder || "";
-      const releaseText = holdHint?.textContent || "";
-      const cancelText = data.cancel || "Отмена";
       const recognition = new Speech();
       recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.addEventListener("result", (event) => {
-        const finals = [];
-        for (let index = 0; index < event.results.length; index += 1) {
-          const part = event.results[index];
-          if (part.isFinal) finals.push(part[0].transcript);
+        const line = Array.from(event.results).map((part) => part[0].transcript).join(" ").trim();
+        if (!line) return;
+        heard = line;
+        if (input) {
+          input.readOnly = false;
+          input.value = line.slice(0, 240);
         }
-        const line = (finals.length ? finals : Array.from(event.results).map((part) => part[0].transcript)).join(" ").trim();
-        if (line) heard = line;
       });
-      const clearHoldTimers = () => {
-        window.clearTimeout(settleTimer);
-        window.clearTimeout(maxHoldTimer);
-        settleTimer = 0;
-        maxHoldTimer = 0;
+      const clearDictationTimers = () => {
+        window.clearTimeout(finishTimer);
+        window.clearTimeout(autoStopTimer);
+        finishTimer = 0;
+        autoStopTimer = 0;
       };
-      const paintTime = () => {
-        const seconds = Math.floor((Date.now() - startedAt) / 1000);
-        if (holdTime) holdTime.textContent = Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
-      };
-      const endHold = () => {
-        window.clearInterval(clock);
-        clearHoldTimers();
-        holding = false;
+      const endDictation = () => {
+        clearDictationTimers();
+        dictating = false;
         voice.classList.remove("is-listening");
         voice.setAttribute("aria-pressed", "false");
-        form.classList.remove("is-recording", "is-cancel");
+        form.classList.remove("is-recording");
         if (input) input.placeholder = placeholder;
-        if (holdHint) holdHint.textContent = releaseText;
+        syncAction();
       };
-      const settle = (turnId) => {
-        if (turnId !== turn) return;
-        const text = cancel ? "" : heard.trim();
-        const held = Date.now() - startedAt;
+      const finishDictation = () => {
+        const text = heard.trim() || (input?.value || "").trim();
         heard = "";
-        endHold();
+        endDictation();
         if (text) ask(text.slice(0, 240));
-        else if (!cancel && held > 700) addMessage(data.unheard || placeholder, "bot");
+        else addMessage(data.unheard || placeholder, "bot");
+        if (input) input.value = "";
+        syncAction();
       };
-      const stopListen = (turnId) => {
+      const stopDictation = () => {
+        if (!dictating) return;
         try {
           recognition.stop();
         } catch {
-          settle(turnId);
+          finishDictation();
           return;
         }
-        settleTimer = window.setTimeout(() => settle(turnId), 900);
+        finishTimer = window.setTimeout(finishDictation, 700);
       };
-      const startListen = (turnId) => {
+      const startDictation = () => {
+        if (voice.classList.contains("is-send") || dictating) return;
+        clearDictationTimers();
+        dictating = true;
+        heard = "";
+        if (input) {
+          input.readOnly = false;
+          input.value = "";
+          input.placeholder = data.hearing || placeholder;
+        }
+        voice.classList.add("is-listening");
+        voice.setAttribute("aria-pressed", "true");
+        form.classList.add("is-recording");
         try {
           recognition.abort();
         } catch {
           /* Сеанс уже закрыт. */
         }
         window.setTimeout(() => {
-          if (turnId !== turn || !holding) return;
+          if (!dictating) return;
           try {
             recognition.start();
           } catch {
-            endHold();
+            endDictation();
+            addMessage(data.unheard || placeholder, "bot");
           }
         }, 120);
+        autoStopTimer = window.setTimeout(stopDictation, 20000);
       };
-      const pressHold = (clientX) => {
-        if (voice.classList.contains("is-send") || holding) return;
-        clearHoldTimers();
-        holding = true;
-        cancel = false;
-        heard = "";
-        turn += 1;
-        const turnId = turn;
-        startX = clientX;
-        startedAt = Date.now();
-        voice.classList.add("is-listening");
-        voice.setAttribute("aria-pressed", "true");
-        form.classList.add("is-recording");
-        paintTime();
-        clock = window.setInterval(paintTime, 250);
-        startListen(turnId);
-        maxHoldTimer = window.setTimeout(() => {
-          if (turnId === turn && holding) stopListen(turnId);
-        }, 20000);
-      };
-      const releaseHold = () => {
-        if (!holding) return;
-        holding = false;
-        const turnId = turn;
-        if (cancel) {
-          heard = "";
-          try {
-            recognition.abort();
-          } catch {
-            /* Распознавание уже остановлено. */
-          }
-          endHold();
+      voice.addEventListener("click", (event) => {
+        if (voice.classList.contains("is-send")) {
+          sendText();
           return;
         }
-        stopListen(turnId);
-      };
-      const moveHold = (clientX) => {
-        if (!holding) return;
-        cancel = startX - clientX > 72;
-        form.classList.toggle("is-cancel", cancel);
-        if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
-      };
-      voice.addEventListener("touchstart", (event) => {
-        if (voice.classList.contains("is-send")) return;
-        pressHold(event.touches[0]?.clientX || 0);
         event.preventDefault();
-      }, { passive: false });
-      voice.addEventListener("touchmove", (event) => {
-        moveHold(event.touches[0]?.clientX || 0);
-        event.preventDefault();
-      }, { passive: false });
-      voice.addEventListener("touchend", (event) => {
-        event.preventDefault();
-        releaseHold();
-      });
-      voice.addEventListener("touchcancel", () => {
-        cancel = true;
-        releaseHold();
-      });
-      voice.addEventListener("pointerdown", (event) => {
-        if (voice.classList.contains("is-send") || event.pointerType === "touch") return;
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        event.preventDefault();
-        pressHold(event.clientX);
-        try {
-          voice.setPointerCapture(event.pointerId);
-        } catch {
-          /* Захват указателя недоступен. */
-        }
-      });
-      voice.addEventListener("pointermove", (event) => {
-        if (event.pointerType === "touch") return;
-        moveHold(event.clientX);
-      });
-      voice.addEventListener("pointerup", (event) => {
-        if (event.pointerType === "touch") return;
-        if (voice.hasPointerCapture?.(event.pointerId)) {
-          try {
-            voice.releasePointerCapture(event.pointerId);
-          } catch {
-            /* Указатель уже отпущен. */
-          }
-        }
-        releaseHold();
-      });
-      voice.addEventListener("pointercancel", () => {
-        cancel = true;
-        releaseHold();
+        if (dictating) stopDictation();
+        else startDictation();
       });
       voice.addEventListener("contextmenu", (event) => event.preventDefault());
+    } else {
+      voice?.addEventListener("click", () => {
+        if (voice.classList.contains("is-send")) sendText();
+      });
     }
   };
 
