@@ -96,40 +96,23 @@
 }
 
 .assistant-nudge {
-  position: relative;
   display: flex;
   align-items: center;
-  max-width: 16rem;
-  border: 3px solid #e56a9a;
-  border-radius: 1.7rem;
+  max-width: 17rem;
+  border: 1px solid #e2b3c6;
+  border-radius: 1.15rem;
   background: #fff;
-  padding: 0.7rem 0.9rem;
+  padding: 0.65rem 0.85rem;
   color: #34282e;
   font: inherit;
   font-size: 0.85rem;
   line-height: 1.35;
   text-align: left;
+  box-shadow: 0 10px 24px rgb(125 50 84 / 0.16);
   cursor: pointer;
   touch-action: pan-y;
-  box-shadow:
-    0 0 0 5px rgb(255 176 206 / 0.55),
-    0 0 16px 2px rgb(232 96 154 / 0.75);
-  animation: assistant-nudge-in 0.35s ease-out, assistant-glow 1.35s ease-in-out 0.35s infinite;
+  animation: assistant-nudge-in 0.35s ease-out;
   transition: transform 0.18s ease, opacity 0.18s ease;
-}
-
-.assistant-nudge::after {
-  content: "";
-  position: absolute;
-  right: 1.45rem;
-  bottom: -0.55rem;
-  width: 0.95rem;
-  height: 0.7rem;
-  border-right: 3px solid #e56a9a;
-  border-bottom: 3px solid #e56a9a;
-  border-bottom-right-radius: 0.55rem;
-  background: #fff;
-  transform: rotate(28deg);
 }
 
 @keyframes assistant-nudge-in {
@@ -140,22 +123,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes assistant-glow {
-  0%,
-  100% {
-    border-color: #e56a9a;
-    box-shadow:
-      0 0 0 4px rgb(255 176 206 / 0.35),
-      0 0 8px 1px rgb(232 96 154 / 0.35);
-  }
-  50% {
-    border-color: #ff8fba;
-    box-shadow:
-      0 0 0 7px rgb(255 190 214 / 0.85),
-      0 0 22px 4px rgb(255 120 176 / 0.95);
   }
 }
 
