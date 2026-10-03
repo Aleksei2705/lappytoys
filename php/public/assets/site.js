@@ -638,7 +638,72 @@
   initMasterClasses();
   initRatingInput();
   initShare();
+  const initAssistant = () => {
+    const root = document.querySelector("[data-assistant]");
+    const dataNode = root?.querySelector("[data-assistant-data]");
+    const panel = root?.querySelector("[data-assistant-panel]");
+    const log = root?.querySelector("[data-assistant-log]");
+    const form = root?.querySelector("[data-assistant-form]");
+    const toggle = root?.querySelector("[data-assistant-toggle]");
+    if (!root || !dataNode || !panel || !log || !form || !toggle) return;
+    const data = JSON.parse(dataNode.textContent || "{}");
+    const input = form.querySelector("input");
+
+    const addMessage = (text, role, href, link) => {
+      const item = document.createElement("p");
+      item.className = `assistant-msg assistant-msg-${role}`;
+      item.textContent = text;
+      if (href && link) {
+        const anchor = document.createElement("a");
+        anchor.className = "assistant-link";
+        anchor.href = href;
+        anchor.textContent = link;
+        if (/^https?:/i.test(href)) {
+          anchor.target = "_blank";
+          anchor.rel = "noopener noreferrer";
+        }
+        item.append(document.createElement("br"), anchor);
+      }
+      log.append(item);
+      log.scrollTop = log.scrollHeight;
+    };
+
+    const reply = (question) => {
+      const query = question.toLocaleLowerCase("ru").replaceAll("ё", "е");
+      const match = (data.answers || []).find((answer) =>
+        (answer.keys || []).some((key) => query.includes(String(key).toLocaleLowerCase("ru"))),
+      );
+      addMessage(match?.text || data.fallback || "", "bot", match?.href, match?.link);
+    };
+
+    const ask = (question) => {
+      const text = question.trim();
+      if (!text) return;
+      addMessage(text, "user");
+      reply(text);
+    };
+
+    const setOpen = (open) => {
+      panel.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+      if (open && !log.childElementCount) addMessage(data.greeting || "", "bot");
+      if (open) input?.focus();
+    };
+
+    toggle.addEventListener("click", () => setOpen(panel.hidden));
+    root.querySelector("[data-assistant-close]")?.addEventListener("click", () => setOpen(false));
+    root.querySelectorAll("[data-assistant-ask]").forEach((button) => {
+      button.addEventListener("click", () => ask(button.getAttribute("data-assistant-ask") || ""));
+    });
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      ask(input?.value || "");
+      if (input) input.value = "";
+    });
+  };
+
   initHeroParallax();
+  initAssistant();
   initGoals();
   initBackLinks();
 })();
