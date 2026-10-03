@@ -226,6 +226,7 @@ final class Assistant
         if (self::isGemini($url)) {
             $headers[] = 'x-goog-api-key: ' . $key;
             $body = self::geminiBody($payload);
+            $urls = self::geminiUrls($url);
         } else {
             $headers[] = 'Authorization: Bearer ' . $key;
             if (str_contains($url, 'openrouter.ai')) {
@@ -233,9 +234,40 @@ final class Assistant
                 $headers[] = 'X-Title: Lappy Art';
             }
             $body = $payload;
+            $urls = [$url];
         }
+        $encoded = json_encode($body, JSON_UNESCAPED_UNICODE);
+        foreach ($urls as $target) {
+            $result = self::post($target, $headers, $encoded);
+            if ($result !== null) {
+                return $result;
+            }
+            if (!str_starts_with(self::$lastError, '503') && !str_starts_with(self::$lastError, '404')) {
+                break;
+            }
+        }
+        return null;
+    }
+
+    /** @return list<string> */
+    private static function geminiUrls(string $primary): array
+    {
+        $urls = [$primary];
+        foreach (['gemini-3.8-flash', 'gemini-3-flash', 'gemini-2.5-flash-lite', 'gemini-flash-latest'] as $model) {
+            $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent';
+            if (!in_array($url, $urls, true)) {
+                $urls[] = $url;
+            }
+        }
+        return $urls;
+    }
+
+    /** @param list<string> $headers */
+    private static function post(string $url, array $headers, string $body): ?string
+    {
         $handle = curl_init($url);
         if ($handle === false) {
+            self::$lastError = '0 no-response';
             return null;
         }
         curl_setopt_array($handle, [
@@ -243,7 +275,7 @@ final class Assistant
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 20,
             CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POSTFIELDS => json_encode($body, JSON_UNESCAPED_UNICODE),
+            CURLOPT_POSTFIELDS => $body,
         ]);
         $response = curl_exec($handle);
         $status = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
