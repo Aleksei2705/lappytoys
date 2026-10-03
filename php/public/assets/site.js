@@ -649,6 +649,40 @@
     if (!root || !dataNode || !panel || !log || !form || !toggle) return;
     const data = JSON.parse(dataNode.textContent || "{}");
     const input = form.querySelector("input");
+    const recent = {};
+
+    const choose = (lines, key) => {
+      const items = (lines || []).filter(Boolean);
+      if (!items.length) return "";
+      let index = Math.floor(Math.random() * items.length);
+      if (items.length > 1 && index === recent[key]) index = (index + 1) % items.length;
+      recent[key] = index;
+      return items[index];
+    };
+
+    const chatId = () => {
+      const key = "lappy-assistant-chat";
+      let id = sessionStorage.getItem(key);
+      if (!/^[a-f0-9]{32}$/.test(id || "")) {
+        id = (crypto.randomUUID?.() || String(Date.now()) + String(Math.random())).replace(/-/g, "").slice(0, 32).padEnd(32, "0");
+        sessionStorage.setItem(key, id);
+      }
+      return id;
+    };
+
+    const shareChat = () => {
+      const messages = Array.from(log.querySelectorAll(".assistant-msg"))
+        .filter((node) => !node.querySelector(".assistant-typing"))
+        .map((node) => ({
+          role: node.classList.contains("assistant-msg-user") ? "user" : "assistant",
+          text: node.childNodes[0]?.textContent || "",
+        }));
+      fetch("/assistant-log.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _csrf: data.csrf, id: chatId(), messages }),
+      }).catch(() => {});
+    };
 
     const avatar = () => {
       const image = document.createElement("img");
@@ -689,6 +723,7 @@
         log.append(row);
       }
       log.scrollTop = log.scrollHeight;
+      if (role === "bot") shareChat();
     };
 
     const showTyping = () => {
@@ -711,7 +746,7 @@
         (answer.keys || []).some((key) => query.includes(String(key).toLocaleLowerCase("ru"))),
       );
       return {
-        text: match?.text || data.fallback || "",
+        text: choose(match?.texts || (match?.text ? [match.text] : data.fallbacks), match ? match.keys[0] : "fallback"),
         href: match?.href || "",
         link: match?.link || "",
       };
@@ -764,7 +799,7 @@
         const pending = showTyping();
         pause(800).then(() => {
           pending.remove();
-          addMessage(data.greeting || "", "bot");
+          addMessage(choose(data.greetings, "greeting"), "bot");
         });
       }
       if (open) {

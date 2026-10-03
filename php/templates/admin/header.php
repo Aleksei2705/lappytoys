@@ -4,10 +4,12 @@
  * @var string $adminSection
  * @var array{id: int, email: string, name: string, role: string} $adminUser
  */
-$counters = ['bookings' => 0, 'reviews' => 0];
+$counters = ['bookings' => 0, 'reviews' => 0, 'chats' => 0];
 try {
     $counters['bookings'] = (int) (Database::fetchOne("SELECT COUNT(*) AS total FROM bookings WHERE status = 'new'")['total'] ?? 0);
     $counters['reviews'] = (int) (Database::fetchOne("SELECT COUNT(*) AS total FROM reviews WHERE status = 'pending'")['total'] ?? 0);
+    Assistant::ensureTable();
+    $counters['chats'] = (int) (Database::fetchOne('SELECT COUNT(*) AS total FROM assistant_chats WHERE updated_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)')['total'] ?? 0);
 } catch (RuntimeException) {
     // The page itself reports DB problems; counters are optional.
 }
@@ -22,6 +24,7 @@ $navItems = [
     'faq' => ['/admin/content.php?part=faq', 'Вопросы и ответы', 0],
     'contacts' => ['/admin/content.php?part=contacts', 'Контакты', 0],
     'bookings' => ['/admin/bookings.php', 'Заявки', $counters['bookings']],
+    'chats' => ['/admin/chats.php', 'Разговоры', $counters['chats']],
     'categories' => ['/admin/categories.php', 'Категории', 0],
 ];
 $flash = Admin::takeFlash();

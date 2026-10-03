@@ -5,24 +5,34 @@ foreach (SiteContent::scheduleForPage() as $slot) {
     $slots[] = $slot['weekday'] . ' · ' . $slot['time'] . ($note !== '' ? ' (' . $note . ')' : '');
 }
 $scheduleText = t('assistant.a.schedulePrefix') . ' ' . implode('; ', $slots) . '.';
+$variants = static function (string $base): array {
+    $lines = [t($base)];
+    foreach ([2, 3] as $index) {
+        $key = str_starts_with($base, 'assistant.a.')
+            ? 'assistant.v.' . substr($base, strlen('assistant.a.')) . '.' . $index
+            : $base . '.' . $index;
+        $lines[] = t($key);
+    }
+    return $lines;
+};
 $payload = [
-    'greeting' => t('assistant.greeting'),
-    'fallback' => t('assistant.fallback'),
+    'greetings' => $variants('assistant.greeting'),
+    'fallbacks' => $variants('assistant.fallback'),
     'signupHref' => bookingUrl(),
     'signupLink' => t('assistant.link.signup'),
     'thinking' => t('assistant.thinking'),
     'ai' => Assistant::enabled(),
     'csrf' => Security::csrfToken(),
     'answers' => [
-        ['keys' => ['запис', 'заяв', 'пробн', 'бесплат', 'жазыл', 'өтінім', 'тегін', 'signup'], 'text' => t('assistant.a.signup'), 'href' => bookingUrl(), 'link' => t('assistant.link.signup')],
-        ['keys' => ['адрес', 'где', 'шуга', 'шуға', 'семе', 'семея', 'семей', 'карт', 'мекен'], 'text' => t('assistant.a.address'), 'href' => (string) site('map_link'), 'link' => t('assistant.link.map')],
-        ['keys' => ['возраст', 'лет', 'ребен', 'дет', 'жас', 'бала'], 'text' => t('assistant.a.age')],
-        ['keys' => ['материал', 'пряж', 'инструмент', 'жіп', 'материал'], 'text' => t('assistant.a.materials')],
-        ['keys' => ['длител', 'сколько длит', 'час', 'ұзақ', 'сағат'], 'text' => t('assistant.a.duration')],
-        ['keys' => ['цен', 'стоим', 'стоит', 'скид', 'баға', 'тұр', 'акци'], 'text' => t('assistant.a.price'), 'href' => bookingUrl(), 'link' => t('assistant.link.signup')],
-        ['keys' => ['расписан', 'время', 'когда', 'вторник', 'суббот', 'кесте', 'уақыт'], 'text' => $scheduleText, 'href' => '/#schedule', 'link' => t('assistant.link.schedule')],
-        ['keys' => ['групп', 'индивид', 'топ'], 'text' => t('assistant.a.group')],
-        ['keys' => ['курс', 'вязан', 'макраме', 'вышив', 'бисер', 'шить', 'направлен', 'тоқым', 'кесте', 'моншақ'], 'text' => t('assistant.a.directions'), 'href' => '/#courses', 'link' => t('assistant.link.courses')],
+        ['keys' => ['запис', 'заяв', 'пробн', 'бесплат', 'жазыл', 'өтінім', 'тегін', 'signup'], 'texts' => $variants('assistant.a.signup'), 'href' => bookingUrl(), 'link' => t('assistant.link.signup')],
+        ['keys' => ['адрес', 'где', 'шуга', 'шуға', 'семе', 'семея', 'семей', 'карт', 'мекен'], 'texts' => $variants('assistant.a.address'), 'href' => (string) site('map_link'), 'link' => t('assistant.link.map')],
+        ['keys' => ['возраст', 'лет', 'ребен', 'дет', 'жас', 'бала'], 'texts' => $variants('assistant.a.age')],
+        ['keys' => ['материал', 'пряж', 'инструмент', 'жіп', 'материал'], 'texts' => $variants('assistant.a.materials')],
+        ['keys' => ['длител', 'сколько длит', 'час', 'ұзақ', 'сағат'], 'texts' => $variants('assistant.a.duration')],
+        ['keys' => ['цен', 'стоим', 'стоит', 'скид', 'баға', 'тұр', 'акци'], 'texts' => $variants('assistant.a.price'), 'href' => bookingUrl(), 'link' => t('assistant.link.signup')],
+        ['keys' => ['расписан', 'время', 'когда', 'вторник', 'суббот', 'кесте', 'уақыт'], 'texts' => [$scheduleText], 'href' => '/#schedule', 'link' => t('assistant.link.schedule')],
+        ['keys' => ['групп', 'индивид', 'топ'], 'texts' => $variants('assistant.a.group')],
+        ['keys' => ['курс', 'вязан', 'макраме', 'вышив', 'бисер', 'шить', 'направлен', 'тоқым', 'кесте', 'моншақ'], 'texts' => $variants('assistant.a.directions'), 'href' => '/#courses', 'link' => t('assistant.link.courses')],
         ['keys' => ['телефон', 'позвон', 'whatsapp', 'ватсап', 'ватцап', 'telegram', 'телег', 'написать'], 'text' => (string) site('phone_display'), 'href' => (string) site('whatsapp'), 'link' => t('assistant.link.whatsapp')],
     ],
 ];

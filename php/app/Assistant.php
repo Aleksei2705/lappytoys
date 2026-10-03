@@ -17,7 +17,7 @@ final class Assistant
 
         $payload = [
             'model' => Config::get('ASSISTANT_MODEL', 'gpt-4o-mini'),
-            'temperature' => 0.2,
+            'temperature' => 0.8,
             'response_format' => ['type' => 'json_object'],
             'messages' => [
                 ['role' => 'system', 'content' => self::instructions()],
@@ -53,9 +53,12 @@ final class Assistant
 
     private static function instructions(): string
     {
-        return "Ты Мила, консультант творческой студии Lappy Art в Семее. Ольга сейчас не на связи, ты отвечаешь вместо неё. Пиши тепло, коротко, от первого лица, на языке вопроса. "
+        return "Ты Мила, вежливый консультант творческой студии Lappy Art в Семее. Ольга сейчас не на связи, ты отвечаешь вместо неё. "
+            . "Пиши тепло, коротко, от первого лица, на языке вопроса, как живой человек в переписке. "
+            . "Каждый ответ формулируй заново: не повторяй прошлые фразы и не начинай одинаково. "
+            . "Можно лёгкую улыбку и мягкий юмор про рукоделие, без сарказма и без шуток над гостем. "
             . "Используй только факты ниже. Не выдумывай цены, скидки, даты и формат занятий. "
-            . "Если факта нет, скажи, что это уточнит Ольга, и верни href \"/#signup\". "
+            . "Если факта нет, вежливо скажи, что это уточнит Ольга, и верни href \"/#signup\". "
             . "Верни JSON {\"text\":\"ответ\",\"href\":\"\"}. href можно оставить пустым или взять одно значение: "
             . "/#signup, /#schedule, /#courses, /#faq, /#contacts, telegram, whatsapp, map.\n\n"
             . self::facts();
@@ -155,6 +158,60 @@ final class Assistant
             return t('assistant.link.map');
         }
         return t('cta.details');
+    }
+
+    /** @param list<array{role: string, text: string}> $messages */
+    public static function remember(string $publicId, array $messages): void
+    {
+        if (!preg_match('/^[a-f0-9]{32}$/', $publicId)) {
+            return;
+        }
+
+        $lines = [];
+        foreach (array_slice($messages, -40) as $message) {
+            $text = trim((string) ($message['text'] ?? ''));
+            if ($text === '') {
+                continue;
+            }
+            $who = ($message['role'] ?? '') === 'user' ? 'Гость' : 'Мила';
+            $lines[] = $who . ': ' . mb_substr($text, 0, 700);
+        }
+        if ($lines === []) {
+            return;
+        }
+
+        $transcript = implode("\n\n", $lines);
+        self::ensureTable();
+        Database::execute(
+            'INSERT INTO assistant_chats (public_id, transcript, created_at, updated_at)
+             VALUES (?, ?, NOW(), NOW())
+             ON DUPLICATE KEY UPDATE transcript = VALUES(transcript), updated_at = NOW()',
+            [$publicId, $transcript],
+        );
+
+        $sent = Mail::send(
+            (string) site('notify_email'),
+            'Разговор с Милой',
+            "На сайте новый обмен с помощником.\n\n" . $transcript,
+        );
+        if (!$sent) {
+            error_log('[assistant] conversation email was not sent');
+        }
+    }
+
+    public static function ensureTable(): void
+    {
+        Database::execute(
+            'CREATE TABLE IF NOT EXISTS assistant_chats (
+                id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+                public_id CHAR(32) NOT NULL,
+                transcript LONGTEXT NOT NULL,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME NOT NULL,
+                PRIMARY KEY (id),
+                UNIQUE KEY assistant_chats_public (public_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+        );
     }
 
     /** @param array<string, mixed> $payload */
