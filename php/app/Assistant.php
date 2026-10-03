@@ -217,6 +217,13 @@ final class Assistant
         );
     }
 
+    private static function usesOpenRouter(): bool
+    {
+        $url = Config::get('ASSISTANT_API_URL', '');
+        $key = Config::get('ASSISTANT_API_KEY', '');
+        return str_contains($url, 'openrouter.ai') || str_starts_with($key, 'sk-or-');
+    }
+
     /** @param array<string, mixed> $payload */
     private static function request(array $payload): ?string
     {
@@ -224,13 +231,61 @@ final class Assistant
             self::$lastError = '0 no-key';
             return null;
         }
-        $url = self::endpoint();
+        return self::usesOpenRouter() ? self::openRouter($payload) : self::gemini($payload);
+    }
+
+    /** @param array<string, mixed> $payload */
+    private static function openRouter(array $payload): ?string
+    {
+        $headers = [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . Config::get('ASSISTANT_API_KEY'),
+            'HTTP-Referer: ' . site('url'),
+            'X-Title: Lappy Art',
+        ];
+        $url = 'https://openrouter.ai/api/v1/chat/completions';
+        foreach (self::openRouterModels() as $model) {
+            $payload['model'] = $model;
+            $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE);
+            $result = self::post($url, $headers, $encoded);
+            if ($result === null && str_starts_with(self::$lastError, '400')) {
+                unset($payload['response_format']);
+                $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE);
+                $result = self::post($url, $headers, $encoded);
+            }
+            if ($result !== null) {
+                return $result;
+            }
+            if (!str_starts_with(self::$lastError, '404') && !str_starts_with(self::$lastError, '503')) {
+                break;
+            }
+        }
+        return null;
+    }
+
+    /** @return list<string> */
+    private static function openRouterModels(): array
+    {
+        $configured = Config::get('ASSISTANT_MODEL', '');
+        $primary = str_contains($configured, '/') ? $configured : 'google/gemini-2.5-flash';
+        $models = [$primary];
+        foreach (['google/gemini-2.5-flash', 'openai/gpt-4o-mini'] as $model) {
+            if (!in_array($model, $models, true)) {
+                $models[] = $model;
+            }
+        }
+        return $models;
+    }
+
+    /** @param array<string, mixed> $payload */
+    private static function gemini(array $payload): ?string
+    {
         $headers = [
             'Content-Type: application/json',
             'x-goog-api-key: ' . Config::get('ASSISTANT_API_KEY'),
         ];
         $encoded = json_encode(self::geminiBody($payload), JSON_UNESCAPED_UNICODE);
-        foreach (self::geminiUrls($url) as $target) {
+        foreach (self::geminiUrls(self::endpoint()) as $target) {
             $result = self::post($target, $headers, $encoded);
             if ($result !== null) {
                 return $result;
@@ -306,6 +361,7 @@ final class Assistant
             $message = trim($body) !== '' ? trim($body) : 'no-response';
         }
         $message = preg_replace('/AIza[\w\-]+/', '[key]', $message) ?? $message;
+        $message = preg_replace('/sk-or-[\w\-]+/', '[key]', $message) ?? $message;
         $message = preg_replace('/key=[^&\s]+/', 'key=[key]', $message) ?? $message;
         return $status . ' ' . mb_substr($message, 0, 180);
     }
