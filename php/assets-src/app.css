@@ -407,8 +407,7 @@
   font-size: 0.82rem;
 }
 
-.assistant-form.is-recording .assistant-input,
-.assistant-form.is-recording .assistant-send {
+.assistant-form.is-recording .assistant-input {
   display: none;
 }
 
@@ -457,6 +456,27 @@
   background: #7d3254;
   color: #fff;
   animation: assistant-listen 1.1s ease-in-out infinite;
+}
+
+.assistant-icon-send {
+  display: none;
+}
+
+.assistant-voice.is-send {
+  width: auto;
+  padding: 0 0.85rem;
+  border-radius: 0.8rem;
+  border-color: #7d3254;
+  background: #7d3254;
+  color: #fff;
+}
+
+.assistant-voice.is-send .assistant-icon-mic {
+  display: none;
+}
+
+.assistant-voice.is-send .assistant-icon-send {
+  display: grid;
 }
 
 @keyframes assistant-listen {

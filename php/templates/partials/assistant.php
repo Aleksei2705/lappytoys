@@ -65,8 +65,10 @@ $payload = [
                 <span data-assistant-hold-time>0:00</span>
                 <span class="assistant-hold-hint" data-assistant-hold-hint><?= t('assistant.release') ?></span>
             </div>
-            <button type="button" class="assistant-voice" hidden data-assistant-voice aria-pressed="false" aria-label="<?= e(t('assistant.voice')) ?>"><?= icon('mic', 'size-4') ?></button>
-            <button type="submit" class="assistant-send"><?= t('assistant.send') ?></button>
+            <button type="button" class="assistant-voice" data-assistant-voice data-label-voice="<?= e(t('assistant.voice')) ?>" data-label-send="<?= e(t('assistant.send')) ?>" aria-pressed="false" aria-label="<?= e(t('assistant.voice')) ?>">
+                <span class="assistant-icon-mic"><?= icon('mic', 'size-4') ?></span>
+                <span class="assistant-icon-send"><?= icon('send', 'size-4') ?></span>
+            </button>
         </form>
     </div>
     <div class="assistant-offer" hidden data-assistant-nudge>

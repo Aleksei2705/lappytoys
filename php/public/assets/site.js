@@ -867,17 +867,31 @@
     root.querySelectorAll("[data-assistant-ask]").forEach((button) => {
       button.addEventListener("click", () => ask(button.getAttribute("data-assistant-ask") || ""));
     });
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
+    const voice = root.querySelector("[data-assistant-voice]");
+    const sendText = () => {
       ask(input?.value || "");
       if (input) input.value = "";
+      voice?.classList.remove("is-send");
+      if (voice) voice.setAttribute("aria-label", voice.dataset.labelVoice || "");
+    };
+    const syncAction = () => {
+      if (!voice) return;
+      const hasText = (input?.value || "").trim() !== "";
+      voice.classList.toggle("is-send", hasText);
+      voice.setAttribute("aria-label", hasText ? voice.dataset.labelSend || "" : voice.dataset.labelVoice || "");
+    };
+    input?.addEventListener("input", syncAction);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendText();
+    });
+    voice?.addEventListener("click", () => {
+      if (voice.classList.contains("is-send")) sendText();
     });
 
-    const voice = root.querySelector("[data-assistant-voice]");
     const holdHint = root.querySelector("[data-assistant-hold-hint]");
     const holdTime = root.querySelector("[data-assistant-hold-time]");
-    if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext) {
-      voice.hidden = false;
+    if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext && window.MediaRecorder) {
       let recorder = null;
       let stream = null;
       let chunks = [];
@@ -933,14 +947,23 @@
         addMessage(body.text, "bot", body.href, body.link);
       };
       voice.addEventListener("pointerdown", async (event) => {
-        if (event.button !== 0 || holding || (recorder && recorder.state === "recording")) return;
+        if (voice.classList.contains("is-send")) return;
+        if ((event.pointerType === "mouse" && event.button !== 0) || holding || (recorder && recorder.state === "recording")) return;
         event.preventDefault();
         holding = true;
         cancel = false;
         startX = event.clientX;
-        voice.setPointerCapture(event.pointerId);
+        try {
+          voice.setPointerCapture(event.pointerId);
+        } catch {
+          /* Палец уже ушёл, запись всё равно остановится по отпусканию. */
+        }
         voice.classList.add("is-listening");
         voice.setAttribute("aria-pressed", "true");
+        form.classList.add("is-recording");
+        startedAt = Date.now();
+        paintTime();
+        clock = window.setInterval(paintTime, 250);
         let next;
         try {
           next = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -951,6 +974,7 @@
         }
         if (!holding) {
           next.getTracks().forEach((track) => track.stop());
+          endHold();
           return;
         }
         stream = next;
@@ -972,27 +996,23 @@
           }
           sendAudio(blob, mime);
         });
-        startedAt = Date.now();
-        paintTime();
-        clock = window.setInterval(paintTime, 250);
-        form.classList.add("is-recording");
         recorder.start(200);
         window.setTimeout(() => {
           if (recorder && recorder.state === "recording") recorder.stop();
         }, 20000);
       });
-      voice.addEventListener("pointermove", (event) => {
+      const release = () => {
+        holding = false;
+        if (recorder && recorder.state === "recording") recorder.stop();
+      };
+      window.addEventListener("pointerup", release);
+      window.addEventListener("pointercancel", release);
+      window.addEventListener("pointermove", (event) => {
         if (!holding) return;
         cancel = startX - event.clientX > 72;
         form.classList.toggle("is-cancel", cancel);
         if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
       });
-      const release = () => {
-        holding = false;
-        if (recorder && recorder.state === "recording") recorder.stop();
-      };
-      voice.addEventListener("pointerup", release);
-      voice.addEventListener("pointercancel", release);
       voice.addEventListener("contextmenu", (event) => event.preventDefault());
     }
   };
