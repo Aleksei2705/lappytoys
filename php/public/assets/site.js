@@ -664,6 +664,11 @@
       const item = document.createElement("p");
       item.className = `assistant-msg assistant-msg-${role}`;
       item.textContent = text;
+      const suggestsOlga = role === "bot" && /ольг/i.test(text) && /заяв|напиш|уточн|ответит|свяж|жазыл|хабар/i.test(text);
+      if (!href && suggestsOlga) {
+        href = data.signupHref;
+        link = data.signupLink;
+      }
       if (href && link) {
         const anchor = document.createElement("a");
         anchor.className = "assistant-link";
