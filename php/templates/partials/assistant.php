@@ -56,6 +56,7 @@ $payload = [
         </div>
         <form class="assistant-form" data-assistant-form>
             <input class="assistant-input" type="text" name="q" maxlength="240" autocomplete="off" placeholder="<?= e(t('assistant.placeholder')) ?>" aria-label="<?= e(t('assistant.placeholder')) ?>">
+            <button type="button" class="assistant-voice" hidden data-assistant-voice aria-pressed="false" aria-label="<?= e(t('assistant.voice')) ?>"><?= icon('mic', 'size-4') ?></button>
             <button type="submit" class="assistant-send"><?= t('assistant.send') ?></button>
         </form>
     </div>

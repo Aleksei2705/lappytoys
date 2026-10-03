@@ -872,6 +872,48 @@
       ask(input?.value || "");
       if (input) input.value = "";
     });
+
+    const voice = root.querySelector("[data-assistant-voice]");
+    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (voice && Speech && window.isSecureContext) {
+      const recognition = new Speech();
+      recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
+      recognition.interimResults = true;
+      recognition.continuous = false;
+      let heard = "";
+      voice.hidden = false;
+      voice.addEventListener("click", () => {
+        if (voice.classList.contains("is-listening")) {
+          recognition.stop();
+          return;
+        }
+        heard = "";
+        voice.classList.add("is-listening");
+        voice.setAttribute("aria-pressed", "true");
+        try {
+          recognition.start();
+        } catch {
+          voice.classList.remove("is-listening");
+          voice.setAttribute("aria-pressed", "false");
+        }
+      });
+      recognition.addEventListener("result", (event) => {
+        heard = Array.from(event.results).map((item) => item[0].transcript).join(" ").trim();
+        if (input) input.value = heard.slice(0, 240);
+      });
+      recognition.addEventListener("end", () => {
+        voice.classList.remove("is-listening");
+        voice.setAttribute("aria-pressed", "false");
+        if (!heard) return;
+        ask(heard.slice(0, 240));
+        heard = "";
+        if (input) input.value = "";
+      });
+      recognition.addEventListener("error", () => {
+        voice.classList.remove("is-listening");
+        voice.setAttribute("aria-pressed", "false");
+      });
+    }
   };
 
   initHeroParallax();
