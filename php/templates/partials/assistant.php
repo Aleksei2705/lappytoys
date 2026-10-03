@@ -1,7 +1,8 @@
 <?php
 $slots = [];
-foreach (site('schedule') as $row) {
-    $slots[] = t((string) $row['weekday']) . ' · ' . (string) $row['time'];
+foreach (SiteContent::scheduleForPage() as $slot) {
+    $note = trim((string) $slot['note']);
+    $slots[] = $slot['weekday'] . ' · ' . $slot['time'] . ($note !== '' ? ' (' . $note . ')' : '');
 }
 $scheduleText = t('assistant.a.schedulePrefix') . ' ' . implode('; ', $slots) . '.';
 $payload = [
@@ -38,6 +39,7 @@ $payload = [
             <button type="submit" class="assistant-send"><?= t('assistant.send') ?></button>
         </form>
     </div>
+    <button type="button" class="assistant-nudge" hidden data-assistant-nudge><?= t('assistant.idle') ?></button>
     <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel">
         <?= icon('sparkles', 'size-5') ?>
         <span><?= t('assistant.title') ?></span>

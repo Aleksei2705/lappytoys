@@ -645,6 +645,7 @@
     const log = root?.querySelector("[data-assistant-log]");
     const form = root?.querySelector("[data-assistant-form]");
     const toggle = root?.querySelector("[data-assistant-toggle]");
+    const nudge = root?.querySelector("[data-assistant-nudge]");
     if (!root || !dataNode || !panel || !log || !form || !toggle) return;
     const data = JSON.parse(dataNode.textContent || "{}");
     const input = form.querySelector("input");
@@ -686,9 +687,21 @@
     const setOpen = (open) => {
       panel.hidden = !open;
       toggle.setAttribute("aria-expanded", String(open));
+      if (nudge) nudge.hidden = true;
       if (open && !log.childElementCount) addMessage(data.greeting || "", "bot");
-      if (open) input?.focus();
+      if (open) {
+        sessionStorage.setItem("lappy-assistant-opened", "1");
+        input?.focus();
+      }
     };
+
+    if (nudge && sessionStorage.getItem("lappy-assistant-opened") !== "1") {
+      window.setTimeout(() => {
+        if (!panel.hidden || sessionStorage.getItem("lappy-assistant-opened") === "1") return;
+        nudge.hidden = false;
+      }, 50000);
+      nudge.addEventListener("click", () => setOpen(true));
+    }
 
     toggle.addEventListener("click", () => setOpen(panel.hidden));
     root.querySelector("[data-assistant-close]")?.addEventListener("click", () => setOpen(false));
