@@ -1090,10 +1090,7 @@
         }, 400);
       };
       const release = () => {
-        if (recognition && !speechSettled) {
-          finishSpeech();
-          return;
-        }
+        if (!holding) return;
         holding = false;
         stopCapture();
       };
@@ -1124,6 +1121,7 @@
           endHold();
           return;
         }
+        await context.resume().catch(() => {});
         stream = next;
         const pieces = [];
         const source = context.createMediaStreamSource(stream);
@@ -1160,40 +1158,7 @@
         window.setTimeout(stopCapture, 20000);
       };
       const press = (clientX) => {
-        if (voice.classList.contains("is-send") || holding || !speechSettled) return;
-        if (recognition) {
-          holding = true;
-          cancel = false;
-          speechSettled = false;
-          heard = "";
-          turn += 1;
-          startX = clientX;
-          voice.classList.add("is-listening");
-          voice.setAttribute("aria-pressed", "true");
-          form.classList.add("is-recording");
-          startedAt = Date.now();
-          paintTime();
-          clock = window.setInterval(paintTime, 250);
-          startMic();
-          try {
-            recognition.start();
-          } catch {
-            try {
-              recognition.abort();
-            } catch {
-              /* Прошлый сеанс уже закрыт. */
-            }
-            window.setTimeout(() => {
-              if (!holding) return;
-              try {
-                recognition.start();
-              } catch {
-                /* Кнопка остаётся нажатой, повтор не мешает отпустить. */
-              }
-            }, 200);
-          }
-          return;
-        }
+        if (voice.classList.contains("is-send") || holding) return;
         begin(clientX);
       };
       voice.addEventListener("touchstart", (event) => {
