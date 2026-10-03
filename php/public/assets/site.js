@@ -874,76 +874,126 @@
     });
 
     const voice = root.querySelector("[data-assistant-voice]");
+    const holdHint = root.querySelector("[data-assistant-hold-hint]");
+    const holdTime = root.querySelector("[data-assistant-hold-time]");
     if (voice && navigator.mediaDevices?.getUserMedia && window.isSecureContext) {
       voice.hidden = false;
       let recorder = null;
+      let stream = null;
       let chunks = [];
+      let holding = false;
+      let cancel = false;
+      let startX = 0;
+      let startedAt = 0;
+      let clock = 0;
       const placeholder = input?.placeholder || "";
-      const finishListen = () => {
+      const releaseText = holdHint?.textContent || "";
+      const cancelText = data.cancel || "Отмена";
+      const stopTracks = () => {
+        stream?.getTracks().forEach((track) => track.stop());
+        stream = null;
+      };
+      const paintTime = () => {
+        const seconds = Math.floor((Date.now() - startedAt) / 1000);
+        if (holdTime) holdTime.textContent = Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
+      };
+      const endHold = () => {
+        window.clearInterval(clock);
+        holding = false;
         voice.classList.remove("is-listening");
         voice.setAttribute("aria-pressed", "false");
+        form.classList.remove("is-recording", "is-cancel");
         if (input) input.placeholder = placeholder;
+        if (holdHint) holdHint.textContent = releaseText;
       };
-      voice.addEventListener("click", async () => {
-        if (recorder && recorder.state === "recording") {
-          recorder.stop();
-          return;
-        }
-        let stream;
+      const sendAudio = async (blob, mime) => {
+        const audio = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+          reader.readAsDataURL(blob);
+        });
+        const pending = showTyping();
+        let body = null;
         try {
-          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const response = await fetch("/chat.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ _csrf: data.csrf, audio, mime, history: [], aside: asideCount }),
+          });
+          body = await response.json();
         } catch {
+          body = null;
+        }
+        pending.remove();
+        if (!body?.heard || !body?.text) {
           if (input) input.placeholder = data.unheard || placeholder;
           return;
         }
-        const preferred = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find((type) => MediaRecorder.isTypeSupported(type));
-        recorder = preferred ? new MediaRecorder(stream, { mimeType: preferred }) : new MediaRecorder(stream);
-        chunks = [];
-        recorder.addEventListener("dataavailable", (event) => {
-          if (event.data.size) chunks.push(event.data);
-        });
-        recorder.addEventListener("stop", async () => {
-          stream.getTracks().forEach((track) => track.stop());
-          finishListen();
-          const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
-          if (blob.size < 800) {
-            if (input) input.placeholder = data.unheard || placeholder;
-            return;
-          }
-          const audio = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
-            reader.readAsDataURL(blob);
-          });
-          const mime = (recorder.mimeType || "audio/webm").split(";")[0];
-          const pending = showTyping();
-          let body = null;
-          try {
-            const response = await fetch("/chat.php", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ _csrf: data.csrf, audio, mime, history: [], aside: asideCount }),
-            });
-            body = await response.json();
-          } catch {
-            body = null;
-          }
-          pending.remove();
-          if (!body?.heard || !body?.text) {
-            if (input) input.placeholder = data.unheard || placeholder;
-            return;
-          }
-          addMessage(body.heard, "user");
-          addMessage(body.text, "bot", body.href, body.link);
-        });
+        addMessage(body.heard, "user");
+        addMessage(body.text, "bot", body.href, body.link);
+      };
+      voice.addEventListener("pointerdown", async (event) => {
+        if (event.button !== 0 || holding || (recorder && recorder.state === "recording")) return;
+        event.preventDefault();
+        holding = true;
+        cancel = false;
+        startX = event.clientX;
+        voice.setPointerCapture(event.pointerId);
         voice.classList.add("is-listening");
         voice.setAttribute("aria-pressed", "true");
-        if (input) input.placeholder = data.hearing || placeholder;
-        recorder.start();
+        let next;
+        try {
+          next = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch {
+          endHold();
+          if (input) input.placeholder = data.unheard || placeholder;
+          return;
+        }
+        if (!holding) {
+          next.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        stream = next;
+        const preferred = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
+        recorder = preferred ? new MediaRecorder(stream, { mimeType: preferred }) : new MediaRecorder(stream);
+        chunks = [];
+        const mime = (recorder.mimeType || preferred || "audio/webm").split(";")[0];
+        recorder.addEventListener("dataavailable", (chunk) => {
+          if (chunk.data.size) chunks.push(chunk.data);
+        });
+        recorder.addEventListener("stop", () => {
+          const blob = new Blob(chunks, { type: mime });
+          const discarded = cancel || Date.now() - startedAt < 450;
+          stopTracks();
+          endHold();
+          if (discarded || blob.size < 200) {
+            if (!discarded && input) input.placeholder = data.unheard || placeholder;
+            return;
+          }
+          sendAudio(blob, mime);
+        });
+        startedAt = Date.now();
+        paintTime();
+        clock = window.setInterval(paintTime, 250);
+        form.classList.add("is-recording");
+        recorder.start(200);
         window.setTimeout(() => {
           if (recorder && recorder.state === "recording") recorder.stop();
-        }, 12000);
+        }, 20000);
       });
+      voice.addEventListener("pointermove", (event) => {
+        if (!holding) return;
+        cancel = startX - event.clientX > 72;
+        form.classList.toggle("is-cancel", cancel);
+        if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
+      });
+      const release = () => {
+        holding = false;
+        if (recorder && recorder.state === "recording") recorder.stop();
+      };
+      voice.addEventListener("pointerup", release);
+      voice.addEventListener("pointercancel", release);
+      voice.addEventListener("contextmenu", (event) => event.preventDefault());
     }
   };
 
