@@ -991,7 +991,44 @@
         addMessage(body.heard, "user");
         addMessage(body.text, "bot", body.href, body.link);
       };
+      const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recognition = null;
+      let heard = "";
+      let speechSettled = true;
+      if (Speech) {
+        recognition = new Speech();
+        recognition.lang = document.documentElement.lang === "kk" ? "kk-KZ" : "ru-RU";
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.addEventListener("result", (event) => {
+          heard = Array.from(event.results).map((item) => item[0].transcript).join(" ").trim();
+        });
+        recognition.addEventListener("error", (event) => {
+          if (event.error === "aborted" || event.error === "no-speech") return;
+          heard = "";
+        });
+        recognition.addEventListener("end", () => {
+          if (speechSettled) return;
+          speechSettled = true;
+          const text = cancel ? "" : heard.trim();
+          heard = "";
+          endHold();
+          if (text) ask(text.slice(0, 240));
+          else if (!cancel) addMessage(data.unheard || placeholder, "bot");
+        });
+      }
       const release = () => {
+        if (recognition && !speechSettled) {
+          holding = false;
+          try {
+            if (cancel) recognition.abort();
+            else recognition.stop();
+          } catch {
+            speechSettled = true;
+            endHold();
+          }
+          return;
+        }
         holding = false;
         stopCapture();
       };
@@ -1058,7 +1095,28 @@
         window.setTimeout(stopCapture, 20000);
       };
       const press = (clientX) => {
-        if (voice.classList.contains("is-send") || holding) return;
+        if (voice.classList.contains("is-send") || holding || !speechSettled) return;
+        if (recognition) {
+          holding = true;
+          cancel = false;
+          speechSettled = false;
+          heard = "";
+          startX = clientX;
+          voice.classList.add("is-listening");
+          voice.setAttribute("aria-pressed", "true");
+          form.classList.add("is-recording");
+          startedAt = Date.now();
+          paintTime();
+          clock = window.setInterval(paintTime, 250);
+          try {
+            recognition.start();
+          } catch {
+            speechSettled = true;
+            endHold();
+            addMessage(data.unheard || placeholder, "bot");
+          }
+          return;
+        }
         begin(clientX);
       };
       voice.addEventListener("touchstart", (event) => {
