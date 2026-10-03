@@ -245,8 +245,7 @@ final class Assistant
     private static function shouldTryNextGeminiModel(string $error): bool
     {
         return str_starts_with($error, '503')
-            || str_starts_with($error, '404')
-            || str_starts_with($error, '429');
+            || str_starts_with($error, '404');
     }
 
     /** @return list<string> */

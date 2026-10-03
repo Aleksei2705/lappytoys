@@ -23,13 +23,11 @@ $hits = array_values(array_filter(
     $_SESSION['assistant_hits'] ?? [],
     static fn ($at): bool => is_int($at) && $at > $now - 3600,
 ));
-if (count($hits) >= 20) {
+if (count($hits) >= 40) {
     http_response_code(429);
-    echo '{}';
+    echo json_encode(['error' => 'busy'], JSON_UNESCAPED_UNICODE);
     exit;
 }
-$hits[] = $now;
-$_SESSION['assistant_hits'] = $hits;
 
 $question = trim((string) ($payload['q'] ?? $payload['message'] ?? ''));
 if ($question === '' || mb_strlen($question) > 240) {
@@ -49,4 +47,6 @@ if ($answer === null) {
     exit;
 }
 
+$hits[] = $now;
+$_SESSION['assistant_hits'] = $hits;
 echo json_encode($answer, JSON_UNESCAPED_UNICODE);
