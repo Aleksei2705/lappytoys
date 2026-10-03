@@ -211,7 +211,22 @@ final class Assistant
     /** @param array<string, mixed> $payload */
     private static function request(array $payload): ?string
     {
-        $url = Config::get('ASSISTANT_API_URL', 'https://api.openai.com/v1/chat/completions');
+        $allowed = [
+            'https://api.openai.com/v1/chat/completions',
+            'https://openrouter.ai/api/v1/chat/completions',
+        ];
+        $url = Config::get('ASSISTANT_API_URL', $allowed[0]);
+        if (!in_array($url, $allowed, true)) {
+            $url = $allowed[0];
+        }
+        $headers = [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . Config::get('ASSISTANT_API_KEY'),
+        ];
+        if (str_contains($url, 'openrouter.ai')) {
+            $headers[] = 'HTTP-Referer: ' . site('url');
+            $headers[] = 'X-Title: Lappy Art';
+        }
         $handle = curl_init($url);
         if ($handle === false) {
             return null;
@@ -220,10 +235,7 @@ final class Assistant
             CURLOPT_POST => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 20,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . Config::get('ASSISTANT_API_KEY'),
-            ],
+            CURLOPT_HTTPHEADER => $headers,
             CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE),
         ]);
         $body = curl_exec($handle);

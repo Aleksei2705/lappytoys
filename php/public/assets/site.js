@@ -756,7 +756,7 @@
             text: node.childNodes[0]?.textContent || "",
           }));
         try {
-          const response = await fetch("/assistant.php", {
+          const response = await fetch("/chat.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ _csrf: data.csrf, q: question, history, aside: asideCount }),
