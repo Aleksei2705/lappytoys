@@ -822,7 +822,8 @@
       }
       if (open) {
         sessionStorage.setItem("lappy-assistant-opened", "1");
-        input?.focus();
+        if (input) input.readOnly = true;
+        input?.blur();
       }
     };
 
@@ -880,6 +881,10 @@
       voice.classList.toggle("is-send", hasText);
       voice.setAttribute("aria-label", hasText ? voice.dataset.labelSend || "" : voice.dataset.labelVoice || "");
     };
+    input?.addEventListener("pointerdown", () => {
+      input.readOnly = false;
+      input.focus();
+    });
     input?.addEventListener("input", syncAction);
     form.addEventListener("submit", (event) => {
       event.preventDefault();

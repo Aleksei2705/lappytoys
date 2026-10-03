@@ -59,7 +59,7 @@ $payload = [
             <?php endforeach; ?>
         </div>
         <form class="assistant-form" data-assistant-form>
-            <input class="assistant-input" type="text" name="q" maxlength="240" autocomplete="off" placeholder="<?= e(t('assistant.placeholder')) ?>" aria-label="<?= e(t('assistant.placeholder')) ?>">
+            <input class="assistant-input" type="text" name="q" maxlength="240" autocomplete="off" readonly placeholder="<?= e(t('assistant.placeholder')) ?>" aria-label="<?= e(t('assistant.placeholder')) ?>">
             <div class="assistant-hold" data-assistant-hold>
                 <span class="assistant-hold-dot" aria-hidden="true"></span>
                 <span data-assistant-hold-time>0:00</span>
