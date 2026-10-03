@@ -281,21 +281,17 @@ final class Assistant
 
     private static function endpoint(): string
     {
-        $model = Config::get('ASSISTANT_MODEL', 'gemini-2.5-flash');
-        $gemini = 'https://generativelanguage.googleapis.com/v1beta/models/'
-            . (str_starts_with($model, 'gemini-') ? $model : 'gemini-2.5-flash')
-            . ':generateContent';
-        $url = Config::get('ASSISTANT_API_URL', $gemini);
-        if ($url === '' || self::isGemini($url)) {
-            return preg_match('#^https://generativelanguage\.googleapis\.com/v1beta/models/gemini-[a-z0-9.\-]+:generateContent$#', $url) === 1
-                ? $url
-                : $gemini;
+        $retired = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+        $model = 'gemini-3.8-flash';
+        $url = Config::get('ASSISTANT_API_URL', '');
+        $configured = Config::get('ASSISTANT_MODEL', '');
+        if (preg_match('#models/(gemini-[a-z0-9.\-]+):generateContent#', $url, $match) === 1) {
+            $configured = $match[1];
         }
-        $allowed = [
-            'https://api.openai.com/v1/chat/completions',
-            'https://openrouter.ai/api/v1/chat/completions',
-        ];
-        return in_array($url, $allowed, true) ? $url : $gemini;
+        if ($configured !== '' && !in_array($configured, $retired, true) && str_starts_with($configured, 'gemini-')) {
+            $model = $configured;
+        }
+        return 'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent';
     }
 
     private static function isGemini(string $url): bool
