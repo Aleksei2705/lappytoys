@@ -906,7 +906,8 @@
       let clock = 0;
       let heard = "";
       let turn = 0;
-      let settled = false;
+      let settleTimer = 0;
+      let maxHoldTimer = 0;
       const placeholder = input?.placeholder || "";
       const releaseText = holdHint?.textContent || "";
       const cancelText = data.cancel || "Отмена";
@@ -915,22 +916,28 @@
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.addEventListener("result", (event) => {
-        heard = Array.from(event.results).map((item) => item[0].transcript).join(" ").trim();
-      });
-      recognition.addEventListener("end", () => {
-        if (!holding) return;
-        try {
-          recognition.start();
-        } catch {
-          /* Браузер ещё закрывает прошлый сеанс. */
+        const finals = [];
+        for (let index = 0; index < event.results.length; index += 1) {
+          const part = event.results[index];
+          if (part.isFinal) finals.push(part[0].transcript);
         }
+        const line = (finals.length ? finals : Array.from(event.results).map((part) => part[0].transcript)).join(" ").trim();
+        if (line) heard = line;
       });
+      const clearHoldTimers = () => {
+        window.clearTimeout(settleTimer);
+        window.clearTimeout(maxHoldTimer);
+        settleTimer = 0;
+        maxHoldTimer = 0;
+      };
       const paintTime = () => {
         const seconds = Math.floor((Date.now() - startedAt) / 1000);
         if (holdTime) holdTime.textContent = Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
       };
       const endHold = () => {
         window.clearInterval(clock);
+        clearHoldTimers();
+        holding = false;
         voice.classList.remove("is-listening");
         voice.setAttribute("aria-pressed", "false");
         form.classList.remove("is-recording", "is-cancel");
@@ -938,9 +945,7 @@
         if (holdHint) holdHint.textContent = releaseText;
       };
       const settle = (turnId) => {
-        if (turnId !== turn || settled) return;
-        settled = true;
-        holding = false;
+        if (turnId !== turn) return;
         const text = cancel ? "" : heard.trim();
         const held = Date.now() - startedAt;
         heard = "";
@@ -948,25 +953,38 @@
         if (text) ask(text.slice(0, 240));
         else if (!cancel && held > 700) addMessage(data.unheard || placeholder, "bot");
       };
-      const releaseHold = () => {
-        if (!holding) return;
-        holding = false;
-        const turnId = turn;
+      const stopListen = (turnId) => {
         try {
           recognition.stop();
         } catch {
           settle(turnId);
           return;
         }
-        window.setTimeout(() => settle(turnId), 650);
+        settleTimer = window.setTimeout(() => settle(turnId), 900);
       };
-      const pressHold = (clientX, pointerId) => {
+      const startListen = (turnId) => {
+        try {
+          recognition.abort();
+        } catch {
+          /* Сеанс уже закрыт. */
+        }
+        window.setTimeout(() => {
+          if (turnId !== turn || !holding) return;
+          try {
+            recognition.start();
+          } catch {
+            endHold();
+          }
+        }, 120);
+      };
+      const pressHold = (clientX) => {
         if (voice.classList.contains("is-send") || holding) return;
+        clearHoldTimers();
         holding = true;
-        settled = false;
         cancel = false;
         heard = "";
         turn += 1;
+        const turnId = turn;
         startX = clientX;
         startedAt = Date.now();
         voice.classList.add("is-listening");
@@ -974,64 +992,73 @@
         form.classList.add("is-recording");
         paintTime();
         clock = window.setInterval(paintTime, 250);
-        try {
-          voice.setPointerCapture(pointerId);
-        } catch {
-          /* На части телефонов захват указателя недоступен. */
-        }
-        try {
-          recognition.start();
-        } catch {
-          try {
-            recognition.abort();
-          } catch {
-            /* Прошлый сеанс уже закрыт. */
-          }
-          window.setTimeout(() => {
-            if (!holding) return;
-            try {
-              recognition.start();
-            } catch {
-              holding = false;
-              settled = true;
-              endHold();
-            }
-          }, 150);
-        }
-        window.setTimeout(releaseHold, 20000);
+        startListen(turnId);
+        maxHoldTimer = window.setTimeout(() => {
+          if (turnId === turn && holding) stopListen(turnId);
+        }, 20000);
       };
-      voice.addEventListener("pointerdown", (event) => {
-        if (voice.classList.contains("is-send")) return;
-        if (event.pointerType === "mouse" && event.button !== 0) return;
-        event.preventDefault();
-        pressHold(event.clientX, event.pointerId);
-      });
-      voice.addEventListener("pointermove", (event) => {
+      const releaseHold = () => {
         if (!holding) return;
-        cancel = startX - event.clientX > 72;
-        form.classList.toggle("is-cancel", cancel);
-        if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
-      });
-      voice.addEventListener("pointerup", (event) => {
-        if (voice.hasPointerCapture?.(event.pointerId)) {
-          try {
-            voice.releasePointerCapture(event.pointerId);
-          } catch {
-            /* Указатель уже отпущен. */
-          }
-        }
+        holding = false;
+        const turnId = turn;
         if (cancel) {
-          turn += 1;
-          holding = false;
           heard = "";
           try {
             recognition.abort();
           } catch {
             /* Распознавание уже остановлено. */
           }
-          settled = true;
           endHold();
           return;
+        }
+        stopListen(turnId);
+      };
+      const moveHold = (clientX) => {
+        if (!holding) return;
+        cancel = startX - clientX > 72;
+        form.classList.toggle("is-cancel", cancel);
+        if (holdHint) holdHint.textContent = cancel ? cancelText : releaseText;
+      };
+      voice.addEventListener("touchstart", (event) => {
+        if (voice.classList.contains("is-send")) return;
+        pressHold(event.touches[0]?.clientX || 0);
+        event.preventDefault();
+      }, { passive: false });
+      voice.addEventListener("touchmove", (event) => {
+        moveHold(event.touches[0]?.clientX || 0);
+        event.preventDefault();
+      }, { passive: false });
+      voice.addEventListener("touchend", (event) => {
+        event.preventDefault();
+        releaseHold();
+      });
+      voice.addEventListener("touchcancel", () => {
+        cancel = true;
+        releaseHold();
+      });
+      voice.addEventListener("pointerdown", (event) => {
+        if (voice.classList.contains("is-send") || event.pointerType === "touch") return;
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        event.preventDefault();
+        pressHold(event.clientX);
+        try {
+          voice.setPointerCapture(event.pointerId);
+        } catch {
+          /* Захват указателя недоступен. */
+        }
+      });
+      voice.addEventListener("pointermove", (event) => {
+        if (event.pointerType === "touch") return;
+        moveHold(event.clientX);
+      });
+      voice.addEventListener("pointerup", (event) => {
+        if (event.pointerType === "touch") return;
+        if (voice.hasPointerCapture?.(event.pointerId)) {
+          try {
+            voice.releasePointerCapture(event.pointerId);
+          } catch {
+            /* Указатель уже отпущен. */
+          }
         }
         releaseHold();
       });
