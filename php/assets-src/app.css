@@ -127,31 +127,46 @@
 
 .assistant-toggle {
   display: inline-flex;
+  width: 3.6rem;
+  height: 3.6rem;
   align-items: center;
-  gap: 0.45rem;
-  height: 2.75rem;
-  padding: 0 0.95rem;
-  border: 1px solid #e2b3c6;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid #fff;
   border-radius: 999px;
   background: #fff;
-  color: #7d3254;
-  font: inherit;
-  font-size: 0.9rem;
-  font-weight: 650;
-  box-shadow: 0 10px 24px rgb(125 50 84 / 0.16);
+  box-shadow: 0 10px 24px rgb(125 50 84 / 0.22);
   cursor: pointer;
+}
+
+.assistant-toggle .assistant-avatar-sm {
+  width: 3.6rem;
+  height: 3.6rem;
 }
 
 .assistant-panel {
   display: flex;
   width: min(22rem, calc(100vw - 2rem));
-  max-height: min(32rem, calc(100dvh - 6.5rem));
+  height: min(28rem, calc(100dvh - 7rem));
+  max-height: calc(100dvh - 7rem);
   flex-direction: column;
   overflow: hidden;
   border: 1px solid #e2b3c6;
   border-radius: 1.25rem;
   background: #fffdfd;
   box-shadow: 0 16px 40px rgb(41 37 36 / 0.16);
+}
+
+@media (max-width: 640px) {
+  .assistant {
+    right: 0.75rem;
+    bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .assistant-panel {
+    width: min(22rem, calc(100vw - 1.5rem));
+    height: min(26rem, calc(100dvh - 6.5rem));
+  }
 }
 
 .assistant-head {
@@ -216,10 +231,12 @@
 
 .assistant-log {
   display: flex;
+  min-height: 0;
   flex: 1;
   flex-direction: column;
   gap: 0.55rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0.85rem 0.9rem;
 }
 
@@ -245,6 +262,8 @@
 }
 
 .assistant-msg-bot {
+  align-self: flex-start;
+  max-width: 88%;
   background: #fdf2f6;
   color: #34282e;
   border-bottom-left-radius: 0.3rem;
@@ -289,6 +308,7 @@
 
 .assistant-msg-user {
   align-self: flex-end;
+  max-width: 88%;
   background: #7d3254;
   color: #fff;
 }

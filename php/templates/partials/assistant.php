@@ -65,9 +65,8 @@ $payload = [
             <span><?= t('assistant.idle') ?></span>
         </button>
     </div>
-    <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel">
-        <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg?v=2" alt="" width="32" height="32">
-        <span><?= t('assistant.title') ?></span>
+    <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel" aria-label="<?= t('assistant.open') ?>">
+        <img class="assistant-avatar assistant-avatar-sm" src="/images/assistant-avatar.jpg?v=2" alt="" width="40" height="40">
     </button>
     <script type="application/json" data-assistant-data><?= json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 </div>
