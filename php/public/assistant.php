@@ -39,6 +39,8 @@ if ($question === '' || mb_strlen($question) > 240) {
 }
 
 $history = is_array($payload['history'] ?? null) ? $payload['history'] : [];
+$aside = max(0, (int) ($payload['aside'] ?? 0));
+$question .= "\n[Посторонних вопросов до этого: {$aside}. Если это число уже 2 или больше и вопрос не про студию, не отвечай по существу.]";
 $answer = Assistant::answer($question, $history);
 if ($answer === null) {
     http_response_code(503);

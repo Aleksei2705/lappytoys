@@ -650,6 +650,7 @@
     const data = JSON.parse(dataNode.textContent || "{}");
     const input = form.querySelector("input");
     const recent = {};
+    let asideCount = 0;
 
     const choose = (lines, key) => {
       const items = (lines || []).filter(Boolean);
@@ -745,6 +746,9 @@
       const match = (data.answers || []).find((answer) =>
         (answer.keys || []).some((key) => query.includes(String(key).toLocaleLowerCase("ru"))),
       );
+      if (!match && asideCount < 2) {
+        return { text: data.asides?.[asideCount] || choose(data.fallbacks, "fallback"), href: "", link: "" };
+      }
       return {
         text: choose(match?.texts || (match?.text ? [match.text] : data.fallbacks), match ? match.keys[0] : "fallback"),
         href: match?.href || "",
@@ -753,6 +757,10 @@
     };
 
     const reply = async (question) => {
+      const query = question.toLocaleLowerCase("ru").replaceAll("ё", "е");
+      const onStudio = (data.answers || []).some((item) =>
+        (item.keys || []).some((key) => query.includes(String(key).toLocaleLowerCase("ru"))),
+      );
       const pending = showTyping();
       const started = performance.now();
       let answer = null;
@@ -769,7 +777,7 @@
           const response = await fetch("/assistant.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ _csrf: data.csrf, q: question, history }),
+            body: JSON.stringify({ _csrf: data.csrf, q: question, history, aside: asideCount }),
           });
           const body = response.ok ? await response.json() : null;
           if (body?.text) answer = body;
@@ -781,6 +789,7 @@
       if (wait > 0) await pause(wait);
       pending.remove();
       const ready = answer || localAnswer(question);
+      if (!onStudio && !answer) asideCount += 1;
       addMessage(ready.text, "bot", ready.href, ready.link);
     };
 
