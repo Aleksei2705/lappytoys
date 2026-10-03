@@ -703,6 +703,19 @@
       nudge.addEventListener("click", () => setOpen(true));
     }
 
+    log.addEventListener("click", (event) => {
+      const anchor = event.target.closest("a");
+      if (!anchor) return;
+      const url = new URL(anchor.href, location.href);
+      const samePage = url.pathname === location.pathname;
+      const target = url.hash && samePage ? document.getElementById(url.hash.slice(1)) : null;
+      setOpen(false);
+      if (!target) return;
+      event.preventDefault();
+      history.pushState(null, "", url.hash);
+      requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+    });
+
     toggle.addEventListener("click", () => setOpen(panel.hidden));
     root.querySelector("[data-assistant-close]")?.addEventListener("click", () => setOpen(false));
     root.querySelectorAll("[data-assistant-ask]").forEach((button) => {
