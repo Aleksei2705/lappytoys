@@ -1040,6 +1040,7 @@
       }
       const finishSpeech = () => {
         if (!recognition || speechSettled) return;
+        speechSettled = true;
         const turnId = turn;
         holding = false;
         endHold();
@@ -1065,8 +1066,10 @@
           const text = heard.trim();
           heard = "";
           const mime = (recorder?.mimeType || "audio/webm").split(";")[0];
+          let delivered = false;
           const deliver = () => {
-            if (turnId !== turn) return;
+            if (delivered || turnId !== turn) return;
+            delivered = true;
             speechSettled = true;
             if (text) {
               stopMic();
