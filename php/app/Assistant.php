@@ -244,6 +244,7 @@ final class Assistant
             'X-Title: Lappy Art',
         ];
         $url = 'https://openrouter.ai/api/v1/chat/completions';
+        $payload['max_tokens'] = 500;
         foreach (self::openRouterModels() as $model) {
             $payload['model'] = $model;
             $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE);
