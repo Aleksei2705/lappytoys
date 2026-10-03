@@ -188,15 +188,6 @@ final class Assistant
              ON DUPLICATE KEY UPDATE transcript = VALUES(transcript), updated_at = NOW()',
             [$publicId, $transcript],
         );
-
-        $sent = Mail::send(
-            (string) site('notify_email'),
-            'Разговор с Милой',
-            "На сайте новый обмен с помощником.\n\n" . $transcript,
-        );
-        if (!$sent) {
-            error_log('[assistant] conversation email was not sent');
-        }
     }
 
     public static function ensureTable(): void
