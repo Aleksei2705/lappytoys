@@ -59,6 +59,7 @@ return [
     ],
     'nav' => [
         '/#about',
+        '/#awards',
         '/#courses',
         '/#master-classes',
         '/#schedule',

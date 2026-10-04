@@ -32,7 +32,7 @@ $awards = SiteContent::awardRows();
                         <img src="<?= e((string) ($about['photo'] ?? '/images/room.jpg')) ?>" alt="<?= e($aboutAlt) ?>" loading="lazy"
                              class="absolute inset-0 size-full object-cover object-top transition-transform duration-700 hover:scale-[1.03]">
                     </div>
-                    <div class="mt-5 text-center lg:text-left">
+                    <div class="mt-5 text-center">
                         <p class="font-heading text-lg font-semibold text-warm-900"><?= e((string) ($about['name'] ?? '')) ?></p>
                         <p class="text-sm text-warm-500"><?= e($aboutRole) ?></p>
                     </div>
@@ -40,15 +40,15 @@ $awards = SiteContent::awardRows();
             </div>
 
             <?= revealStart(120, '', 'left') ?>
-                <div class="space-y-6">
+                <div class="space-y-6 text-center">
                     <?php
                     render('partials/section-header', [
                         'eyebrow' => t('about.eyebrow'),
                         'titleHtml' => t('about.title.before') . ' <span class="text-gradient">' . t('about.title.accent') . '</span>',
-                        'align' => 'left',
+                        'align' => 'center',
                     ]);
                     ?>
-                    <div class="flex flex-col items-center space-y-4 text-base leading-relaxed text-warm-500" data-expandable>
+                    <div class="mx-auto flex max-w-xl flex-col items-center space-y-4 text-center text-base leading-relaxed text-warm-500" data-expandable>
                         <?php foreach ($aboutParagraphs as $i => $paragraph): ?>
                             <p class="w-full" <?= $i >= $previewCount ? 'data-expandable-extra hidden' : '' ?>><?= e($paragraph) ?></p>
                         <?php endforeach; ?>
@@ -63,8 +63,8 @@ $awards = SiteContent::awardRows();
             </div>
         </div>
 
+        <div id="awards" class="<?= $awards === [] ? '' : 'mt-14 sm:mt-16' ?>">
         <?php if ($awards !== []): ?>
-        <div id="awards" class="mt-14 sm:mt-16">
             <?php
             render('partials/section-header', [
                 'eyebrow' => t('awards.eyebrow'),
@@ -89,7 +89,7 @@ $awards = SiteContent::awardRows();
                     </button>
                 <?php endforeach; ?>
             </div>
-        </div>
         <?php endif; ?>
+        </div>
     </div>
 </section>
