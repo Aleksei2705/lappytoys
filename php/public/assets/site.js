@@ -563,6 +563,9 @@
       render(0);
     });
 
+    const awards = Array.from(document.querySelectorAll("[data-award]"));
+    awards.forEach((award, index) => award.addEventListener("click", () => open(awards, index)));
+
     const stepLightbox = (direction) => activeSlides.length && open(activeSlides, activeIndex + direction);
     closeButton?.addEventListener("click", close);
     lightbox?.querySelector("[data-lightbox-prev]")?.addEventListener("click", () => stepLightbox(-1));

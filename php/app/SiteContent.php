@@ -232,6 +232,26 @@ final class SiteContent
         }
     }
 
+    /** @return list<array<string, string>> */
+    public static function awardRows(): array
+    {
+        return self::stored('awards') ?? [];
+    }
+
+    /** @param list<array<string, string>> $rows */
+    public static function saveAwards(array $rows): void
+    {
+        $previous = self::stored('awards') ?? [];
+        self::write('awards', $rows);
+        $kept = array_column($rows, 'image');
+        foreach ($previous as $old) {
+            $image = (string) ($old['image'] ?? '');
+            if ($image !== '' && !in_array($image, $kept, true)) {
+                Admin::deleteUploadedImage($image);
+            }
+        }
+    }
+
     /** @return array<string, string> */
     public static function contactSettings(): array
     {

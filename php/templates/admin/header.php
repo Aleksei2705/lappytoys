@@ -16,6 +16,7 @@ try {
 
 $navItems = [
     'about' => ['/admin/content.php?part=about', 'Обо мне', 0],
+    'awards' => ['/admin/content.php?part=awards', 'Грамоты', 0],
     'courses' => ['/admin/classes.php?kind=course', 'Виды занятий', 0],
     'master' => ['/admin/classes.php?kind=master_class', 'Мастер-классы', 0],
     'schedule' => ['/admin/schedule.php', 'Расписание', 0],

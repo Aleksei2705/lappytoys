@@ -11,12 +11,13 @@ if (Admin::isPost()) {
         $part = $posted;
     }
 }
-if (!in_array($part, ['about', 'faq', 'contacts'], true)) {
+if (!in_array($part, ['about', 'awards', 'faq', 'contacts'], true)) {
     $part = 'about';
 }
 $adminSection = $part;
-$adminTitle = ['about' => 'Обо мне', 'faq' => 'Вопросы и ответы', 'contacts' => 'Контакты'][$part];
+$adminTitle = ['about' => 'Обо мне', 'awards' => 'Грамоты', 'faq' => 'Вопросы и ответы', 'contacts' => 'Контакты'][$part];
 $errors = [];
+$awards = [];
 
 function contentHttps(string $value): bool
 {
@@ -111,6 +112,70 @@ try {
             Admin::redirect('/admin/content.php?part=about');
         }
 
+        if ($action === 'awards') {
+            $images = $_POST['image'] ?? [];
+            $captionsRu = $_POST['caption_ru'] ?? [];
+            $captionsKk = $_POST['caption_kk'] ?? [];
+            $uploads = $_FILES['upload'] ?? [];
+            $count = is_array($captionsRu) ? count($captionsRu) : 0;
+            $rows = [];
+            $fresh = [];
+            for ($i = 0; $i < $count && count($rows) < 8; $i++) {
+                $captionRu = is_array($captionsRu) ? Admin::text($captionsRu, (string) $i) : '';
+                $captionKk = is_array($captionsKk) ? Admin::text($captionsKk, (string) $i) : '';
+                $hasFile = is_array($uploads['error'] ?? null)
+                    && (int) ($uploads['error'][$i] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
+                if ($captionRu === '' && $captionKk === '' && !$hasFile) {
+                    continue;
+                }
+                $current = is_array($images) ? Admin::text($images, (string) $i) : '';
+                if (preg_match('#^/uploads/awards/[a-f0-9]{16}\.(jpg|png|webp)$#', $current) !== 1) {
+                    $current = '';
+                }
+                try {
+                    $uploaded = null;
+                    if ($hasFile && is_array($uploads['error'] ?? null)) {
+                        $uploaded = Admin::storeImage([
+                            'name' => $uploads['name'][$i] ?? '',
+                            'type' => $uploads['type'][$i] ?? '',
+                            'tmp_name' => $uploads['tmp_name'][$i] ?? '',
+                            'error' => $uploads['error'][$i] ?? UPLOAD_ERR_NO_FILE,
+                            'size' => $uploads['size'][$i] ?? 0,
+                        ], 'awards');
+                    }
+                } catch (InvalidArgumentException $exception) {
+                    $errors[] = $exception->getMessage();
+                    $uploaded = null;
+                }
+                if ($uploaded !== null) {
+                    $fresh[] = $uploaded;
+                    $current = $uploaded;
+                }
+                if ($captionRu === '' && $captionKk === '') {
+                    $errors[] = 'У каждого документа нужна подпись: кто, за что и год.';
+                    continue;
+                }
+                if ($current === '') {
+                    $errors[] = 'У документа «' . ($captionRu !== '' ? $captionRu : $captionKk) . '» нет фото.';
+                    continue;
+                }
+                $rows[] = [
+                    'image' => $current,
+                    'caption_ru' => mb_substr($captionRu, 0, 120),
+                    'caption_kk' => mb_substr($captionKk, 0, 120),
+                ];
+            }
+            if ($errors === []) {
+                SiteContent::saveAwards($rows);
+                Admin::flash('success', 'Грамоты сохранены и уже на сайте.');
+                Admin::redirect('/admin/content.php?part=awards');
+            }
+            foreach ($fresh as $path) {
+                Admin::deleteUploadedImage($path);
+            }
+            $awards = $rows;
+        }
+
         if ($action === 'contacts') {
             $phone = Admin::text($_POST, 'phone');
             $embed = Admin::text($_POST, 'map_embed_url');
@@ -151,18 +216,23 @@ try {
     $about = SiteContent::aboutData();
     $contacts = contactFormValues();
     $paragraphs = is_array($about['paragraphs'] ?? null) ? $about['paragraphs'] : [];
+    if (!isset($awards)) {
+        $awards = SiteContent::awardRows();
+    }
 } catch (InvalidArgumentException $exception) {
     $errors[] = $exception->getMessage();
     $faq = SiteContent::faqRows();
     $about = SiteContent::aboutData();
     $contacts = contactFormValues();
     $paragraphs = is_array($about['paragraphs'] ?? null) ? $about['paragraphs'] : [];
+    $awards = $awards ?? SiteContent::awardRows();
 } catch (RuntimeException) {
     $errors[] = 'Ошибка базы данных. Подробности в логе сервера.';
     $faq = [];
     $about = [];
     $contacts = [];
     $paragraphs = [];
+    $awards = [];
 }
 
 if ($errors !== [] && Admin::isPost() && Admin::text($_POST, 'block') === 'contacts') {
@@ -258,6 +328,55 @@ require APP_ROOT . '/templates/admin/header.php';
         <textarea name="paragraph_ru[]" maxlength="2000" rows="3" placeholder="Абзац (рус.)" class="textarea-field"></textarea>
         <textarea name="paragraph_kk[]" maxlength="2000" rows="3" placeholder="Абзац (қаз.)" class="textarea-field"></textarea>
         <button type="button" class="text-left text-sm text-red-600 underline" data-remove-row>Убрать абзац</button>
+    </div>
+</template>
+<?php endif; ?>
+
+<?php if ($part === 'awards'): ?>
+<section id="awards" class="mb-10">
+    <h2 class="mb-2 font-heading text-xl font-bold">Письма и грамоты</h2>
+    <p class="mb-4 max-w-2xl text-sm text-warm-500">До восьми сканов. Подпись — одна строка: кто выдал, за что и год. Пустой список на сайте не показывается. Фото — JPG, PNG или WebP, до 3 МБ.</p>
+    <form method="post" enctype="multipart/form-data" class="space-y-3">
+        <?= Security::csrfField() ?>
+        <input type="hidden" name="block" value="awards">
+        <div id="award-rows" class="space-y-3">
+            <?php foreach ($awards as $award): ?>
+                <div class="card-soft grid gap-4 p-4 sm:grid-cols-[5.5rem_1fr_auto]" data-row>
+                    <img src="<?= e((string) ($award['image'] ?? '')) ?>" alt="" class="h-24 w-20 rounded-xl bg-white object-contain">
+                    <input type="hidden" name="image[]" value="<?= e((string) ($award['image'] ?? '')) ?>">
+                    <div class="grid gap-3">
+                        <input name="caption_ru[]" maxlength="120" value="<?= e((string) ($award['caption_ru'] ?? '')) ?>" placeholder="Школа №12, конкурс, 2024" class="input-field">
+                        <input name="caption_kk[]" maxlength="120" value="<?= e((string) ($award['caption_kk'] ?? '')) ?>" placeholder="№12 мектеп, байқау, 2024" class="input-field">
+                        <input type="file" name="upload[]" accept="image/jpeg,image/png,image/webp" class="block text-sm">
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <button type="button" class="btn-ghost !px-2 !py-1.5" data-move="up" aria-label="Выше">↑</button>
+                        <button type="button" class="btn-ghost !px-2 !py-1.5" data-move="down" aria-label="Ниже">↓</button>
+                        <button type="button" class="text-sm text-red-600 underline" data-remove-row>Убрать</button>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <button type="button" class="btn-secondary !px-4 !py-2" data-add-row="#award-rows" data-add-template="#award-template">+ Документ</button>
+            <button type="submit" class="btn-primary h-11 px-8">Сохранить грамоты</button>
+        </div>
+    </form>
+</section>
+<template id="award-template">
+    <div class="card-soft grid gap-4 p-4 sm:grid-cols-[5.5rem_1fr_auto]" data-row>
+        <span class="flex h-24 w-20 items-center justify-center rounded-xl bg-brand-50 text-xs text-warm-500">скан</span>
+        <input type="hidden" name="image[]" value="">
+        <div class="grid gap-3">
+            <input name="caption_ru[]" maxlength="120" placeholder="Школа №12, конкурс, 2024" class="input-field">
+            <input name="caption_kk[]" maxlength="120" placeholder="№12 мектеп, байқау, 2024" class="input-field">
+            <input type="file" name="upload[]" accept="image/jpeg,image/png,image/webp" class="block text-sm">
+        </div>
+        <div class="flex items-start gap-2">
+            <button type="button" class="btn-ghost !px-2 !py-1.5" data-move="up" aria-label="Выше">↑</button>
+            <button type="button" class="btn-ghost !px-2 !py-1.5" data-move="down" aria-label="Ниже">↓</button>
+            <button type="button" class="text-sm text-red-600 underline" data-remove-row>Убрать</button>
+        </div>
     </div>
 </template>
 <?php endif; ?>
