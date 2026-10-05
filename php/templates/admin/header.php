@@ -19,6 +19,7 @@ $navItems = [
     'awards' => ['/admin/content.php?part=awards', 'Грамоты', 0],
     'courses' => ['/admin/classes.php?kind=course', 'Виды занятий', 0],
     'master' => ['/admin/classes.php?kind=master_class', 'Мастер-классы', 0],
+    'shop' => ['/admin/shop.php', 'Онлайн', 0],
     'schedule' => ['/admin/schedule.php', 'Расписание', 0],
     'works' => ['/admin/gallery.php', 'Работы учеников', 0],
     'reviews' => ['/admin/reviews.php', 'Отзывы', $counters['reviews']],

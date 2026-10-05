@@ -5,4 +5,5 @@ DirectoryIndex index.php
     RewriteEngine On
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
     RewriteRule ^courses/([a-z0-9-]+)/?$ course.php?slug=$1 [L,QSA]
+    RewriteRule ^online/([a-z0-9-]+)/?$ online.php?slug=$1 [L,QSA]
 </IfModule>

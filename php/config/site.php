@@ -62,6 +62,7 @@ return [
         '/#awards',
         '/#courses',
         '/#master-classes',
+        '/#online',
         '/#schedule',
         '/#works',
         '/#instagram',
