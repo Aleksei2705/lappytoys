@@ -52,9 +52,11 @@
       const target = pendingTarget;
       pendingTarget = null;
       unlockPage();
-      if (target) {
-        requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
-      }
+      if (!target) return;
+      const header = document.querySelector("[data-site-header]");
+      const headerBottom = header ? header.getBoundingClientRect().bottom : 0;
+      const delta = target.getBoundingClientRect().top - headerBottom;
+      window.scrollBy(0, Math.round(delta));
     };
 
     const setOpen = (open) => {
