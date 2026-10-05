@@ -56,14 +56,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     $hits[] = $now;
                     $_SESSION['shop_hits'] = $hits;
                     $link = site('url') . '/online/' . $product['slug'] . '/?order=' . $token;
-                    if (!Notifier::shopOrder([
+                    if (Notifier::shopOrder([
                         'id' => $placed['id'],
                         'name' => $name,
                         'phone' => $phone,
                         'title' => loc($product, 'title'),
                         'link' => $link,
                     ])) {
-                        error_log('[online] shop order #' . $token . ': Telegram notification was not sent');
+                        Shop::markTelegramSent($placed['id']);
+                    } else {
+                        error_log('[online] shop order #' . $token . ': Telegram failed — ' . Telegram::lastError());
                     }
                     header('Location: /online/' . rawurlencode((string) $product['slug']) . '/?order=' . $token, true, 303);
                     exit;

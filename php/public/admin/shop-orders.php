@@ -22,12 +22,33 @@ try {
             Admin::flash('success', 'Заявка отменена.');
         } elseif ($action === 'telegram_test') {
             $sent = Telegram::send('🧪 Тест: уведомления онлайн-магазина lappytoys.kz');
+            $detail = Telegram::lastError();
             Admin::flash(
                 $sent ? 'success' : 'error',
                 $sent
-                    ? 'Тестовое сообщение отправлено в чат TELEGRAM_CHAT_ID. Откройте Telegram (не SMS).'
-                    : 'Не отправилось. Проверьте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в .env на сервере и лог PHP.',
+                    ? 'Тест отправлен в чат ' . Config::get('TELEGRAM_CHAT_ID') . '. Откройте Telegram (не SMS).'
+                    : 'Telegram: ' . ($detail !== '' ? $detail : 'не удалось отправить. Проверьте .env на сервере.'),
             );
+        } elseif ($id > 0 && $action === 'telegram_resend') {
+            $order = Shop::findOrder($id);
+            if ($order === null) {
+                Admin::flash('error', 'Заявка не найдена.');
+            } else {
+                $link = site('url') . '/online/' . $order['slug'] . '/?order=' . $order['token'];
+                $sent = Notifier::shopOrder([
+                    'id' => $id,
+                    'name' => (string) $order['name'],
+                    'phone' => (string) $order['phone'],
+                    'title' => (string) $order['title_ru'],
+                    'link' => $link,
+                ]);
+                if ($sent) {
+                    Shop::markTelegramSent($id);
+                    Admin::flash('success', 'Сообщение отправлено в Telegram.');
+                } else {
+                    Admin::flash('error', 'Telegram: ' . Telegram::lastError());
+                }
+            }
         }
         Admin::redirect('/admin/shop-orders.php');
     }
@@ -52,6 +73,8 @@ require APP_ROOT . '/templates/admin/header.php';
         Telegram не настроен на сервере (<code class="text-xs">TELEGRAM_BOT_TOKEN</code> и <code class="text-xs">TELEGRAM_CHAT_ID</code> в <code class="text-xs">.env</code>).
         Заявки здесь сохраняются, но сообщения в Telegram не уходят — те же переменные, что для формы «Записаться».
     </p>
+<?php elseif (($chatIssue = Telegram::chatIdIssue()) !== null): ?>
+    <p class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><?= e($chatIssue) ?></p>
 <?php elseif (Config::get('TELEGRAM_WEBHOOK_SECRET') === ''): ?>
     <p class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
         Кнопки «Оплачено» в Telegram работают после webhook: задайте <code class="text-xs">TELEGRAM_WEBHOOK_SECRET</code> в <code class="text-xs">.env</code> и на сервере выполните
@@ -70,7 +93,12 @@ require APP_ROOT . '/templates/admin/header.php';
                     <p><a class="text-brand-700 underline" href="tel:<?= e((string) $order['phone']) ?>"><?= e((string) $order['phone']) ?></a></p>
                     <p class="mt-1"><?= e((string) $order['title_ru']) ?></p>
                 </div>
-                <p class="text-warm-500">#<?= (int) $order['id'] ?> · <?= e(Admin::dt((string) $order['created_at'])) ?> · <?= e($labels[(string) $order['status']] ?? '') ?></p>
+                <p class="text-warm-500">
+                    #<?= (int) $order['id'] ?> · <?= e(Admin::dt((string) $order['created_at'])) ?> · <?= e($labels[(string) $order['status']] ?? '') ?>
+                    <?php if (!(int) ($order['telegram_sent'] ?? 0)): ?>
+                        <span class="ml-1 rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-800" title="В Telegram не ушло">без Telegram</span>
+                    <?php endif; ?>
+                </p>
             </div>
             <p class="mt-2 break-all text-warm-500"><?= e(site('url') . '/online/' . $order['slug'] . '/?order=' . $order['token']) ?></p>
             <?php if ($order['status'] === 'pending'): ?>
@@ -87,6 +115,14 @@ require APP_ROOT . '/templates/admin/header.php';
                         <input type="hidden" name="action" value="cancel">
                         <button type="submit" class="text-sm text-red-600 underline">Отменить</button>
                     </form>
+                    <?php if (!(int) ($order['telegram_sent'] ?? 0)): ?>
+                        <form method="post">
+                            <?= Security::csrfField() ?>
+                            <input type="hidden" name="id" value="<?= (int) $order['id'] ?>">
+                            <input type="hidden" name="action" value="telegram_resend">
+                            <button type="submit" class="text-sm text-brand-700 underline">Отправить в Telegram</button>
+                        </form>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </article>

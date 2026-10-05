@@ -47,6 +47,24 @@ final class Shop
                 KEY shop_orders_status (status, id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
         );
+        self::ensureOrderColumns();
+    }
+
+    private static function ensureOrderColumns(): void
+    {
+        try {
+            Database::execute(
+                'ALTER TABLE shop_orders ADD COLUMN telegram_sent TINYINT(1) NOT NULL DEFAULT 0 AFTER status',
+            );
+        } catch (RuntimeException) {
+            // column already exists
+        }
+    }
+
+    public static function markTelegramSent(int $id): void
+    {
+        self::ensureTables();
+        Database::execute('UPDATE shop_orders SET telegram_sent = 1 WHERE id = ?', [$id]);
     }
 
     /** @return list<array<string, mixed>> */

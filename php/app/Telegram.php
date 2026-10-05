@@ -5,15 +5,42 @@ final class Telegram
 {
     private const TIMEOUT_SECONDS = 6;
 
+    private static string $lastError = '';
+
     public static function isConfigured(): bool
     {
         return Config::get('TELEGRAM_BOT_TOKEN') !== '' && Config::get('TELEGRAM_CHAT_ID') !== '';
+    }
+
+    public static function lastError(): string
+    {
+        return self::$lastError;
+    }
+
+    /** Numeric chat id (e.g. 123456789 or -100…). @username will not work. */
+    public static function chatIdIssue(): ?string
+    {
+        $id = trim(Config::get('TELEGRAM_CHAT_ID'));
+        if ($id === '') {
+            return 'TELEGRAM_CHAT_ID пустой.';
+        }
+        if (str_contains($id, '@') || preg_match('/^-?\d{5,20}$/', $id) !== 1) {
+            return 'TELEGRAM_CHAT_ID должен быть числом (узнать: @userinfobot или php scripts/telegram-setup.php chat-id), не @username.';
+        }
+        return null;
     }
 
     /** @param array<string, mixed>|null $replyMarkup Inline keyboard etc. */
     public static function send(string $html, ?array $replyMarkup = null): bool
     {
         if (!self::isConfigured()) {
+            self::$lastError = 'TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID не заданы в .env';
+            return false;
+        }
+        $chatIssue = self::chatIdIssue();
+        if ($chatIssue !== null) {
+            self::$lastError = $chatIssue;
+            error_log('[telegram] ' . $chatIssue);
             return false;
         }
 
@@ -30,7 +57,10 @@ final class Telegram
         $response = self::call('sendMessage', $payload);
         $ok = is_array($response) && ($response['ok'] ?? false) === true;
         if (!$ok) {
-            error_log('[telegram] sendMessage failed: ' . self::errorText($response));
+            self::$lastError = self::errorText($response);
+            error_log('[telegram] sendMessage failed: ' . self::$lastError);
+        } else {
+            self::$lastError = '';
         }
         return $ok;
     }
@@ -84,6 +114,9 @@ final class Telegram
             CURLOPT_TIMEOUT => self::TIMEOUT_SECONDS,
         ]);
         $result = curl_exec($curl);
+        if ($result === false) {
+            error_log('[telegram] curl error: ' . curl_error($curl));
+        }
         curl_close($curl);
         return $result;
     }
