@@ -49,7 +49,7 @@ final class TelegramWebhook
                 return;
             }
             Shop::markPaid($orderId);
-            self::answer($callback, 'Оплата подтверждена. У покупателя открылась ссылка на сайте.');
+            self::answer($callback, 'Оплата подтверждена. У покупателя открылась ссылка на сайте.', true);
             self::markMessageHandled($callback, '✅ Оплачено');
             return;
         }
@@ -76,11 +76,10 @@ final class TelegramWebhook
                     return true;
                 }
             }
-            return false;
         }
 
         $chatId = Config::get('TELEGRAM_CHAT_ID');
-        return $chatId !== '' && !str_starts_with($chatId, '-');
+        return $chatId !== '' && !str_starts_with($chatId, '-') && (string) $userId === $chatId;
     }
 
     /** @param array<string, mixed> $callback */
@@ -111,16 +110,11 @@ final class TelegramWebhook
             return;
         }
 
-        $newText = $text . "\n\n" . $statusLine;
         Telegram::call('editMessageText', [
-            'chat_id' => (string) $chatId,
-            'message_id' => (string) $messageId,
-            'text' => $newText,
-            'disable_web_page_preview' => 'true',
-        ]);
-        Telegram::call('editMessageReplyMarkup', [
-            'chat_id' => (string) $chatId,
-            'message_id' => (string) $messageId,
+            'chat_id' => $chatId,
+            'message_id' => (int) $messageId,
+            'text' => $text . "\n\n" . $statusLine,
+            'disable_web_page_preview' => true,
             'reply_markup' => ['inline_keyboard' => []],
         ]);
     }

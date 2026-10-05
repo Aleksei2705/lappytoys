@@ -65,6 +65,91 @@ final class Telegram
         return $ok;
     }
 
+    /** Public HTTPS endpoint Telegram calls when an inline button is pressed. */
+    public static function webhookUrl(): string
+    {
+        $base = rtrim(Config::get('APP_URL'), '/');
+        if ($base === '') {
+            $base = rtrim((string) site('url'), '/');
+        }
+        return $base . '/telegram-webhook.php';
+    }
+
+    /** Secret Telegram sends back in X-Telegram-Bot-Api-Secret-Token. Empty means the check is off. */
+    public static function webhookSecret(): string
+    {
+        $fromEnv = Config::get('TELEGRAM_WEBHOOK_SECRET');
+        if ($fromEnv !== '') {
+            return $fromEnv;
+        }
+        $path = APP_ROOT . '/storage/telegram-webhook.secret';
+        if (!is_readable($path)) {
+            return '';
+        }
+        $value = trim((string) file_get_contents($path));
+        return preg_match('/^[A-Za-z0-9_-]{16,128}$/', $value) === 1 ? $value : '';
+    }
+
+    /**
+     * Registers the shop-button webhook once. Later calls skip the API if this URL is already saved.
+     */
+    public static function ensureWebhook(): bool
+    {
+        $url = self::webhookUrl();
+        $stamp = APP_ROOT . '/storage/telegram-webhook.url';
+        if (is_readable($stamp) && trim((string) file_get_contents($stamp)) === $url) {
+            return true;
+        }
+        $result = self::registerWebhook();
+        return $result['ok'];
+    }
+
+    /** @return array{ok: bool, detail: string} */
+    public static function registerWebhook(): array
+    {
+        if (Config::get('TELEGRAM_BOT_TOKEN') === '') {
+            self::$lastError = 'TELEGRAM_BOT_TOKEN пустой.';
+            return ['ok' => false, 'detail' => self::$lastError];
+        }
+        $url = self::webhookUrl();
+        if (!str_starts_with($url, 'https://')) {
+            self::$lastError = 'APP_URL должен начинаться с https://';
+            return ['ok' => false, 'detail' => self::$lastError];
+        }
+
+        $secret = self::webhookSecret();
+        if ($secret === '') {
+            $secret = bin2hex(random_bytes(16));
+            $dir = APP_ROOT . '/storage';
+            if (!is_dir($dir) && !mkdir($dir, 0750, true) && !is_dir($dir)) {
+                $secret = '';
+            } elseif (file_put_contents($dir . '/telegram-webhook.secret', $secret) === false) {
+                $secret = '';
+            }
+        }
+
+        $payload = [
+            'url' => $url,
+            'allowed_updates' => ['callback_query'],
+        ];
+        if ($secret !== '') {
+            $payload['secret_token'] = $secret;
+        }
+
+        $response = self::call('setWebhook', $payload);
+        $ok = is_array($response) && ($response['ok'] ?? false) === true;
+        if (!$ok) {
+            self::$lastError = self::errorText($response);
+            error_log('[telegram] setWebhook failed: ' . self::$lastError);
+            return ['ok' => false, 'detail' => self::$lastError];
+        }
+
+        $stamp = APP_ROOT . '/storage/telegram-webhook.url';
+        file_put_contents($stamp, $url);
+        self::$lastError = '';
+        return ['ok' => true, 'detail' => $url];
+    }
+
     /** @param array<string, mixed>|null $response */
     public static function errorText(?array $response): string
     {

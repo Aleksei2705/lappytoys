@@ -55,22 +55,12 @@ if ($mode === 'test') {
 }
 
 if ($mode === 'webhook-set') {
-    $base = rtrim((string) Config::get('APP_URL'), '/');
-    if ($base === '') {
-        fwrite(STDERR, "APP_URL is empty in .env\n");
+    $result = Telegram::registerWebhook();
+    if (!$result['ok']) {
+        fwrite(STDERR, 'setWebhook failed: ' . $result['detail'] . "\n");
         exit(1);
     }
-    $payload = ['url' => $base . '/telegram-webhook.php'];
-    $secret = Config::get('TELEGRAM_WEBHOOK_SECRET');
-    if ($secret !== '') {
-        $payload['secret_token'] = $secret;
-    }
-    $response = Telegram::call('setWebhook', $payload);
-    if (!is_array($response) || ($response['ok'] ?? false) !== true) {
-        fwrite(STDERR, 'setWebhook failed: ' . ($response['description'] ?? 'no response') . "\n");
-        exit(1);
-    }
-    echo "Webhook: {$payload['url']}\n";
+    echo "Webhook: {$result['detail']}\n";
     exit(0);
 }
 

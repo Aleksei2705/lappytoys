@@ -75,6 +75,7 @@ final class Notifier
         ];
 
         $text = implode("\n", $lines);
+        Telegram::ensureWebhook();
         if (Telegram::send($text, $keyboard)) {
             return true;
         }

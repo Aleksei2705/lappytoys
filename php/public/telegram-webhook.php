@@ -8,7 +8,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     exit;
 }
 
-$secret = Config::get('TELEGRAM_WEBHOOK_SECRET');
+$secret = Telegram::webhookSecret();
 if ($secret !== '') {
     $header = (string) ($_SERVER['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'] ?? '');
     if (!hash_equals($secret, $header)) {

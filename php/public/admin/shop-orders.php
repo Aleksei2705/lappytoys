@@ -20,6 +20,14 @@ try {
         } elseif ($id > 0 && $action === 'cancel') {
             Shop::cancel($id);
             Admin::flash('success', 'Заявка отменена.');
+        } elseif ($action === 'telegram_webhook') {
+            $result = Telegram::registerWebhook();
+            Admin::flash(
+                $result['ok'] ? 'success' : 'error',
+                $result['ok']
+                    ? 'Кнопки «Оплачено» и «Отменить» включены. Нажмите их под сообщением о покупке в Telegram.'
+                    : 'Кнопки не включились: ' . $result['detail'],
+            );
         } elseif ($action === 'telegram_test') {
             $sent = Telegram::send('🧪 Тест: уведомления онлайн-магазина lappytoys.kz');
             $detail = Telegram::lastError();
@@ -66,6 +74,13 @@ require APP_ROOT . '/templates/admin/header.php';
         <input type="hidden" name="action" value="telegram_test">
         <button type="submit" class="text-sm text-brand-700 underline">Проверить Telegram</button>
     </form>
+    <?php if (Telegram::isConfigured()): ?>
+        <form method="post" class="inline">
+            <?= Security::csrfField() ?>
+            <input type="hidden" name="action" value="telegram_webhook">
+            <button type="submit" class="text-sm text-brand-700 underline">Включить кнопки</button>
+        </form>
+    <?php endif; ?>
 </div>
 <p class="mb-4 text-sm text-warm-500">Сообщения о покупках приходят в Telegram-чат из .env (TELEGRAM_CHAT_ID), не SMS на телефон покупателя.</p>
 <?php if (!Telegram::isConfigured()): ?>
@@ -75,10 +90,9 @@ require APP_ROOT . '/templates/admin/header.php';
     </p>
 <?php elseif (($chatIssue = Telegram::chatIdIssue()) !== null): ?>
     <p class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><?= e($chatIssue) ?></p>
-<?php elseif (Config::get('TELEGRAM_WEBHOOK_SECRET') === ''): ?>
+<?php elseif (!is_readable(APP_ROOT . '/storage/telegram-webhook.url')): ?>
     <p class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        Кнопки «Оплачено» в Telegram работают после webhook: задайте <code class="text-xs">TELEGRAM_WEBHOOK_SECRET</code> в <code class="text-xs">.env</code> и на сервере выполните
-        <code class="text-xs">php scripts/telegram-setup.php webhook-set</code>.
+        Сообщения уже приходят, но кнопки «Оплачено» и «Отменить» под ними ещё не включены. Нажмите «Включить кнопки» выше.
     </p>
 <?php endif; ?>
 <?php if ($orders === []): ?>
