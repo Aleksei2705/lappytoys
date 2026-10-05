@@ -46,12 +46,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     $hits[] = $now;
                     $_SESSION['shop_hits'] = $hits;
                     $link = site('url') . '/online/' . $product['slug'] . '/?order=' . $token;
-                    Telegram::send(
-                        '<b>Онлайн-покупка</b>' . "\n"
-                        . e($name) . ' · ' . e($phone) . "\n"
-                        . e(loc($product, 'title')) . "\n"
-                        . e($link)
-                    );
+                    if (!Notifier::shopOrder([
+                        'name' => $name,
+                        'phone' => $phone,
+                        'title' => loc($product, 'title'),
+                        'link' => $link,
+                    ])) {
+                        error_log('[online] shop order #' . $token . ': Telegram notification was not sent');
+                    }
                     header('Location: /online/' . rawurlencode((string) $product['slug']) . '/?order=' . $token, true, 303);
                     exit;
                 } catch (RuntimeException) {

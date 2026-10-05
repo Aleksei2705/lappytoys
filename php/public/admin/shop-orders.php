@@ -31,6 +31,12 @@ try {
 require APP_ROOT . '/templates/admin/header.php';
 ?>
 <p class="mb-4"><a href="/admin/shop.php" class="text-sm text-brand-700 underline">К товарам</a></p>
+<?php if (!Telegram::isConfigured()): ?>
+    <p class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        Telegram не настроен на сервере (<code class="text-xs">TELEGRAM_BOT_TOKEN</code> и <code class="text-xs">TELEGRAM_CHAT_ID</code> в <code class="text-xs">.env</code>).
+        Заявки здесь сохраняются, но сообщения в Telegram не уходят — те же переменные, что для формы «Записаться».
+    </p>
+<?php endif; ?>
 <?php if ($orders === []): ?>
     <p class="card-soft p-6 text-sm text-warm-500">Заявок пока нет.</p>
 <?php endif; ?>

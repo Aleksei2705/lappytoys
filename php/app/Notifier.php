@@ -49,6 +49,24 @@ final class Notifier
         return Mail::send((string) site('notify_email'), 'Новая заявка — ' . $booking['name'], implode("\n", $lines));
     }
 
+    /** @param array{name: string, phone: string, title: string, link: string} $order */
+    public static function shopOrder(array $order): bool
+    {
+        $lines = [
+            '🛒 <b>Онлайн-покупка</b> — lappytoys.kz',
+            '',
+            'Имя: ' . self::h($order['name']),
+            'Телефон: ' . self::h($order['phone']),
+            'Товар: ' . self::h($order['title']),
+            '',
+            self::h($order['link']),
+            '',
+            '🕒 ' . date('d.m.Y H:i'),
+        ];
+
+        return Telegram::send(implode("\n", $lines));
+    }
+
     /** @param array{name: string, course: string, rating: int, text: string} $review */
     public static function review(array $review): bool
     {
