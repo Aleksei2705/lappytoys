@@ -74,7 +74,12 @@ final class Notifier
             ]],
         ];
 
-        return Telegram::send(implode("\n", $lines), $keyboard);
+        $text = implode("\n", $lines);
+        if (Telegram::send($text, $keyboard)) {
+            return true;
+        }
+        error_log('[shop-order] telegram with buttons failed, retrying plain message');
+        return Telegram::send($text);
     }
 
     /** @param array{name: string, course: string, rating: int, text: string} $review */

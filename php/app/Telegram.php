@@ -21,18 +21,29 @@ final class Telegram
             'chat_id' => Config::get('TELEGRAM_CHAT_ID'),
             'text' => $html,
             'parse_mode' => 'HTML',
-            'disable_web_page_preview' => 'true',
+            'disable_web_page_preview' => true,
         ];
         if ($replyMarkup !== null) {
-            $payload['reply_markup'] = json_encode($replyMarkup, JSON_UNESCAPED_UNICODE);
+            $payload['reply_markup'] = $replyMarkup;
         }
 
         $response = self::call('sendMessage', $payload);
         $ok = is_array($response) && ($response['ok'] ?? false) === true;
         if (!$ok) {
-            error_log('[telegram] sendMessage failed: ' . ($response['description'] ?? 'no response'));
+            error_log('[telegram] sendMessage failed: ' . self::errorText($response));
         }
         return $ok;
+    }
+
+    /** @param array<string, mixed>|null $response */
+    public static function errorText(?array $response): string
+    {
+        if ($response === null) {
+            return 'no response (network or curl)';
+        }
+        $code = $response['error_code'] ?? '';
+        $desc = $response['description'] ?? 'unknown';
+        return trim($code . ' ' . $desc);
     }
 
     /** @return array<string, mixed>|null */
@@ -44,7 +55,10 @@ final class Telegram
         }
 
         $url = 'https://api.telegram.org/bot' . $token . '/' . $method;
-        $body = http_build_query($payload);
+        $body = json_encode($payload, JSON_UNESCAPED_UNICODE);
+        if (!is_string($body)) {
+            return null;
+        }
 
         try {
             $raw = function_exists('curl_init') ? self::viaCurl($url, $body) : self::viaStream($url, $body);
@@ -64,6 +78,7 @@ final class Telegram
         curl_setopt_array($curl, [
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $body,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CONNECTTIMEOUT => self::TIMEOUT_SECONDS,
             CURLOPT_TIMEOUT => self::TIMEOUT_SECONDS,
@@ -77,7 +92,7 @@ final class Telegram
     {
         $context = stream_context_create(['http' => [
             'method' => 'POST',
-            'header' => 'Content-Type: application/x-www-form-urlencoded',
+            'header' => "Content-Type: application/json\r\n",
             'content' => $body,
             'timeout' => self::TIMEOUT_SECONDS,
             'ignore_errors' => true,

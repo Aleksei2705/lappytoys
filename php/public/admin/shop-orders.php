@@ -20,6 +20,14 @@ try {
         } elseif ($id > 0 && $action === 'cancel') {
             Shop::cancel($id);
             Admin::flash('success', 'Заявка отменена.');
+        } elseif ($action === 'telegram_test') {
+            $sent = Telegram::send('🧪 Тест: уведомления онлайн-магазина lappytoys.kz');
+            Admin::flash(
+                $sent ? 'success' : 'error',
+                $sent
+                    ? 'Тестовое сообщение отправлено в чат TELEGRAM_CHAT_ID. Откройте Telegram (не SMS).'
+                    : 'Не отправилось. Проверьте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в .env на сервере и лог PHP.',
+            );
         }
         Admin::redirect('/admin/shop-orders.php');
     }
@@ -30,7 +38,15 @@ try {
 
 require APP_ROOT . '/templates/admin/header.php';
 ?>
-<p class="mb-4"><a href="/admin/shop.php" class="text-sm text-brand-700 underline">К товарам</a></p>
+<div class="mb-4 flex flex-wrap items-center gap-3">
+    <a href="/admin/shop.php" class="text-sm text-brand-700 underline">К товарам</a>
+    <form method="post" class="inline">
+        <?= Security::csrfField() ?>
+        <input type="hidden" name="action" value="telegram_test">
+        <button type="submit" class="text-sm text-brand-700 underline">Проверить Telegram</button>
+    </form>
+</div>
+<p class="mb-4 text-sm text-warm-500">Сообщения о покупках приходят в Telegram-чат из .env (TELEGRAM_CHAT_ID), не SMS на телефон покупателя.</p>
 <?php if (!Telegram::isConfigured()): ?>
     <p class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
         Telegram не настроен на сервере (<code class="text-xs">TELEGRAM_BOT_TOKEN</code> и <code class="text-xs">TELEGRAM_CHAT_ID</code> в <code class="text-xs">.env</code>).

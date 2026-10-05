@@ -93,7 +93,7 @@ final class TelegramWebhook
         Telegram::call('answerCallbackQuery', [
             'callback_query_id' => $id,
             'text' => $text,
-            'show_alert' => $alert ? 'true' : 'false',
+            'show_alert' => $alert,
         ]);
     }
 
@@ -121,6 +121,7 @@ final class TelegramWebhook
         Telegram::call('editMessageReplyMarkup', [
             'chat_id' => (string) $chatId,
             'message_id' => (string) $messageId,
+            'reply_markup' => ['inline_keyboard' => []],
         ]);
     }
 }
