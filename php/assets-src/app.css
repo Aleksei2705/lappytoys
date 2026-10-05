@@ -441,7 +441,12 @@ body {
 .page-section {
   box-sizing: border-box;
   min-height: calc(100svh - 4rem - env(safe-area-inset-top, 0px));
+  scroll-margin-top: calc(4rem + env(safe-area-inset-top, 0px));
   @apply py-10 sm:py-12;
+}
+
+#awards {
+  scroll-margin-top: calc(4rem + env(safe-area-inset-top, 0px));
 }
 
 .section-alt {

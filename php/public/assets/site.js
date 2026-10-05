@@ -21,6 +21,7 @@
     const motionOff = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let scrollY = 0;
     let closeTimer = 0;
+    let pendingTarget = null;
 
     const paintToggle = (open) => {
       toggle.setAttribute("aria-expanded", String(open));
@@ -48,7 +49,12 @@
     const finishClose = () => {
       menu.classList.remove("is-open", "is-closing");
       menu.hidden = true;
+      const target = pendingTarget;
+      pendingTarget = null;
       unlockPage();
+      if (target) {
+        requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+      }
     };
 
     const setOpen = (open) => {
@@ -81,9 +87,10 @@
           const target = url.hash && samePage ? document.getElementById(url.hash.slice(1)) : null;
           if (target) {
             event.preventDefault();
-            setOpen(false);
+            pendingTarget = target;
             history.pushState(null, "", url.hash);
-            requestAnimationFrame(() => target.scrollIntoView({ block: "start" }));
+            markCurrent();
+            setOpen(false);
             return;
           }
         }
