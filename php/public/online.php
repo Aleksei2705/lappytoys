@@ -38,7 +38,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 $_SESSION['shop_hits'] ?? [],
                 static fn ($at): bool => is_int($at) && $at > $now - 3600,
             ));
-            if (count($hits) >= 5) {
+            $existingPending = Shop::pendingOrderForPhone((int) $product['id'], $phone);
+            if ($existingPending !== null) {
+                header(
+                    'Location: /online/' . rawurlencode((string) $product['slug']) . '/?order=' . $existingPending['token'],
+                    true,
+                    303,
+                );
+                exit;
+            }
+            if (count($hits) >= 12) {
                 $error = t('online.busy');
             } else {
                 try {

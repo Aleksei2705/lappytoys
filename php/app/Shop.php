@@ -199,6 +199,19 @@ final class Shop
     }
 
     /** @return array<string, mixed>|null */
+    public static function pendingOrderForPhone(int $productId, string $phone): ?array
+    {
+        self::ensureTables();
+        if ($productId < 1 || preg_match('/^\+?[0-9]{10,15}$/', $phone) !== 1) {
+            return null;
+        }
+        return Database::fetchOne(
+            'SELECT token FROM shop_orders WHERE product_id = ? AND phone = ? AND status = \'pending\' ORDER BY id DESC LIMIT 1',
+            [$productId, $phone],
+        );
+    }
+
+    /** @return array<string, mixed>|null */
     public static function findOrder(int $id): ?array
     {
         self::ensureTables();
