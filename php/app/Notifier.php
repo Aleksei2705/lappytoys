@@ -83,6 +83,46 @@ final class Notifier
         return Telegram::send($text);
     }
 
+    /**
+     * After payment: a message Olga can send to the buyer, with the same page link.
+     *
+     * @param array{name: string, phone: string, title: string, link: string} $order
+     */
+    public static function shopPaid(array $order): bool
+    {
+        $buyerText = "Оплата подтверждена. Ссылка открыта — откройте её, даже если закрыли страницу:\n" . $order['link'];
+        $lines = [
+            '✅ <b>Ссылка покупателю открыта</b>',
+            '',
+            self::h($order['name']) . ' · ' . self::h($order['phone']),
+            self::h($order['title']),
+            '',
+            self::h($buyerText),
+            '',
+            'Кнопка ниже откроет WhatsApp покупателя с этим текстом. Нажмите «Отправить».',
+        ];
+        $text = implode("\n", $lines);
+        $whatsapp = self::whatsappToBuyer((string) $order['phone'], $buyerText);
+        if ($whatsapp !== null && Telegram::send($text, [
+            'inline_keyboard' => [[
+                ['text' => 'Отправить покупателю в WhatsApp', 'url' => $whatsapp],
+            ]],
+        ])) {
+            return true;
+        }
+        return Telegram::send($text);
+    }
+
+    private static function whatsappToBuyer(string $phone, string $text): ?string
+    {
+        $digits = preg_replace('/\D/', '', $phone) ?? '';
+        if (strlen($digits) < 10 || strlen($digits) > 15) {
+            return null;
+        }
+        $url = 'https://wa.me/' . $digits . '?text=' . rawurlencode($text);
+        return strlen($url) <= 2048 ? $url : null;
+    }
+
     /** @param array{name: string, course: string, rating: int, text: string} $review */
     public static function review(array $review): bool
     {

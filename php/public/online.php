@@ -55,7 +55,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     $token = $placed['token'];
                     $hits[] = $now;
                     $_SESSION['shop_hits'] = $hits;
-                    $link = site('url') . '/online/' . $product['slug'] . '/?order=' . $token;
+                    $link = Shop::orderUrl(['slug' => (string) $product['slug'], 'token' => $token]);
                     if (Notifier::shopOrder([
                         'id' => $placed['id'],
                         'name' => $name,
@@ -80,6 +80,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 $order = $token !== '' ? Shop::orderByToken($token) : null;
 if ($order !== null && (int) $order['product_id'] !== (int) $product['id']) {
     $order = null;
+}
+
+if (($_GET['watch'] ?? '') === '1') {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['status' => is_array($order) ? (string) $order['status'] : 'none'], JSON_UNESCAPED_UNICODE);
+    exit;
 }
 
 $title = loc($product, 'title');
@@ -108,16 +114,31 @@ require APP_ROOT . '/templates/layout/header.php';
 
     <p class="mt-8 text-base leading-relaxed text-warm-600"><?= e(loc($product, 'description')) ?></p>
 
+    <?php
+    $orderUrl = $order !== null ? Shop::orderUrl($order) : '';
+    ?>
     <?php if ($order !== null && $order['status'] === 'paid'): ?>
         <div class="card-soft mt-10 p-6 text-center">
             <p class="text-base text-warm-700"><?= t('online.paid') ?></p>
             <a class="btn-primary mt-4 h-12 px-8" href="/download.php?token=<?= e((string) $order['token']) ?>"><?= t('online.download') ?></a>
+            <p class="mt-4 text-sm text-warm-500"><?= t('online.save') ?></p>
+            <p class="mt-2 break-all text-sm"><a class="text-brand-700 underline" href="<?= e($orderUrl) ?>"><?= e($orderUrl) ?></a></p>
         </div>
     <?php elseif ($order !== null && $order['status'] === 'pending'): ?>
-        <div class="card-soft mt-10 p-6">
+        <div class="card-soft mt-10 p-6" data-order-watch>
             <p class="text-base leading-relaxed text-warm-700"><?= t('online.pending') ?></p>
             <p class="mt-3 text-sm text-warm-500"><?= t('online.save') ?></p>
+            <p class="mt-2 break-all text-sm"><a class="text-brand-700 underline" href="<?= e($orderUrl) ?>"><?= e($orderUrl) ?></a></p>
         </div>
+        <script>
+            setInterval(function () {
+                var watch = location.pathname + location.search + (location.search ? "&" : "?") + "watch=1";
+                fetch(watch, { headers: { "Accept": "application/json" } })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) { if (data && data.status === "paid") location.reload(); })
+                    .catch(function () {});
+            }, 8000);
+        </script>
     <?php else: ?>
         <?php if ($error !== ''): ?>
             <p class="mt-8 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"><?= e($error) ?></p>

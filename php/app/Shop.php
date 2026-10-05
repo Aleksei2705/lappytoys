@@ -257,13 +257,21 @@ final class Shop
         );
     }
 
-    public static function markPaid(int $id): void
+    public static function markPaid(int $id): bool
     {
         self::ensureTables();
-        Database::execute(
+        return Database::execute(
             'UPDATE shop_orders SET status = \'paid\', paid_at = NOW() WHERE id = ? AND status = \'pending\'',
             [$id],
-        );
+        ) > 0;
+    }
+
+    /** @param array{slug?: string, token?: string} $order */
+    public static function orderUrl(array $order): string
+    {
+        return rtrim((string) site('url'), '/')
+            . '/online/' . rawurlencode((string) ($order['slug'] ?? ''))
+            . '/?order=' . rawurlencode((string) ($order['token'] ?? ''));
     }
 
     public static function cancel(int $id): void

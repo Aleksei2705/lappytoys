@@ -15,8 +15,27 @@ try {
         $id = Admin::intParam($_POST, 'id');
         $action = Admin::text($_POST, 'action');
         if ($id > 0 && $action === 'paid') {
-            Shop::markPaid($id);
-            Admin::flash('success', 'Оплата отмечена. Ссылка на скачивание открыта.');
+            $order = Shop::findOrder($id);
+            if ($order === null) {
+                Admin::flash('error', 'Заявка не найдена.');
+            } elseif ((string) $order['status'] === 'cancelled') {
+                Admin::flash('error', 'Заявка отменена.');
+            } elseif (!Shop::markPaid($id)) {
+                Admin::flash('success', 'Оплата уже была отмечена.');
+            } else {
+                $told = Notifier::shopPaid([
+                    'name' => (string) $order['name'],
+                    'phone' => (string) $order['phone'],
+                    'title' => (string) $order['title_ru'],
+                    'link' => Shop::orderUrl($order),
+                ]);
+                Admin::flash(
+                    'success',
+                    $told
+                        ? 'Оплата отмечена. В Telegram есть кнопка: она откроет WhatsApp покупателя с рабочей ссылкой.'
+                        : 'Оплата отмечена. Ссылка на скачивание открыта.',
+                );
+            }
         } elseif ($id > 0 && $action === 'cancel') {
             Shop::cancel($id);
             Admin::flash('success', 'Заявка отменена.');
@@ -42,7 +61,7 @@ try {
             if ($order === null) {
                 Admin::flash('error', 'Заявка не найдена.');
             } else {
-                $link = site('url') . '/online/' . $order['slug'] . '/?order=' . $order['token'];
+                $link = Shop::orderUrl($order);
                 $sent = Notifier::shopOrder([
                     'id' => $id,
                     'name' => (string) $order['name'],
@@ -114,7 +133,7 @@ require APP_ROOT . '/templates/admin/header.php';
                     <?php endif; ?>
                 </p>
             </div>
-            <p class="mt-2 break-all text-warm-500"><?= e(site('url') . '/online/' . $order['slug'] . '/?order=' . $order['token']) ?></p>
+            <p class="mt-2 break-all text-warm-500"><?= e(Shop::orderUrl($order)) ?></p>
             <?php if ($order['status'] === 'pending'): ?>
                 <div class="mt-3 flex gap-3">
                     <form method="post">

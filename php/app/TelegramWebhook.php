@@ -48,9 +48,18 @@ final class TelegramWebhook
                 self::answer($callback, 'Заявка закрыта.', true);
                 return;
             }
-            Shop::markPaid($orderId);
-            self::answer($callback, 'Оплата подтверждена. У покупателя открылась ссылка на сайте.', true);
+            if (!Shop::markPaid($orderId)) {
+                self::answer($callback, 'Уже отмечено как оплачено.');
+                return;
+            }
+            self::answer($callback, 'Оплата подтверждена. Следующее сообщение — ссылка для покупателя.', true);
             self::markMessageHandled($callback, '✅ Оплачено');
+            Notifier::shopPaid([
+                'name' => (string) $order['name'],
+                'phone' => (string) $order['phone'],
+                'title' => (string) $order['title_ru'],
+                'link' => Shop::orderUrl($order),
+            ]);
             return;
         }
 
