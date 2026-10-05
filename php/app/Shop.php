@@ -186,8 +186,8 @@ final class Shop
         }
     }
 
-    /** @param array<string, string> $buyer */
-    public static function order(int $productId, array $buyer): string
+    /** @param array<string, string> $buyer @return array{id: int, token: string} */
+    public static function order(int $productId, array $buyer): array
     {
         self::ensureTables();
         $token = bin2hex(random_bytes(16));
@@ -195,7 +195,19 @@ final class Shop
             'INSERT INTO shop_orders (product_id, token, name, phone) VALUES (?, ?, ?, ?)',
             [$productId, $token, $buyer['name'], $buyer['phone']],
         );
-        return $token;
+        return ['id' => Database::lastInsertId(), 'token' => $token];
+    }
+
+    /** @return array<string, mixed>|null */
+    public static function findOrder(int $id): ?array
+    {
+        self::ensureTables();
+        return $id > 0
+            ? Database::fetchOne(
+                'SELECT o.*, p.slug, p.title_ru FROM shop_orders o JOIN shop_products p ON p.id = o.product_id WHERE o.id = ?',
+                [$id],
+            )
+            : null;
     }
 
     /** @return array<string, mixed>|null */

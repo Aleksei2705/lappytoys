@@ -10,8 +10,8 @@ final class Telegram
         return Config::get('TELEGRAM_BOT_TOKEN') !== '' && Config::get('TELEGRAM_CHAT_ID') !== '';
     }
 
-    /** Sends an HTML-formatted message to the configured chat. Never throws; returns success. */
-    public static function send(string $html): bool
+    /** @param array<string, mixed>|null $replyMarkup Inline keyboard etc. */
+    public static function send(string $html, ?array $replyMarkup = null): bool
     {
         if (!self::isConfigured()) {
             return false;
@@ -23,6 +23,9 @@ final class Telegram
             'parse_mode' => 'HTML',
             'disable_web_page_preview' => 'true',
         ];
+        if ($replyMarkup !== null) {
+            $payload['reply_markup'] = json_encode($replyMarkup, JSON_UNESCAPED_UNICODE);
+        }
 
         $response = self::call('sendMessage', $payload);
         $ok = is_array($response) && ($response['ok'] ?? false) === true;

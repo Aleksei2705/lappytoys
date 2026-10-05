@@ -36,6 +36,11 @@ require APP_ROOT . '/templates/admin/header.php';
         Telegram не настроен на сервере (<code class="text-xs">TELEGRAM_BOT_TOKEN</code> и <code class="text-xs">TELEGRAM_CHAT_ID</code> в <code class="text-xs">.env</code>).
         Заявки здесь сохраняются, но сообщения в Telegram не уходят — те же переменные, что для формы «Записаться».
     </p>
+<?php elseif (Config::get('TELEGRAM_WEBHOOK_SECRET') === ''): ?>
+    <p class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        Кнопки «Оплачено» в Telegram работают после webhook: задайте <code class="text-xs">TELEGRAM_WEBHOOK_SECRET</code> в <code class="text-xs">.env</code> и на сервере выполните
+        <code class="text-xs">php scripts/telegram-setup.php webhook-set</code>.
+    </p>
 <?php endif; ?>
 <?php if ($orders === []): ?>
     <p class="card-soft p-6 text-sm text-warm-500">Заявок пока нет.</p>

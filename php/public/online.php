@@ -42,11 +42,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 $error = t('online.busy');
             } else {
                 try {
-                    $token = Shop::order((int) $product['id'], ['name' => $name, 'phone' => $phone]);
+                    $placed = Shop::order((int) $product['id'], ['name' => $name, 'phone' => $phone]);
+                    $token = $placed['token'];
                     $hits[] = $now;
                     $_SESSION['shop_hits'] = $hits;
                     $link = site('url') . '/online/' . $product['slug'] . '/?order=' . $token;
                     if (!Notifier::shopOrder([
+                        'id' => $placed['id'],
                         'name' => $name,
                         'phone' => $phone,
                         'title' => loc($product, 'title'),

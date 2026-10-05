@@ -49,7 +49,7 @@ final class Notifier
         return Mail::send((string) site('notify_email'), 'Новая заявка — ' . $booking['name'], implode("\n", $lines));
     }
 
-    /** @param array{name: string, phone: string, title: string, link: string} $order */
+    /** @param array{id: int, name: string, phone: string, title: string, link: string} $order */
     public static function shopOrder(array $order): bool
     {
         $lines = [
@@ -59,12 +59,22 @@ final class Notifier
             'Телефон: ' . self::h($order['phone']),
             'Товар: ' . self::h($order['title']),
             '',
+            'Ссылка для покупателя:',
             self::h($order['link']),
+            '',
+            'Выставьте счёт в Kaspi по телефону. Когда оплата пришла — нажмите «Оплачено».',
             '',
             '🕒 ' . date('d.m.Y H:i'),
         ];
 
-        return Telegram::send(implode("\n", $lines));
+        $keyboard = [
+            'inline_keyboard' => [[
+                ['text' => '✅ Оплачено', 'callback_data' => 'shop_paid:' . $order['id']],
+                ['text' => 'Отменить', 'callback_data' => 'shop_cancel:' . $order['id']],
+            ]],
+        ];
+
+        return Telegram::send(implode("\n", $lines), $keyboard);
     }
 
     /** @param array{name: string, course: string, rating: int, text: string} $review */
