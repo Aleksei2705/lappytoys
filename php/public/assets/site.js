@@ -18,23 +18,58 @@
 
     const iconOpen = toggle.querySelector("[data-icon-open]");
     const iconClose = toggle.querySelector("[data-icon-close]");
+    const motionOff = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let scrollY = 0;
+    let closeTimer = 0;
 
-    const setOpen = (open) => {
-      const body = document.body;
-      menu.hidden = !open;
+    const paintToggle = (open) => {
       toggle.setAttribute("aria-expanded", String(open));
       toggle.setAttribute("aria-label", open ? toggle.dataset.labelClose : toggle.dataset.labelOpen);
       iconOpen.hidden = open;
       iconClose.hidden = !open;
+    };
 
+    const lockPage = () => {
+      scrollY = window.scrollY;
+      document.body.style.cssText = `overflow:hidden;position:fixed;top:-${scrollY}px;width:100%`;
+    };
+
+    const unlockPage = () => {
+      document.body.style.cssText = "";
+      window.scrollTo(0, scrollY);
+    };
+
+    const markCurrent = () => {
+      menu.querySelectorAll(".mobile-nav-link").forEach((link) => {
+        link.classList.toggle("is-current", link.hash !== "" && link.hash === location.hash);
+      });
+    };
+
+    const finishClose = () => {
+      menu.classList.remove("is-open", "is-closing");
+      menu.hidden = true;
+      unlockPage();
+    };
+
+    const setOpen = (open) => {
+      window.clearTimeout(closeTimer);
       if (open) {
-        scrollY = window.scrollY;
-        body.style.cssText = `overflow:hidden;position:fixed;top:-${scrollY}px;width:100%`;
-      } else {
-        body.style.cssText = "";
-        window.scrollTo(0, scrollY);
+        markCurrent();
+        menu.hidden = false;
+        menu.classList.remove("is-closing");
+        paintToggle(true);
+        lockPage();
+        requestAnimationFrame(() => menu.classList.add("is-open"));
+        return;
       }
+      paintToggle(false);
+      if (motionOff || menu.hidden) {
+        finishClose();
+        return;
+      }
+      menu.classList.remove("is-open");
+      menu.classList.add("is-closing");
+      closeTimer = window.setTimeout(finishClose, 280);
     };
 
     toggle.addEventListener("click", () => setOpen(menu.hidden));

@@ -119,6 +119,8 @@ ym(<?= (int) $metricaId ?>,"init",{clickmap:true,trackLinks:true,accurateTrackBo
 <div id="mobile-nav" class="lg:hidden" hidden>
     <div class="mobile-nav-backdrop" aria-hidden="true" data-menu-close></div>
     <nav class="mobile-nav-sheet">
+        <span class="mobile-nav-thread" aria-hidden="true"></span>
+        <span class="mobile-nav-flow" aria-hidden="true"></span>
         <div class="mobile-nav-list">
             <?php foreach (site('nav') as $href): ?>
                 <a href="<?= e($href) ?>" class="mobile-nav-link" data-menu-close><?= t('nav.' . $href) ?></a>
