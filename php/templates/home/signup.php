@@ -18,6 +18,8 @@ $waLabels = [
     'phoneVerifyError' => I18n::translate('signup.errPhoneVerify'),
     'phoneCodeError' => I18n::translate('phone.codeErr'),
     'phoneCodeSent' => I18n::translate('phone.codeSent'),
+    'phoneCodeResend' => I18n::translate('phone.codeResend'),
+    'phoneCodeResendWait' => I18n::translate('phone.codeResendWait'),
     'whatsapp' => (string) site('whatsapp'),
     'telegram' => (string) site('telegram'),
 ];
@@ -75,7 +77,7 @@ $waLabels = [
                     </div>
 
                     <div class="flex flex-col gap-3">
-                        <button type="submit" class="btn-primary h-11 w-full" data-goal="signup_form">
+                        <button type="submit" class="btn-primary h-11 w-full" data-goal="signup_form" disabled aria-disabled="true">
                             <?= icon('send', 'size-4') ?><?= t('signup.submit') ?>
                         </button>
                         <p class="text-center text-xs uppercase tracking-wider text-warm-500"><?= t('signup.or') ?></p>

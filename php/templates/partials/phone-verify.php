@@ -12,5 +12,8 @@ $codeId = $phoneInputId . '-code';
         <button type="button" class="btn-secondary phone-verify-send" data-phone-verify-send><?= t('phone.codeSend') ?></button>
     </div>
     <p class="mt-2 text-sm leading-relaxed text-warm-500" data-phone-verify-hint><?= t('phone.codeHint') ?></p>
+    <button type="button" class="phone-verify-resend mt-2 hidden text-sm font-medium text-brand-700 underline-offset-2 hover:text-brand-800 hover:underline disabled:cursor-not-allowed disabled:no-underline disabled:opacity-50" data-phone-verify-resend>
+        <?= t('phone.codeResend') ?>
+    </button>
     <p class="mt-2 hidden text-sm text-red-600" data-phone-verify-error role="alert"></p>
 </div>

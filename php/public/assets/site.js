@@ -565,18 +565,56 @@
 
       const csrf = () => form.querySelector('input[name="_csrf"]')?.value ?? "";
       const states = new Map();
+      const submitButtons = form.querySelectorAll('button[type="submit"]');
+
+      const updateSubmitState = () => {
+        const ready = [...states.values()].every((entry) => entry.verified && !entry.confirming);
+        submitButtons.forEach((button) => {
+          button.disabled = !ready;
+        });
+      };
 
       blocks.forEach((block) => {
         const phoneId = block.dataset.phoneFor || "phone";
         const phoneInput = document.getElementById(phoneId) || form.querySelector("[data-phone-input]");
         const codeInput = block.querySelector("[data-phone-code]");
         const sendButton = block.querySelector("[data-phone-verify-send]");
+        const resendButton = block.querySelector("[data-phone-verify-resend]");
         const errorEl = block.querySelector("[data-phone-verify-error]");
         const hintEl = block.querySelector("[data-phone-verify-hint]");
         if (!phoneInput || !codeInput || !sendButton) return;
 
-        const state = { verified: false, sending: false };
+        const state = { verified: false, sending: false, confirming: false, sentOnce: false, cooldownUntil: 0 };
         states.set(block, state);
+        let cooldownTimer = null;
+
+        const resendLabel = labels.phoneCodeResend || sendButton.textContent.trim();
+        const resendWaitLabel = labels.phoneCodeResendWait || "Wait %d s.";
+
+        const syncCooldown = () => {
+          const left = Math.ceil((state.cooldownUntil - Date.now()) / 1000);
+          if (left > 0) {
+            sendButton.disabled = true;
+            if (resendButton) {
+              resendButton.disabled = true;
+              resendButton.textContent = resendWaitLabel.replace("%d", String(left));
+            }
+            cooldownTimer = window.setTimeout(syncCooldown, 1000);
+            return;
+          }
+          sendButton.disabled = false;
+          if (resendButton) {
+            resendButton.disabled = false;
+            resendButton.textContent = resendLabel;
+          }
+          cooldownTimer = null;
+        };
+
+        const startCooldown = (seconds = 60) => {
+          if (cooldownTimer) window.clearTimeout(cooldownTimer);
+          state.cooldownUntil = Date.now() + seconds * 1000;
+          syncCooldown();
+        };
 
         const setError = (message) => {
           errorEl.textContent = message;
@@ -587,6 +625,7 @@
         const syncStatus = () => {
           if (!isValidPhone(interpretPhone(phoneInput.value).digits)) {
             state.verified = false;
+            updateSubmitState();
             return;
           }
           phoneVerifyApi({
@@ -595,28 +634,46 @@
             _csrf: csrf(),
           }).then(({ ok, data }) => {
             state.verified = ok && data.verified === true;
+            updateSubmitState();
           });
         };
 
         const reset = () => {
           state.verified = false;
+          state.confirming = false;
+          state.sentOnce = false;
+          state.cooldownUntil = 0;
+          if (cooldownTimer) window.clearTimeout(cooldownTimer);
           codeInput.value = "";
           setError("");
+          if (resendButton) {
+            resendButton.hidden = true;
+            resendButton.classList.add("hidden");
+            resendButton.disabled = false;
+            resendButton.textContent = resendLabel;
+          }
+          sendButton.disabled = false;
+          updateSubmitState();
           syncStatus();
         };
 
         phoneInput.addEventListener("input", reset);
         syncStatus();
 
-        sendButton.addEventListener("click", async () => {
-          if (state.sending) return;
+        const requestCode = async (openBot) => {
+          if (state.sending || Date.now() < state.cooldownUntil) return;
           if (!isValidPhone(interpretPhone(phoneInput.value).digits)) {
             setError(labels.phoneError || labels.phoneVerifyError || "");
             phoneInput.focus();
             return;
           }
           state.sending = true;
+          state.verified = false;
+          state.confirming = false;
+          codeInput.value = "";
+          updateSubmitState();
           sendButton.disabled = true;
+          if (resendButton) resendButton.disabled = true;
           setError("");
           const { ok, data } = await phoneVerifyApi({
             action: "send",
@@ -624,40 +681,64 @@
             _csrf: csrf(),
           });
           state.sending = false;
-          sendButton.disabled = false;
           if (!ok || !data.botUrl) {
             setError(labels.phoneVerifyError || labels.phoneCodeError || "");
+            sendButton.disabled = false;
+            if (resendButton) resendButton.disabled = false;
             return;
+          }
+          state.sentOnce = true;
+          if (resendButton) {
+            resendButton.hidden = false;
+            resendButton.classList.remove("hidden");
           }
           if (hintEl && labels.phoneCodeSent) hintEl.textContent = labels.phoneCodeSent;
-          window.open(data.botUrl, "_blank", "noopener,noreferrer");
+          startCooldown(60);
+          if (openBot) window.open(data.botUrl, "_blank", "noopener,noreferrer");
           codeInput.focus();
-        });
+        };
 
-        codeInput.addEventListener("input", () => {
-          const digits = codeInput.value.replace(/\D/g, "").slice(0, 6);
-          codeInput.value = digits;
-          if (digits.length < 6) {
-            state.verified = false;
-            setError("");
-            return;
-          }
+        sendButton.addEventListener("click", () => requestCode(true));
+        resendButton?.addEventListener("click", () => requestCode(true));
+
+        const confirmCode = (digits) => {
+          state.confirming = true;
+          state.verified = false;
+          updateSubmitState();
+          setError("");
           phoneVerifyApi({
             action: "confirm",
             phone: phoneInput.value,
             code: digits,
             _csrf: csrf(),
           }).then(({ ok }) => {
+            state.confirming = false;
             if (ok) {
               state.verified = true;
               setError("");
-              return;
+            } else {
+              state.verified = false;
+              setError(labels.phoneCodeError || "");
             }
-            state.verified = false;
-            setError(labels.phoneCodeError || "");
+            updateSubmitState();
           });
+        };
+
+        codeInput.addEventListener("input", () => {
+          const digits = codeInput.value.replace(/\D/g, "").slice(0, 6);
+          codeInput.value = digits;
+          if (digits.length < 6) {
+            state.verified = false;
+            state.confirming = false;
+            setError("");
+            updateSubmitState();
+            return;
+          }
+          confirmCode(digits);
         });
       });
+
+      updateSubmitState();
 
       form.addEventListener("submit", (event) => {
         const phoneInput = form.querySelector("[data-phone-input]");

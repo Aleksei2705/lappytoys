@@ -1031,7 +1031,7 @@ body {
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] bg-gradient-to-r from-brand-600 to-brand-700 px-5 py-2.5 text-white shadow-md shadow-brand-200/80 hover:from-brand-700 hover:to-brand-800 hover:shadow-lg hover:shadow-brand-200/90;
+  @apply inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] bg-gradient-to-r from-brand-600 to-brand-700 px-5 py-2.5 text-white shadow-md shadow-brand-200/80 hover:from-brand-700 hover:to-brand-800 hover:shadow-lg hover:shadow-brand-200/90 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
 }
 
 .btn-secondary {

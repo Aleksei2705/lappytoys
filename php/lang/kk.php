@@ -147,6 +147,8 @@ return [
     'phone.codeHint' => 'Алдымен телефонды жазыңыз, «Код алу» басыңыз, Telegram-да @lappyart_orders_bot ашып, кодты осында енгізіңіз.',
     'phone.codeErr' => 'Код дұрыс емес немесе мерзімі өткен. Telegram-да жаңасын сұраңыз.',
     'phone.codeSent' => 'Telegram-ды ашыңыз — бот код жібереді. Содан кейін оны жоғарыға енгізіңіз.',
+    'phone.codeResend' => 'Кодты қайта жіберу',
+    'phone.codeResendWait' => 'Қайта жіберу: %d сек.',
     'signup.direction' => 'Бағыт',
     'signup.directionPh' => 'Курс немесе мастер-класс таңдаңыз',
     'signup.date' => 'Қалаған күн',

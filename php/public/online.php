@@ -183,6 +183,8 @@ require APP_ROOT . '/templates/layout/header.php';
                   'phoneVerifyError' => t('online.phoneVerify'),
                   'phoneCodeError' => t('phone.codeErr'),
                   'phoneCodeSent' => t('phone.codeSent'),
+                  'phoneCodeResend' => t('phone.codeResend'),
+                  'phoneCodeResendWait' => t('phone.codeResendWait'),
               ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>">
             <?= Security::csrfField() ?>
             <div>
@@ -195,7 +197,7 @@ require APP_ROOT . '/templates/layout/header.php';
                 <?php render('partials/phone-verify', ['phoneInputId' => 'shop-phone']); ?>
             </div>
             <div class="sm:col-span-2">
-                <button type="submit" class="btn-primary h-12 px-8"><?= t('online.buy') ?></button>
+                <button type="submit" class="btn-primary h-12 px-8" disabled aria-disabled="true"><?= t('online.buy') ?></button>
                 <p class="mt-3 text-sm leading-relaxed text-warm-500"><?= t('online.note') ?></p>
             </div>
         </form>
