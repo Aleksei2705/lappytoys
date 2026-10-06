@@ -72,7 +72,7 @@ final class Assistant
             . "Не обсуждай политику, медицину, интимные темы и всё, что неуместно на работе. "
             . "Если факта о студии нет, вежливо скажи, что это уточнит Ольга, и верни href \"/#signup\". "
             . "Верни JSON {\"text\":\"ответ\",\"href\":\"\"}. href можно оставить пустым или взять одно значение: "
-            . "/#signup, /#schedule, /#courses, /#faq, /#contacts, telegram, whatsapp, map.\n\n"
+            . "/#signup, /#schedule, /#courses, /#online, /#faq, /#contacts, telegram, whatsapp, map.\n\n"
             . self::facts();
     }
 
@@ -103,13 +103,30 @@ final class Assistant
 
         foreach (['course', 'master_class'] as $kind) {
             foreach (ClassRepository::published($kind) as $item) {
-                $lines[] = ($kind === 'course' ? 'Занятие' : 'Мастер-класс')
+                $lines[] = ($kind === 'course' ? 'Занятие в студии' : 'Мастер-класс в студии')
                     . ': ' . loc($item, 'title')
                     . ', цена: ' . (string) ($item['price_label'] ?? '')
                     . ', ' . loc($item, 'duration')
                     . ', уровень: ' . loc($item, 'level')
                     . '. ' . loc($item, 'description');
             }
+        }
+
+        $lines[] = t('assistant.a.onlineIntro');
+        try {
+            $shopProducts = Shop::published();
+        } catch (RuntimeException) {
+            $shopProducts = [];
+        }
+        foreach ($shopProducts as $product) {
+            $kind = (string) ($product['kind'] ?? 'lesson');
+            $kindLabel = $kind === 'master_class' ? 'Онлайн мастер-класс (купить)' : 'Онлайн видеоурок (купить)';
+            $slug = (string) ($product['slug'] ?? '');
+            $lines[] = $kindLabel
+                . ': ' . loc($product, 'title')
+                . ', цена: ' . Shop::price((int) ($product['price_kzt'] ?? 0))
+                . '. ' . loc($product, 'description')
+                . ($slug !== '' ? ' Страница покупки: /online/' . $slug . '/' : '');
         }
 
         for ($i = 0; $i < (int) site('faq_count'); $i++) {
@@ -140,6 +157,7 @@ final class Assistant
             '/#signup' => bookingUrl(),
             '/#schedule' => '/#schedule',
             '/#courses' => '/#courses',
+            '/#online' => '/#online',
             '/#faq' => '/#faq',
             '/#contacts' => '/#contacts',
             'telegram' => (string) site('telegram'),
@@ -159,6 +177,12 @@ final class Assistant
         }
         if (str_contains($href, '#courses')) {
             return t('assistant.link.courses');
+        }
+        if (str_contains($href, '#online')) {
+            return t('assistant.link.online');
+        }
+        if (str_contains($href, '/online/')) {
+            return t('assistant.link.online');
         }
         if (str_contains($href, 't.me')) {
             return t('assistant.link.telegram');

@@ -36,6 +36,7 @@ $payload = [
         ['keys' => ['расписан', 'время', 'когда', 'вторник', 'суббот', 'кесте', 'уақыт'], 'texts' => [$scheduleText], 'href' => '/#schedule', 'link' => t('assistant.link.schedule')],
         ['keys' => ['групп', 'индивид', 'топ'], 'texts' => $variants('assistant.a.group')],
         ['keys' => ['курс', 'вязан', 'макраме', 'вышив', 'бисер', 'шить', 'направлен', 'тоқым', 'кесте', 'моншақ'], 'texts' => $variants('assistant.a.directions'), 'href' => '/#courses', 'link' => t('assistant.link.courses')],
+        ['keys' => ['онлайн', 'видеоурок', 'видео урок', 'купить', 'скачать', 'для дома', 'shop', 'kaspi', '2000', 'онлайн мастер', 'видеосабақ', 'сатып ал', 'үйге'], 'texts' => $variants('assistant.a.online'), 'href' => '/#online', 'link' => t('assistant.link.online')],
         ['keys' => ['телефон', 'позвон', 'whatsapp', 'ватсап', 'ватцап', 'telegram', 'телег', 'написать'], 'text' => (string) site('phone_display'), 'href' => (string) site('whatsapp'), 'link' => t('assistant.link.whatsapp')],
     ],
 ];
