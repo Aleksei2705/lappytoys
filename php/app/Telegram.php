@@ -57,7 +57,8 @@ final class Telegram
         return self::deliver($payload);
     }
 
-    public static function sendTo(string $chatId, string $html): bool
+    /** @param array<string, mixed>|null $replyMarkup */
+    public static function sendTo(string $chatId, string $html, ?array $replyMarkup = null): bool
     {
         if (Config::get('TELEGRAM_BOT_TOKEN') === '') {
             self::$lastError = 'TELEGRAM_BOT_TOKEN пустой.';
@@ -67,12 +68,16 @@ final class Telegram
             self::$lastError = 'Некорректный chat id.';
             return false;
         }
-        return self::deliver([
+        $payload = [
             'chat_id' => $chatId,
             'text' => $html,
             'parse_mode' => 'HTML',
             'disable_web_page_preview' => true,
-        ]);
+        ];
+        if ($replyMarkup !== null) {
+            $payload['reply_markup'] = $replyMarkup;
+        }
+        return self::deliver($payload);
     }
 
     /** @param array<string, mixed> $payload */

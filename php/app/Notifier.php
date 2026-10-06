@@ -95,61 +95,109 @@ final class Notifier
                 $error = 'Telegram не вернул ссылку приглашения.';
             }
         }
+        $page = Shop::orderUrl($order);
+        $buyerText = self::buyerText($page, $invite);
+        $chatId = trim((string) ($order['buyer_chat_id'] ?? ''));
+        $buyerSent = false;
+        $buyerError = '';
+        if (preg_match('/^\d{5,20}$/', $chatId) === 1) {
+            $buyerSent = self::messageBuyer($chatId, $buyerText, $invite);
+            if (!$buyerSent) {
+                $buyerError = Telegram::lastError();
+            }
+        }
         return self::shopPaid([
             'name' => (string) $order['name'],
             'phone' => (string) $order['phone'],
             'title' => (string) ($order['title_ru'] ?? ''),
-            'link' => Shop::orderUrl($order),
+            'link' => $page,
             'invite' => $invite,
             'invite_error' => $error,
+            'buyer_sent' => $buyerSent,
+            'buyer_error' => $buyerError,
         ]);
+    }
+
+    /** Sends the paid message into the buyer's private chat, if they already opened the bot. */
+    public static function deliverBuyer(array $order): bool
+    {
+        $chatId = trim((string) ($order['buyer_chat_id'] ?? ''));
+        if (preg_match('/^\d{5,20}$/', $chatId) !== 1) {
+            return false;
+        }
+        $invite = Shop::grantChannel($order);
+        return self::messageBuyer($chatId, self::buyerText(Shop::orderUrl($order), $invite), $invite);
     }
 
     /**
      * After payment: the closed-channel invite and the site page, ready to forward to the buyer.
      *
-     * @param array{name: string, phone: string, title: string, link: string, invite?: string, invite_error?: string} $order
+     * @param array{name: string, phone: string, title: string, link: string, invite?: string, invite_error?: string, buyer_sent?: bool, buyer_error?: string} $order
      */
     public static function shopPaid(array $order): bool
     {
         $invite = (string) ($order['invite'] ?? '');
-        $buyerLines = ['Оплата подтверждена.'];
-        if (Shop::isInviteLink($invite)) {
-            $buyerLines[] = 'Закрытый канал. Ссылка одноразовая — откройте её один раз:';
-            $buyerLines[] = $invite;
-        }
-        $buyerLines[] = 'Страница на сайте, если закроете это сообщение:';
-        $buyerLines[] = $order['link'];
-        $buyerText = implode("\n", $buyerLines);
+        $buyerText = self::buyerText($order['link'], $invite);
         $lines = [
-            '✅ <b>Ссылка покупателю открыта</b>',
+            '✅ <b>Оплата подтверждена</b>',
             '',
             self::h($order['name']) . ' · ' . self::h($order['phone']),
             self::h($order['title']),
             '',
-            self::h($buyerText),
         ];
+        if (($order['buyer_sent'] ?? false) === true) {
+            $lines[] = 'Сообщение со ссылкой отправлено покупателю в Telegram.';
+        } else {
+            $buyerError = trim((string) ($order['buyer_error'] ?? ''));
+            $lines[] = $buyerError !== ''
+                ? 'Покупателю в Telegram не ушло: ' . self::h($buyerError)
+                : 'Покупатель ещё не открыл бота. Ссылка уйдёт сама, когда он нажмёт «Открыть Telegram» на сайте.';
+            $lines[] = '';
+            $lines[] = self::h($buyerText);
+        }
         $inviteError = trim((string) ($order['invite_error'] ?? ''));
         if ($inviteError !== '') {
             $lines[] = '';
             $lines[] = 'Канал не открылся: ' . self::h($inviteError);
             $lines[] = 'Добавьте бота администратором канала с правом приглашать.';
         }
-        $lines[] = '';
-        $lines[] = 'Кнопка ниже откроет WhatsApp покупателя с этим текстом. Нажмите «Отправить».';
         $text = implode("\n", $lines);
         $keyboard = [];
         if (Shop::isInviteLink($invite)) {
             $keyboard[] = [['text' => 'Открыть канал', 'url' => $invite]];
         }
-        $whatsapp = self::whatsappToBuyer((string) $order['phone'], $buyerText);
-        if ($whatsapp !== null) {
-            $keyboard[] = [['text' => 'Отправить покупателю в WhatsApp', 'url' => $whatsapp]];
+        if (($order['buyer_sent'] ?? false) !== true) {
+            $whatsapp = self::whatsappToBuyer((string) $order['phone'], $buyerText);
+            if ($whatsapp !== null) {
+                $keyboard[] = [['text' => 'Отправить покупателю в WhatsApp', 'url' => $whatsapp]];
+            }
         }
         if ($keyboard !== [] && Telegram::send($text, ['inline_keyboard' => $keyboard])) {
             return true;
         }
         return Telegram::send($text);
+    }
+
+    private static function buyerText(string $page, string $invite): string
+    {
+        $lines = ['Оплата подтверждена.'];
+        if (Shop::isInviteLink($invite)) {
+            $lines[] = 'Закрытый канал. Ссылка одноразовая — откройте её один раз:';
+            $lines[] = $invite;
+        }
+        $lines[] = 'Страница на сайте, если закроете это сообщение:';
+        $lines[] = $page;
+        return implode("\n", $lines);
+    }
+
+    private static function messageBuyer(string $chatId, string $text, string $invite): bool
+    {
+        $rest = implode("\n", array_slice(explode("\n", $text), 1));
+        $html = "✅ <b>Оплата подтверждена</b>\n\n" . self::h($rest);
+        $keyboard = Shop::isInviteLink($invite)
+            ? ['inline_keyboard' => [[['text' => 'Открыть канал', 'url' => $invite]]]]
+            : null;
+        return Telegram::sendTo($chatId, $html, $keyboard);
     }
 
     private static function whatsappToBuyer(string $phone, string $text): ?string

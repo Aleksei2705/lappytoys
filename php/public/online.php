@@ -141,12 +141,22 @@ require APP_ROOT . '/templates/layout/header.php';
             <?php endif; ?>
             <p class="mt-4 text-sm text-warm-500"><?= t('online.save') ?></p>
             <p class="mt-2 break-all text-sm"><a class="text-brand-700 underline" href="<?= e($orderUrl) ?>"><?= e($orderUrl) ?></a></p>
+            <?php $paidBotUrl = Shop::buyerBotUrl((string) $order['token']); ?>
+            <?php if ($paidBotUrl !== '' && trim((string) ($order['buyer_chat_id'] ?? '')) === ''): ?>
+                <a class="btn-primary mt-4 h-12 px-8" href="<?= e($paidBotUrl) ?>" target="_blank" rel="noopener noreferrer"><?= t('online.telegram') ?></a>
+                <p class="mt-3 text-sm text-warm-500"><?= t('online.telegramNote') ?></p>
+            <?php endif; ?>
         </div>
     <?php elseif ($order !== null && $order['status'] === 'pending'): ?>
         <div class="card-soft mt-10 p-6" data-order-watch>
             <p class="text-base leading-relaxed text-warm-700"><?= t('online.pending') ?></p>
             <p class="mt-3 text-sm text-warm-500"><?= t('online.save') ?></p>
             <p class="mt-2 break-all text-sm"><a class="text-brand-700 underline" href="<?= e($orderUrl) ?>"><?= e($orderUrl) ?></a></p>
+            <?php $botUrl = Shop::buyerBotUrl((string) $order['token']); ?>
+            <?php if ($botUrl !== '' && trim((string) ($order['buyer_chat_id'] ?? '')) === ''): ?>
+                <a class="btn-primary mt-4 h-12 px-8" href="<?= e($botUrl) ?>" target="_blank" rel="noopener noreferrer"><?= t('online.telegram') ?></a>
+                <p class="mt-3 text-sm text-warm-500"><?= t('online.telegramNote') ?></p>
+            <?php endif; ?>
         </div>
         <script>
             setInterval(function () {

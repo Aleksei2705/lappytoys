@@ -7,6 +7,7 @@ return [
     'url' => 'https://lappytoys.kz',
     'phone' => '+77058553873',
     'phone_display' => '+7 (705) 855-38-73',
+    'orders_bot' => 'lappyart_orders_bot',
     'telegram' => 'https://t.me/OlgaLapteva85',
     'telegram_group' => 'https://t.me/lappyart',
     'whatsapp' => 'https://wa.me/77058553873',

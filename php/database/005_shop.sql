@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS shop_orders (
   status ENUM('pending','paid','cancelled') NOT NULL DEFAULT 'pending',
   telegram_sent TINYINT(1) NOT NULL DEFAULT 0,
   invite_link VARCHAR(255) NULL,
+  buyer_chat_id VARCHAR(20) NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   paid_at DATETIME NULL,
   PRIMARY KEY (id),

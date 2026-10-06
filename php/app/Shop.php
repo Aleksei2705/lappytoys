@@ -67,6 +67,13 @@ final class Shop
         } catch (RuntimeException) {
             // column already exists
         }
+        try {
+            Database::execute(
+                'ALTER TABLE shop_orders ADD COLUMN buyer_chat_id VARCHAR(20) NULL AFTER invite_link',
+            );
+        } catch (RuntimeException) {
+            // column already exists
+        }
     }
 
     private static function ensureProductColumns(): void
@@ -317,6 +324,41 @@ final class Shop
         $row = Database::fetchOne('SELECT invite_link FROM shop_orders WHERE id = ?', [$orderId]);
         $stored = trim((string) ($row['invite_link'] ?? ''));
         return self::isInviteLink($stored) ? $stored : $invite;
+    }
+
+    /** Links the buyer's private chat to this order. A second Telegram account cannot take it. */
+    public static function attachBuyer(string $token, string $chatId): ?array
+    {
+        if (preg_match('/^\d{5,20}$/', $chatId) !== 1) {
+            return null;
+        }
+        $order = self::orderByToken($token);
+        if ($order === null) {
+            return null;
+        }
+        $current = trim((string) ($order['buyer_chat_id'] ?? ''));
+        if ($current !== '' && $current !== $chatId) {
+            $order['buyer_taken'] = true;
+            return $order;
+        }
+        if ($current !== $chatId) {
+            self::ensureTables();
+            Database::execute(
+                'UPDATE shop_orders SET buyer_chat_id = ? WHERE id = ?',
+                [$chatId, (int) $order['id']],
+            );
+            $order['buyer_chat_id'] = $chatId;
+        }
+        return $order;
+    }
+
+    public static function buyerBotUrl(string $token): string
+    {
+        $name = (string) site('orders_bot');
+        if (preg_match('/^[A-Za-z0-9_]{5,32}$/', $name) !== 1 || preg_match('/^[a-f0-9]{32}$/', $token) !== 1) {
+            return '';
+        }
+        return 'https://t.me/' . $name . '?start=' . $token;
     }
 
     public static function isInviteLink(string $link): bool

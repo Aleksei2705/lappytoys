@@ -15,7 +15,13 @@ final class TelegramWebhook
 
         $post = $update['channel_post'] ?? $update['message'] ?? null;
         if (is_array($post)) {
-            self::replyIdCommand($post);
+            $chat = $post['chat'] ?? null;
+            $type = is_array($chat) ? (string) ($chat['type'] ?? '') : '';
+            if ($type === 'private') {
+                self::linkBuyer($post);
+            } else {
+                self::replyIdCommand($post);
+            }
             return;
         }
 
@@ -100,6 +106,51 @@ final class TelegramWebhook
             return;
         }
         self::announceChat($chat);
+    }
+
+    /** @param array<string, mixed> $post */
+    private static function linkBuyer(array $post): void
+    {
+        $chat = $post['chat'] ?? null;
+        $chatId = is_array($chat) ? (string) ($chat['id'] ?? '') : '';
+        if (preg_match('/^\d{5,20}$/', $chatId) !== 1) {
+            return;
+        }
+        $text = trim((string) ($post['text'] ?? ''));
+        if (preg_match('#^/start(?:@\w+)?(?:\s+([a-f0-9]{32}))?$#i', $text, $matches) !== 1) {
+            return;
+        }
+        $token = $matches[1] ?? '';
+        if ($token === '') {
+            Telegram::sendTo($chatId, 'Оформите покупку на сайте и нажмите «Открыть Telegram». После оплаты ссылка придёт в этот чат.');
+            return;
+        }
+        try {
+            $order = Shop::attachBuyer($token, $chatId);
+        } catch (RuntimeException) {
+            Telegram::sendTo($chatId, 'Не удалось сохранить заявку. Напишите Ольге.');
+            return;
+        }
+        if ($order === null) {
+            Telegram::sendTo($chatId, 'Заявка не найдена. Откройте ссылку со страницы покупки ещё раз.');
+            return;
+        }
+        if (($order['buyer_taken'] ?? false) === true) {
+            Telegram::sendTo($chatId, 'Эта заявка уже открыта в другом Telegram.');
+            return;
+        }
+        $status = (string) ($order['status'] ?? '');
+        if ($status === 'cancelled') {
+            Telegram::sendTo($chatId, 'Эта заявка отменена.');
+            return;
+        }
+        if ($status === 'paid') {
+            if (!Notifier::deliverBuyer($order)) {
+                Telegram::sendTo($chatId, 'Оплата подтверждена, но ссылку отправить не удалось. Напишите Ольге.');
+            }
+            return;
+        }
+        Telegram::sendTo($chatId, 'Заявка привязана. Когда оплата будет подтверждена, ссылка придёт в этот чат.');
     }
 
     /** @param array<string, mixed> $post */
