@@ -1,7 +1,7 @@
 <?php
 $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-3 py-2.5 text-center text-sm font-semibold leading-snug shadow-md transition duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-4';
 ?>
-<section class="hero-screen">
+<section class="hero-screen<?= ($heroVideos ?? []) !== [] ? ' hero-screen-reel' : '' ?>">
     <div class="absolute inset-0 overflow-hidden bg-cream">
         <div class="hero-parallax-layer absolute -inset-[8%] bg-cover bg-center" data-hero-parallax
              style="background-image:url(/images/hero-knit.jpg)"></div>
@@ -33,20 +33,21 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
     <?php endif; ?>
     <div class="container-main relative z-10 flex min-h-0 w-full flex-1 items-end">
         <div class="hero-copy">
-            <p class="font-heading text-[2.35rem] font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-5xl lg:text-6xl"><?= e((string) site('brand_title')) ?></p>
-            <p class="text-sm font-medium tracking-wide text-warm-700 sm:text-base"><?= t('brand.subtitle') ?></p>
-
-            <a href="/courses/trial/" class="hero-offer">
-                <span class="hero-offer-aura" aria-hidden="true"></span>
-                <span class="hero-offer-card">
-                    <span class="hero-offer-shine" aria-hidden="true"></span>
-                    <?= icon('gift', 'relative z-[1] size-5 shrink-0 text-brand-700 sm:size-6') ?>
-                    <span class="relative z-[1]">
-                        <span class="hero-offer-title"><?= t('hero.offer') ?></span>
-                        <span class="mt-0.5 block text-[0.7rem] font-medium tracking-wide text-brand-800/80 sm:text-xs"><?= t('hero.offerHint') ?></span>
+            <?php if ($heroClips === []): ?>
+                <p class="font-heading text-[2.35rem] font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-5xl lg:text-6xl"><?= e((string) site('brand_title')) ?></p>
+                <p class="text-sm font-medium tracking-wide text-warm-700 sm:text-base"><?= t('brand.subtitle') ?></p>
+                <a href="/courses/trial/" class="hero-offer">
+                    <span class="hero-offer-aura" aria-hidden="true"></span>
+                    <span class="hero-offer-card">
+                        <span class="hero-offer-shine" aria-hidden="true"></span>
+                        <?= icon('gift', 'relative z-[1] size-5 shrink-0 text-brand-700 sm:size-6') ?>
+                        <span class="relative z-[1]">
+                            <span class="hero-offer-title"><?= t('hero.offer') ?></span>
+                            <span class="mt-0.5 block text-[0.7rem] font-medium tracking-wide text-brand-800/80 sm:text-xs"><?= t('hero.offerHint') ?></span>
+                        </span>
                     </span>
-                </span>
-            </a>
+                </a>
+            <?php endif; ?>
 
             <h1 class="hero-heading max-w-xl">
                 <span class="hero-heading-line"><?= t('hero.title.before') ?></span>
@@ -58,6 +59,21 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
                     <?= t('hero.title.accent') ?>
                 </span>
             </h1>
+            <?php if ($heroClips !== []): ?>
+                <p class="font-heading text-3xl font-bold leading-none tracking-tight text-brand-800 sm:text-4xl"><?= e((string) site('brand_title')) ?></p>
+                <p class="text-sm font-medium tracking-wide text-warm-700"><?= t('brand.subtitle') ?></p>
+                <a href="/courses/trial/" class="hero-offer">
+                    <span class="hero-offer-aura" aria-hidden="true"></span>
+                    <span class="hero-offer-card">
+                        <span class="hero-offer-shine" aria-hidden="true"></span>
+                        <?= icon('gift', 'relative z-[1] size-5 shrink-0 text-brand-700') ?>
+                        <span class="relative z-[1]">
+                            <span class="hero-offer-title"><?= t('hero.offer') ?></span>
+                            <span class="mt-0.5 block text-[0.7rem] font-medium tracking-wide text-brand-800/80"><?= t('hero.offerHint') ?></span>
+                        </span>
+                    </span>
+                </a>
+            <?php endif; ?>
             <p class="hero-slogan">
                 <?= t('hero.slogan.before') ?> <span class="hero-slogan-accent"><?= t('hero.slogan.accent') ?></span>
             </p>
