@@ -4,6 +4,7 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/app/bootstrap.php';
 
 const REVIEW_LIMIT_PER_HOUR = 3;
+const REVIEW_TEXT_MAX = 1200;
 
 function redirectToReviews(string $type, string $messageKey): void
 {
@@ -21,7 +22,6 @@ if (!Security::verifyCsrf($_POST['_csrf'] ?? null)) {
     redirectToReviews('error', 'review.errCsrf');
 }
 
-// Honeypot: real users never fill the hidden field. Pretend success to bots.
 if (trim((string) ($_POST['website'] ?? '')) !== '') {
     redirectToReviews('success', 'review.thanks');
 }
@@ -33,11 +33,23 @@ $courseKey = (string) ($_POST['course'] ?? '');
 
 $nameLength = mb_strlen($name);
 $textLength = mb_strlen($text);
-if ($nameLength < 2 || $nameLength > 60 || $textLength < 5 || $textLength > 600 || $rating < 1 || $rating > 5) {
+if ($nameLength < 2 || $nameLength > 60 || $textLength < 5 || $textLength > REVIEW_TEXT_MAX || $rating < 1 || $rating > 5) {
     redirectToReviews('error', 'review.errValidation');
 }
 
+$photoPath = null;
+$file = $_FILES['photo'] ?? null;
+$hasUpload = is_array($file) && (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
+
 try {
+    if ($hasUpload) {
+        try {
+            $photoPath = Admin::storeImage($file, 'reviews');
+        } catch (InvalidArgumentException) {
+            redirectToReviews('error', 'review.errPhoto');
+        }
+    }
+
     $classId = null;
     $courseRu = '';
     $courseKk = null;
@@ -46,9 +58,23 @@ try {
         $labelKey = $courseKey === 'mc' ? 'review.option.mc' : 'review.option.other';
         $courseRu = I18n::translateIn('ru', $labelKey);
         $courseKk = I18n::translateIn('kk', $labelKey);
+    } elseif (str_starts_with($courseKey, 'shop:')) {
+        $slug = substr($courseKey, 5);
+        $product = Shop::findPublished($slug);
+        if ($product === null) {
+            if ($photoPath !== null) {
+                Admin::deleteUploadedImage($photoPath);
+            }
+            redirectToReviews('error', 'review.errValidation');
+        }
+        $courseRu = (string) $product['title_ru'];
+        $courseKk = $product['title_kk'] !== null ? (string) $product['title_kk'] : null;
     } else {
-        $class = ClassRepository::findPublished($courseKey, 'course');
+        $class = ClassRepository::findPublishedBySlug($courseKey);
         if ($class === null) {
+            if ($photoPath !== null) {
+                Admin::deleteUploadedImage($photoPath);
+            }
             redirectToReviews('error', 'review.errValidation');
         }
         $classId = (int) $class['id'];
@@ -58,13 +84,25 @@ try {
 
     $ipHash = Security::hashIp(Security::clientIp());
     if (ReviewRepository::countRecentFromIp($ipHash, 60) >= REVIEW_LIMIT_PER_HOUR) {
+        if ($photoPath !== null) {
+            Admin::deleteUploadedImage($photoPath);
+        }
         redirectToReviews('error', 'review.errRateLimit');
     }
 
-    ReviewRepository::create($name, $classId, $courseRu, $courseKk, $text, $rating, $ipHash);
-    Notifier::review(['name' => $name, 'course' => $courseRu, 'rating' => $rating, 'text' => $text]);
+    ReviewRepository::create($name, $classId, $courseRu, $courseKk, $text, $rating, $ipHash, $photoPath);
+    Notifier::review([
+        'name' => $name,
+        'course' => $courseRu,
+        'rating' => $rating,
+        'text' => $text,
+        'has_photo' => $photoPath !== null,
+    ]);
     redirectToReviews('success', 'review.thanks');
 } catch (RuntimeException $exception) {
+    if ($photoPath !== null) {
+        Admin::deleteUploadedImage($photoPath);
+    }
     error_log('[review-submit] ' . $exception->getMessage());
     redirectToReviews('error', 'review.errGeneric');
 }

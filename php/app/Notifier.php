@@ -210,20 +210,22 @@ final class Notifier
         return strlen($url) <= 2048 ? $url : null;
     }
 
-    /** @param array{name: string, course: string, rating: int, text: string} $review */
+    /** @param array{name: string, course: string, rating: int, text: string, has_photo?: bool} $review */
     public static function review(array $review): bool
     {
-        $lines = [
+        $photoLine = !empty($review['has_photo']) ? '📷 С фото игрушки — проверьте в админке' : null;
+        $lines = array_filter([
             '⭐ <b>Новый отзыв на модерации</b> — lappytoys.kz',
             '',
             'Имя: ' . self::h($review['name']),
             'Курс: ' . self::h($review['course']),
             'Оценка: ' . $review['rating'] . '/5',
+            $photoLine,
             '',
             self::h($review['text']),
             '',
             '🕒 ' . date('d.m.Y H:i'),
-        ];
+        ], static fn (?string $line): bool => $line !== null);
 
         return Telegram::send(implode("\n", $lines));
     }

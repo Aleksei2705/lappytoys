@@ -26,6 +26,10 @@ try {
             Admin::flash('success', $action === 'approved' ? 'Отзыв опубликован.' : 'Отзыв отклонён.');
         } elseif ($id > 0 && $action === 'delete') {
             Admin::guard('admin');
+            $row = Database::fetchOne('SELECT photo_path FROM reviews WHERE id = ?', [$id]);
+            if ($row !== null && ReviewRepository::isPhotoPath($row['photo_path'] ?? null)) {
+                Admin::deleteUploadedImage((string) $row['photo_path']);
+            }
             Database::execute('DELETE FROM reviews WHERE id = ?', [$id]);
             Admin::flash('success', 'Отзыв удалён.');
         }
@@ -75,6 +79,11 @@ require APP_ROOT . '/templates/admin/header.php';
                     <span class="ml-1 rounded px-1.5 py-0.5 text-xs <?= $statusClasses[$review['status']] ?? '' ?>"><?= e(REVIEW_STATUSES[$review['status']] ?? (string) $review['status']) ?></span>
                 </p>
             </div>
+            <?php if (ReviewRepository::isPhotoPath($review['photo_path'] ?? null)): ?>
+                <a href="<?= e((string) $review['photo_path']) ?>" target="_blank" rel="noopener" class="mt-2 inline-block overflow-hidden rounded-xl border border-cream-200">
+                    <img src="<?= e((string) $review['photo_path']) ?>" alt="" class="max-h-40 w-auto object-cover">
+                </a>
+            <?php endif; ?>
             <p class="mt-2 whitespace-pre-line"><?= e((string) $review['text']) ?></p>
             <?php if (!empty($review['reply_text'])): ?>
                 <p class="mt-2 rounded-lg bg-brand-50 p-2 text-warm-700"><span class="font-medium">Ответ:</span> <?= e((string) $review['reply_text']) ?></p>

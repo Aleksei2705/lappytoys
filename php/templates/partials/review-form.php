@@ -1,20 +1,18 @@
 <?php
 /**
  * @var list<array<string, mixed>> $courses
+ * @var list<array<string, mixed>> $masterClasses
+ * @var list<array<string, mixed>> $shopProducts
  * @var array{type: string, message: string}|null $flash
  */
-$options = [];
-foreach ($courses as $course) {
-    $options[(string) $course['slug']] = loc($course, 'title');
-}
-$options['mc'] = I18n::translate('review.option.mc');
-$options['other'] = I18n::translate('review.option.other');
+$textMax = ReviewRepository::TEXT_MAX;
 ?>
 <div class="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5" id="review-form">
     <h3 class="font-heading text-xl font-semibold text-warm-900"><?= t('review.formTitle') ?></h3>
     <p class="mt-2 text-sm leading-relaxed text-warm-500"><?= t('review.moderationHint') ?></p>
+    <p class="mt-1 text-sm leading-relaxed text-warm-500"><?= t('review.ugcHint') ?></p>
 
-    <form class="mt-6 space-y-5" method="post" action="/review-submit.php" data-review-form>
+    <form class="mt-6 space-y-5" method="post" action="/review-submit.php" enctype="multipart/form-data" data-review-form>
         <?= Security::csrfField() ?>
         <div class="absolute -left-[9999px] size-px overflow-hidden" aria-hidden="true">
             <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
@@ -32,9 +30,31 @@ $options['other'] = I18n::translate('review.option.other');
             <div>
                 <label for="review-course" class="mb-2 block text-sm font-medium text-warm-700"><?= t('review.course') ?></label>
                 <select id="review-course" name="course" required class="input-field">
-                    <?php foreach ($options as $value => $label): ?>
-                        <option value="<?= e((string) $value) ?>"><?= e($label) ?></option>
-                    <?php endforeach; ?>
+                    <?php if ($courses !== []): ?>
+                        <optgroup label="<?= t('review.optionGroup.courses') ?>">
+                            <?php foreach ($courses as $course): ?>
+                                <option value="<?= e((string) $course['slug']) ?>"><?= e(loc($course, 'title')) ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    <?php endif; ?>
+                    <?php if (($masterClasses ?? []) !== []): ?>
+                        <optgroup label="<?= t('review.optionGroup.master') ?>">
+                            <?php foreach ($masterClasses as $course): ?>
+                                <option value="<?= e((string) $course['slug']) ?>"><?= e(loc($course, 'title')) ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    <?php endif; ?>
+                    <?php if (($shopProducts ?? []) !== []): ?>
+                        <optgroup label="<?= t('review.optionGroup.online') ?>">
+                            <?php foreach ($shopProducts as $product): ?>
+                                <option value="shop:<?= e((string) $product['slug']) ?>"><?= e(loc($product, 'title')) ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    <?php endif; ?>
+                    <optgroup label="<?= t('review.optionGroup.other') ?>">
+                        <option value="mc"><?= t('review.option.mc') ?></option>
+                        <option value="other"><?= t('review.option.other') ?></option>
+                    </optgroup>
                 </select>
             </div>
 
@@ -55,8 +75,20 @@ $options['other'] = I18n::translate('review.option.other');
 
             <div>
                 <label for="review-text" class="mb-2 block text-sm font-medium text-warm-700"><?= t('review.text') ?></label>
-                <textarea id="review-text" name="text" required minlength="5" maxlength="600" rows="4"
-                          placeholder="<?= t('review.textPh') ?>" class="textarea-field"></textarea>
+                <textarea id="review-text" name="text" required minlength="5" maxlength="<?= $textMax ?>" rows="5"
+                          placeholder="<?= t('review.textPhLong') ?>" class="textarea-field" data-review-text></textarea>
+                <p class="mt-1.5 text-right text-xs text-warm-500"><span data-review-char-count>0</span> / <?= $textMax ?></p>
+            </div>
+
+            <div>
+                <label for="review-photo" class="mb-2 block text-sm font-medium text-warm-700"><?= t('review.photo') ?></label>
+                <p class="mb-2 text-xs text-warm-500"><?= t('review.photoHint') ?></p>
+                <input id="review-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp"
+                       class="block w-full text-sm text-warm-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-800"
+                       data-review-photo-input>
+                <div class="mt-3 hidden overflow-hidden rounded-2xl border border-cream-200 bg-cream-100/50" data-review-photo-preview>
+                    <img alt="" class="max-h-56 w-full object-cover" data-review-photo-preview-img>
+                </div>
             </div>
 
             <button type="submit" class="btn-primary h-11 w-full">

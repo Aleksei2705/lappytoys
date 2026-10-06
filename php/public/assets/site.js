@@ -365,6 +365,81 @@
         });
       };
       buttons.forEach((button) => button.addEventListener("click", () => render(Number(button.dataset.ratingValue))));
+
+      const textArea = form.querySelector("[data-review-text]");
+      const charCount = form.querySelector("[data-review-char-count]");
+      const syncChars = () => {
+        if (charCount && textArea) charCount.textContent = String(textArea.value.length);
+      };
+      textArea?.addEventListener("input", syncChars);
+      syncChars();
+
+      const photoInput = form.querySelector("[data-review-photo-input]");
+      const photoPreview = form.querySelector("[data-review-photo-preview]");
+      const photoImg = form.querySelector("[data-review-photo-preview-img]");
+      let previewUrl = null;
+      photoInput?.addEventListener("change", () => {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = null;
+        const file = photoInput.files?.[0];
+        if (!file || !photoPreview || !photoImg) {
+          photoPreview?.classList.add("hidden");
+          return;
+        }
+        previewUrl = URL.createObjectURL(file);
+        photoImg.src = previewUrl;
+        photoPreview.classList.remove("hidden");
+      });
+    });
+  };
+
+  const initReviewsCarousel = () => {
+    document.querySelectorAll("[data-reviews-carousel]").forEach((root) => {
+      const scroller = root.querySelector("[data-reviews-scroller]");
+      const slides = Array.from(root.querySelectorAll("[data-reviews-slide]"));
+      const indexLabel = root.querySelector("[data-reviews-index]");
+      if (!scroller || slides.length === 0) return;
+
+      let index = 0;
+      const render = (next) => {
+        index = ((next % slides.length) + slides.length) % slides.length;
+        if (indexLabel) indexLabel.textContent = String(index + 1);
+      };
+
+      const goTo = (next) => {
+        const bounded = ((next % slides.length) + slides.length) % slides.length;
+        render(bounded);
+        const slide = slides[bounded];
+        scroller.scrollTo({
+          left: slide.offsetLeft - (scroller.clientWidth - slide.offsetWidth) / 2,
+          behavior: reduceMotion ? "auto" : "smooth",
+        });
+      };
+
+      root.querySelector("[data-reviews-prev]")?.addEventListener("click", () => goTo(index - 1));
+      root.querySelector("[data-reviews-next]")?.addEventListener("click", () => goTo(index + 1));
+
+      let frame = 0;
+      scroller.addEventListener(
+        "scroll",
+        () => {
+          cancelAnimationFrame(frame);
+          frame = requestAnimationFrame(() => {
+            const center = scroller.scrollLeft + scroller.clientWidth / 2;
+            const next = slides.reduce(
+              (best, slide, i) => {
+                const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+                const distance = Math.abs(slideCenter - center);
+                return distance < best.distance ? { index: i, distance } : best;
+              },
+              { index: 0, distance: Infinity },
+            ).index;
+            if (next !== index) render(next);
+          });
+        },
+        { passive: true },
+      );
+      render(0);
     });
   };
 
@@ -976,6 +1051,24 @@
     const awards = Array.from(document.querySelectorAll("[data-award]"));
     awards.forEach((award, index) => award.addEventListener("click", () => open(awards, index)));
 
+    document.querySelectorAll("[data-review-photo-open]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const url = button.dataset.reviewPhotoOpen;
+        const alt = button.dataset.reviewPhotoAlt || "";
+        if (!lightbox || !stage || !url) return;
+        stage.replaceChildren();
+        const image = document.createElement("img");
+        image.src = url;
+        image.alt = alt;
+        image.className = "max-h-full max-w-full object-contain";
+        stage.append(image);
+        if (title) title.textContent = alt;
+        lightbox.hidden = false;
+        document.body.style.overflow = "hidden";
+        closeButton?.focus();
+      });
+    });
+
     const stepLightbox = (direction) => activeSlides.length && open(activeSlides, activeIndex + direction);
     closeButton?.addEventListener("click", close);
     lightbox?.querySelector("[data-lightbox-prev]")?.addEventListener("click", () => stepLightbox(-1));
@@ -1053,6 +1146,7 @@
   initExpandable();
   initMasterClasses();
   initRatingInput();
+  initReviewsCarousel();
   initShare();
 
   const initShopOrderTelegram = () => {

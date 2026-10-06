@@ -1864,3 +1864,22 @@ body.is-admin [data-password-toggle] {
   padding: 0;
   flex: 0 0 auto;
 }
+
+.reviews-feed-scroller {
+  scroll-padding-inline: 1.25rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+  [data-reviews-carousel] {
+    padding-inline: 2.75rem;
+  }
+
+  .reviews-feed-nav-prev {
+    left: 0;
+  }
+
+  .reviews-feed-nav-next {
+    right: 0;
+  }
+}

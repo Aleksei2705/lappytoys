@@ -43,14 +43,14 @@ try {
             'class_id' => Admin::intParam($_POST, 'class_id') ?: null,
         ];
 
-        $limits = ['name' => [2, 60, 'Имя'], 'course' => [1, 80, 'Курс'], 'text' => [5, 600, 'Текст отзыва']];
+        $limits = ['name' => [2, 60, 'Имя'], 'course' => [1, 80, 'Курс'], 'text' => [5, ReviewRepository::TEXT_MAX, 'Текст отзыва']];
         foreach ($limits as $field => [$min, $max, $label]) {
             $length = mb_strlen($form[$field]);
             if ($length < $min || $length > $max) {
                 $errors[] = "{$label}: от {$min} до {$max} символов.";
             }
         }
-        foreach (['course_kk' => 80, 'text_kk' => 600, 'reply_text' => 600, 'reply_text_kk' => 600] as $field => $max) {
+        foreach (['course_kk' => 80, 'text_kk' => ReviewRepository::TEXT_MAX, 'reply_text' => 600, 'reply_text_kk' => 600] as $field => $max) {
             if (mb_strlen($form[$field]) > $max) {
                 $errors[] = "Поле {$field}: максимум {$max} символов.";
             }
@@ -153,12 +153,20 @@ require APP_ROOT . '/templates/admin/header.php';
     </div>
     <div>
         <label for="text" class="mb-2 block text-sm font-medium">Текст (рус.)</label>
-        <textarea id="text" name="text" required maxlength="600" rows="4" class="textarea-field"><?= e((string) ($form['text'] ?? '')) ?></textarea>
+        <textarea id="text" name="text" required maxlength="<?= ReviewRepository::TEXT_MAX ?>" rows="5" class="textarea-field"><?= e((string) ($form['text'] ?? '')) ?></textarea>
     </div>
     <div>
         <label for="text_kk" class="mb-2 block text-sm font-medium">Текст (қаз.)</label>
-        <textarea id="text_kk" name="text_kk" maxlength="600" rows="4" class="textarea-field"><?= e((string) ($form['text_kk'] ?? '')) ?></textarea>
+        <textarea id="text_kk" name="text_kk" maxlength="<?= ReviewRepository::TEXT_MAX ?>" rows="5" class="textarea-field"><?= e((string) ($form['text_kk'] ?? '')) ?></textarea>
     </div>
+    <?php if ($existing !== null && ReviewRepository::isPhotoPath($existing['photo_path'] ?? null)): ?>
+        <div>
+            <p class="mb-2 text-sm font-medium">Фото ученика (UGC)</p>
+            <a href="<?= e((string) $existing['photo_path']) ?>" target="_blank" rel="noopener" class="inline-block overflow-hidden rounded-xl border border-cream-200">
+                <img src="<?= e((string) $existing['photo_path']) ?>" alt="" class="max-h-56 w-auto object-cover">
+            </a>
+        </div>
+    <?php endif; ?>
     <div>
         <label for="reply_text" class="mb-2 block text-sm font-medium">Ответ студии (рус.)</label>
         <textarea id="reply_text" name="reply_text" maxlength="600" rows="3" class="textarea-field"><?= e((string) ($form['reply_text'] ?? '')) ?></textarea>
