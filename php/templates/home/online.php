@@ -5,6 +5,7 @@
 } ?>
 <section id="online" class="page-section">
     <div class="container-main">
+        <?= revealStart(0, '', 'left') ?>
         <?php
         render('partials/section-header', [
             'eyebrow' => t('online.eyebrow'),
@@ -12,8 +13,10 @@
             'description' => t('online.desc'),
         ]);
         ?>
+        </div>
         <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <?php foreach ($shopProducts as $product): ?>
+            <?php foreach ($shopProducts as $index => $product): ?>
+                <?= revealStart(($index % 3) * 80, 'h-full') ?>
                 <article class="card-hover flex h-full flex-col">
                     <?php $photo = Shop::imagePath($product['image_path'] ?? ''); ?>
                     <?php if ($photo !== ''): ?>
@@ -29,6 +32,7 @@
                         <a href="/online/<?= e((string) $product['slug']) ?>/" class="btn-ghost h-10 w-full"><?= t('cta.details') ?><?= icon('arrow-up-right', 'size-4') ?></a>
                     </div>
                 </article>
+                </div>
             <?php endforeach; ?>
         </div>
     </div>
