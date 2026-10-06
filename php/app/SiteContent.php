@@ -152,6 +152,51 @@ final class SiteContent
         }
     }
 
+    /** @return array{video: string, poster: string}|null */
+    public static function heroFeature(): ?array
+    {
+        $data = self::object('hero_feature');
+        if (!is_array($data)) {
+            return null;
+        }
+        $video = (string) ($data['video'] ?? '');
+        $poster = (string) ($data['poster'] ?? '');
+        if (!self::isHeroVideo($video) || !self::isHeroPoster($poster)) {
+            return null;
+        }
+        return ['video' => $video, 'poster' => $poster];
+    }
+
+    public static function saveHeroFeature(?string $video, ?string $poster): void
+    {
+        $previous = self::heroFeature();
+        $video = $video ?? '';
+        $poster = $poster ?? '';
+        if ($video === '' || $poster === '' || !self::isHeroVideo($video) || !self::isHeroPoster($poster)) {
+            self::saveObject('hero_feature', ['video' => '', 'poster' => '']);
+            if ($previous !== null) {
+                self::deleteHeroVideo($previous['video']);
+                Admin::deleteUploadedImage($previous['poster']);
+            }
+            return;
+        }
+        self::saveObject('hero_feature', ['video' => $video, 'poster' => $poster]);
+        if ($previous === null) {
+            return;
+        }
+        if ($previous['video'] !== $video) {
+            self::deleteHeroVideo($previous['video']);
+        }
+        if ($previous['poster'] !== $poster) {
+            Admin::deleteUploadedImage($previous['poster']);
+        }
+    }
+
+    public static function isHeroPoster(string $path): bool
+    {
+        return preg_match('#^/uploads/hero/[a-f0-9]{16}\.(jpg|png|webp)$#', $path) === 1;
+    }
+
     private static bool $tableReady = false;
 
     private static function ready(): bool

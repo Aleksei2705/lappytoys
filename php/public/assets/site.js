@@ -1479,7 +1479,65 @@
     });
   };
 
+  const initHeroFeature = () => {
+    const trigger = document.querySelector("[data-hero-feature]");
+    const player = document.querySelector("[data-hero-feature-player]");
+    const video = player?.querySelector("[data-hero-feature-video]");
+    const closeButton = player?.querySelector("[data-hero-feature-close]");
+    if (!trigger || !player || !video) return;
+
+    let usingFullscreen = false;
+
+    const close = () => {
+      if (player.hidden) return;
+      player.hidden = true;
+      document.body.style.overflow = "";
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      usingFullscreen = false;
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      trigger.focus();
+    };
+
+    trigger.addEventListener("click", () => {
+      const src = trigger.getAttribute("data-hero-feature");
+      if (!src) return;
+      video.src = src;
+      player.hidden = false;
+      document.body.style.overflow = "hidden";
+      video.play().catch(() => {});
+      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent)
+        || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      if (ios && typeof video.webkitEnterFullscreen === "function") {
+        video.webkitEnterFullscreen();
+      } else if (typeof player.requestFullscreen === "function") {
+        player.requestFullscreen().catch(() => {});
+      }
+      closeButton?.focus();
+    });
+
+    closeButton?.addEventListener("click", close);
+    player.addEventListener("click", (event) => {
+      if (event.target === player) close();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (!player.hidden && event.key === "Escape") close();
+    });
+    document.addEventListener("fullscreenchange", () => {
+      if (document.fullscreenElement === player) {
+        usingFullscreen = true;
+        return;
+      }
+      if (usingFullscreen) close();
+    });
+    video.addEventListener("webkitendfullscreen", close);
+  };
+
   initHeroParallax();
+  initHeroFeature();
   initAssistant();
   initGoals();
   initBackLinks();
