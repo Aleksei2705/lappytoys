@@ -1057,11 +1057,11 @@ body {
 
 /* Form */
 .input-field {
-  @apply h-11 w-full rounded-xl border border-brand-100 bg-brand-50/30 px-4 text-sm outline-none transition-colors placeholder:text-warm-500/50 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100/80;
+  @apply h-11 w-full rounded-xl border-2 border-brand-700 bg-white px-4 text-sm text-warm-900 outline-none transition-colors placeholder:text-warm-500/70 focus:border-brand-800 focus:ring-4 focus:ring-brand-300/70;
 }
 
 .textarea-field {
-  @apply min-h-24 w-full rounded-xl border border-brand-100 bg-brand-50/30 px-4 py-3 text-sm outline-none transition-colors placeholder:text-warm-500/50 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100/80;
+  @apply min-h-24 w-full rounded-xl border-2 border-brand-700 bg-white px-4 py-3 text-sm text-warm-900 outline-none transition-colors placeholder:text-warm-500/70 focus:border-brand-800 focus:ring-4 focus:ring-brand-300/70;
 }
 
 /* Contact links */
