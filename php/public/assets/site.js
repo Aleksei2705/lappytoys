@@ -1210,15 +1210,18 @@
       }
     }, 2500);
 
-    const setOpen = (open) => {
+    const setOpen = (open, options = {}) => {
       panel.hidden = !open;
       toggle.setAttribute("aria-expanded", String(open));
       if (nudge) nudge.hidden = true;
       if (open && !log.childElementCount) {
+        const intro = typeof options.message === "string" && options.message.trim() !== ""
+          ? options.message.trim()
+          : choose(data.greetings, "greeting");
         const pending = showTyping();
         pause(800).then(() => {
           pending.remove();
-          addMessage(choose(data.greetings, "greeting"), "bot");
+          addMessage(intro, "bot");
         });
       }
       if (open) {
@@ -1228,20 +1231,27 @@
       }
     };
 
-    if (nudge && sessionStorage.getItem("lappy-assistant-opened") !== "1") {
-      const sinceKey = "lappy-assistant-since";
-      const since = Number(sessionStorage.getItem(sinceKey) || Date.now());
-      sessionStorage.setItem(sinceKey, String(since));
-      const delay = Math.max(0, 20000 - (Date.now() - since));
+    const openedKey = "lappy-assistant-opened";
+    const autoOpenMs = 18000;
+
+    if (sessionStorage.getItem(openedKey) !== "1") {
       window.setTimeout(() => {
-        if (!panel.hidden || sessionStorage.getItem("lappy-assistant-opened") === "1") return;
-        nudge.hidden = false;
-        window.setTimeout(() => {
-          if (dismiss && !nudge.hidden) dismiss.hidden = false;
-        }, 2500);
-      }, delay);
+        if (sessionStorage.getItem(openedKey) === "1" || !panel.hidden) return;
+        const proactive = typeof data.proactive === "string" ? data.proactive : "";
+        setOpen(true, { message: proactive });
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          try {
+            chime();
+          } catch {
+            /* ignore */
+          }
+        }
+      }, autoOpenMs);
+    }
+
+    if (nudge) {
       const hideOffer = () => {
-        sessionStorage.setItem("lappy-assistant-opened", "1");
+        sessionStorage.setItem(openedKey, "1");
         nudge.hidden = true;
       };
       offer?.addEventListener("click", () => setOpen(true));

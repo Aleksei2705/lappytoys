@@ -17,6 +17,7 @@ $variants = static function (string $base): array {
 };
 $payload = [
     'greetings' => $variants('assistant.greeting'),
+    'proactive' => t('assistant.proactive'),
     'fallbacks' => $variants('assistant.fallback'),
     'asides' => [t('assistant.aside.1'), t('assistant.aside.2'), t('assistant.aside.3')],
     'signupHref' => bookingUrl(),
