@@ -83,6 +83,7 @@ try {
         'direction' => $direction,
         'preferred_date' => $preferredDate !== '' ? $preferredDate : null,
         'message' => $message !== '' ? $message : null,
+        'day_offer' => $directionKey === 'course:trial' || str_starts_with($directionKey, 'mc:'),
     ];
 
     $bookingId = BookingRepository::create(

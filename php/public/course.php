@@ -76,11 +76,15 @@ require APP_ROOT . '/templates/layout/header.php';
         <?php endforeach; ?>
     </div>
 
-    <div class="mt-12 flex flex-wrap justify-center gap-4">
+    <div class="mt-12">
+        <?php render('partials/day-offer', ['offerTone' => (string) $course['slug'] === 'trial' ? 'banner' : 'compact']); ?>
+    </div>
+
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
         <a href="/#courses" class="btn-secondary h-12 px-8 text-base" data-back>
             <?= icon('arrow-left', 'size-4') ?><?= t('cta.back') ?>
         </a>
-        <a href="/#signup" class="btn-primary h-12 px-8 text-base"><?= t('cta.signupCourse') ?></a>
+        <a href="/#signup"<?= (string) $course['slug'] === 'trial' ? ' data-signup-direction="course:trial"' : '' ?> class="btn-primary h-12 px-8 text-base"><?= t('cta.signupCourse') ?></a>
     </div>
 </div>
 <?php

@@ -22,6 +22,7 @@ $waLabels = [
     'phoneCodeResendWait' => I18n::translate('phone.codeResendWait'),
     'whatsapp' => (string) site('whatsapp'),
     'telegram' => (string) site('telegram'),
+    'dayOffer' => I18n::translate('offer.short'),
 ];
 ?>
 <section id="signup" class="page-section section-alt">
@@ -52,6 +53,9 @@ $waLabels = [
                         <?php render('partials/phone-field', ['id' => 'phone']); ?>
                         <?php render('partials/phone-verify', ['phoneInputId' => 'phone']); ?>
                         <p id="phone-error" class="mt-2 hidden text-sm text-red-600" data-phone-error></p>
+                    </div>
+                    <div data-day-offer hidden>
+                        <?php render('partials/day-offer', ['offerTone' => 'banner']); ?>
                     </div>
                     <div>
                         <label for="direction" class="mb-2 block text-sm font-medium text-warm-700"><?= t('signup.direction') ?></label>

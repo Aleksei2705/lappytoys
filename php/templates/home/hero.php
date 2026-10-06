@@ -1,7 +1,7 @@
 <?php
 $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-3 py-2.5 text-center text-sm font-semibold leading-snug shadow-md transition duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-4';
 ?>
-<section class="relative flex min-h-[calc(100svh-4rem-env(safe-area-inset-top,0px))] flex-col justify-end overflow-hidden">
+<section class="hero-screen">
     <div class="absolute inset-0 overflow-hidden bg-cream">
         <div class="hero-parallax-layer absolute -inset-[8%] bg-cover bg-center" data-hero-parallax
              style="background-image:url(/images/hero-knit.jpg)"></div>
@@ -12,12 +12,12 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
             <div class="hero-shimmer absolute inset-0"></div>
         </div>
     </div>
-    <div class="container-main relative z-10 w-full pb-10 pt-16 sm:pb-14 sm:pt-20 md:pb-16">
-        <div class="hero-copy flex w-full max-w-2xl flex-col items-start text-left">
-            <p class="font-heading text-5xl font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-6xl lg:text-7xl"><?= e((string) site('brand_title')) ?></p>
-            <p class="mt-2 text-sm font-medium tracking-wide text-warm-700 sm:text-base"><?= t('brand.subtitle') ?></p>
+    <div class="container-main relative z-10 flex min-h-0 w-full flex-1 items-end">
+        <div class="hero-copy">
+            <p class="font-heading text-[2.35rem] font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-5xl lg:text-6xl"><?= e((string) site('brand_title')) ?></p>
+            <p class="text-sm font-medium tracking-wide text-warm-700 sm:text-base"><?= t('brand.subtitle') ?></p>
 
-            <a href="/courses/trial/" class="hero-offer mt-6 sm:mt-7">
+            <a href="/courses/trial/" class="hero-offer">
                 <span class="hero-offer-aura" aria-hidden="true"></span>
                 <span class="hero-offer-card">
                     <span class="hero-offer-shine" aria-hidden="true"></span>
@@ -29,7 +29,7 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
                 </span>
             </a>
 
-            <h1 class="hero-heading mt-8 max-w-xl">
+            <h1 class="hero-heading max-w-xl">
                 <span class="hero-heading-line"><?= t('hero.title.before') ?></span>
                 <svg class="hero-heading-yarn" viewBox="0 0 280 14" fill="none" aria-hidden="true">
                     <path d="M2 9 C 28 2, 52 13, 80 7 S 130 1, 160 8 S 220 14, 278 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
@@ -39,13 +39,13 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
                     <?= t('hero.title.accent') ?>
                 </span>
             </h1>
-            <p class="hero-slogan mt-5">
+            <p class="hero-slogan">
                 <?= t('hero.slogan.before') ?> <span class="hero-slogan-accent"><?= t('hero.slogan.accent') ?></span>
             </p>
-            <p class="mt-3 max-w-md text-base leading-relaxed text-warm-700 sm:text-lg"><?= t('hero.lead') ?></p>
+            <p class="hero-lead max-w-md text-sm leading-snug text-warm-700 sm:text-base sm:leading-relaxed"><?= t('hero.lead') ?></p>
 
-            <div class="mt-8 flex w-full max-w-xl flex-col gap-3">
-                <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+            <div class="hero-actions flex w-full max-w-xl flex-col gap-2.5">
+                <div class="grid grid-cols-2 gap-2.5">
                     <a href="#courses" class="<?= $heroBtn ?> bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-brand-900/15 hover:from-brand-700 hover:to-brand-800">
                         <?= icon('book-open', 'size-4 shrink-0') ?><?= t('hero.courses') ?>
                     </a>

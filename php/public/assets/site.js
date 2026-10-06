@@ -883,6 +883,45 @@
     });
   };
 
+  const dayOfferDirection = (value) => value === "course:trial" || value.startsWith("mc:");
+
+  const applySignupDirection = (value) => {
+    const select = document.querySelector("[data-direction]");
+    if (!select || ![...select.options].some((option) => option.value === value)) return;
+    select.value = value;
+    select.dispatchEvent(new Event("change"));
+  };
+
+  const initDayOffer = () => {
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest("[data-signup-direction]");
+      if (!link) return;
+      const value = link.dataset.signupDirection || "";
+      if (!value) return;
+      sessionStorage.setItem("lappy-signup-direction", value);
+      applySignupDirection(value);
+    });
+
+    document.querySelectorAll("[data-signup-form]").forEach((form) => {
+      const select = form.querySelector("[data-direction]");
+      const offer = form.querySelector("[data-day-offer]");
+      if (!select || !offer) return;
+
+      const sync = () => {
+        const active = dayOfferDirection(select.value);
+        offer.hidden = !active;
+      };
+
+      select.addEventListener("change", sync);
+      const stored = sessionStorage.getItem("lappy-signup-direction");
+      if (stored) {
+        sessionStorage.removeItem("lappy-signup-direction");
+        if ([...select.options].some((option) => option.value === stored)) select.value = stored;
+      }
+      sync();
+    });
+  };
+
   const initSignupForm = () => {
     const form = document.querySelector("[data-signup-form]");
     if (!form) return;
@@ -920,6 +959,7 @@
         optional(labels.direction, directionText),
         optional(labels.date, field("preferredDate")),
         optional(labels.message, field("message")),
+        dayOfferDirection(direction?.value || "") && labels.dayOffer ? labels.dayOffer : null,
         "",
         labels.footer,
       ]
@@ -1137,6 +1177,7 @@
   initMobileMenu();
   initPhoneFields();
   initPhoneVerify();
+  initDayOffer();
   initSignupForm();
   initMedia();
   initSocialEmbeds();

@@ -20,6 +20,10 @@ final class Notifier
             $lines[] = '';
             $lines[] = self::h($booking['message']);
         }
+        if (!empty($booking['day_offer'])) {
+            $lines[] = '';
+            $lines[] = '🎁 ' . self::h(I18n::translateIn('ru', 'offer.remind'));
+        }
         $lines[] = '';
         $lines[] = '🕒 ' . date('d.m.Y H:i');
 
@@ -42,6 +46,10 @@ final class Notifier
         if ($booking['message'] !== null && $booking['message'] !== '') {
             $lines[] = '';
             $lines[] = $booking['message'];
+        }
+        if (!empty($booking['day_offer'])) {
+            $lines[] = '';
+            $lines[] = I18n::translateIn('ru', 'offer.remind');
         }
         $lines[] = '';
         $lines[] = date('d.m.Y H:i');
