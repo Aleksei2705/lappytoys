@@ -1426,10 +1426,10 @@ body {
     display: block;
     position: absolute;
     z-index: 20;
-    top: 0;
-    bottom: 0.35rem;
-    left: calc(1.5rem + 42rem + 0.35rem);
-    right: 0.35rem;
+    top: 1rem;
+    bottom: calc(0.35rem + 1rem);
+    left: calc(1.5rem + 42rem + 0.35rem - 2rem);
+    right: calc(0.35rem + 4.5rem);
     width: auto;
     height: auto;
     min-width: 0;
