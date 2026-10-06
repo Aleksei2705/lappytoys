@@ -1355,6 +1355,63 @@ body {
   transform: rotate(-2deg);
 }
 
+.hero-guide {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, #2aabee 42%, white);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), color-mix(in srgb, #2aabee 16%, white));
+  padding: 0.85rem 1rem 0.85rem 0.85rem;
+  text-decoration: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 10px 28px color-mix(in srgb, #2aabee 20%, transparent);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.hero-guide:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 14px 32px color-mix(in srgb, #2aabee 28%, transparent);
+}
+
+.hero-guide-icon {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.9rem;
+  background: #fff;
+  box-shadow: 0 4px 12px color-mix(in srgb, #2aabee 18%, transparent);
+}
+
+.hero-guide-kicker {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: #1a8bc4;
+}
+
+.hero-guide-title {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-warm-900);
+}
+
 .hero-offer {
   position: relative;
   display: inline-flex;
