@@ -1426,14 +1426,15 @@ body {
     display: block;
     position: absolute;
     z-index: 20;
-    top: var(--hero-edge);
-    right: var(--hero-edge);
-    bottom: var(--hero-edge);
+    top: 0;
+    bottom: 0;
+    left: calc(42rem + 2.75rem);
     width: var(--hero-feature-w);
     height: auto;
     min-width: 0;
     min-height: 0;
     flex: none;
+    margin: 0;
   }
 }
 

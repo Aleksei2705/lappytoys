@@ -102,13 +102,13 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
                 </a>
             </div>
         </div>
+        <?php if (is_array($heroFeature ?? null)): ?>
+            <button type="button" class="hero-feature" data-hero-feature="<?= e($heroFeature['video']) ?>" aria-label="<?= t('aria.expandVideo') ?>">
+                <img class="hero-feature-poster" src="<?= e($heroFeature['poster']) ?>" alt="" width="720" height="960">
+                <span class="hero-feature-play" aria-hidden="true"><?= icon('play', 'size-7 fill-current') ?></span>
+            </button>
+        <?php endif; ?>
     </div>
-    <?php if (is_array($heroFeature ?? null)): ?>
-        <button type="button" class="hero-feature" data-hero-feature="<?= e($heroFeature['video']) ?>" aria-label="<?= t('aria.expandVideo') ?>">
-            <img class="hero-feature-poster" src="<?= e($heroFeature['poster']) ?>" alt="" width="720" height="960">
-            <span class="hero-feature-play" aria-hidden="true"><?= icon('play', 'size-7 fill-current') ?></span>
-        </button>
-    <?php endif; ?>
 </section>
 <?php if (is_array($heroFeature ?? null)): ?>
     <div class="hero-feature-player" hidden data-hero-feature-player>
