@@ -25,13 +25,15 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
             <div class="hero-reel-track">
                 <?php foreach ([false, true] as $copy): ?>
                     <?php foreach ($heroClips as $clip): ?>
-                        <video class="hero-reel-item" width="360" height="480" src="<?= e((string) $clip['path']) ?>" muted autoplay loop playsinline preload="metadata" disablepictureinpicture <?= $copy ? 'aria-hidden="true" tabindex="-1"' : '' ?>></video>
+                        <div class="hero-reel-slide">
+                            <video class="hero-reel-item" width="360" height="480" src="<?= e((string) $clip['path']) ?>" muted autoplay loop playsinline preload="metadata" disablepictureinpicture <?= $copy ? 'aria-hidden="true" tabindex="-1"' : '' ?>></video>
+                        </div>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
             </div>
         </div>
     <?php endif; ?>
-    <div class="container-main relative z-10 flex min-h-0 w-full flex-1 items-end<?= ($heroFeature ?? null) ? ' hero-stage' : '' ?>">
+    <div class="container-main relative z-10 flex min-h-0 w-full flex-1 items-end">
         <div class="hero-copy">
             <?php if ($heroClips === []): ?>
                 <p class="font-heading text-[2.35rem] font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-5xl lg:text-6xl"><?= e((string) site('brand_title')) ?></p>
@@ -100,13 +102,13 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
                 </a>
             </div>
         </div>
-        <?php if (is_array($heroFeature ?? null)): ?>
-            <button type="button" class="hero-feature" data-hero-feature="<?= e($heroFeature['video']) ?>" aria-label="<?= t('aria.expandVideo') ?>">
-                <img class="hero-feature-poster" src="<?= e($heroFeature['poster']) ?>" alt="" width="720" height="960">
-                <span class="hero-feature-play" aria-hidden="true"><?= icon('play', 'size-7 fill-current') ?></span>
-            </button>
-        <?php endif; ?>
     </div>
+    <?php if (is_array($heroFeature ?? null)): ?>
+        <button type="button" class="hero-feature" data-hero-feature="<?= e($heroFeature['video']) ?>" aria-label="<?= t('aria.expandVideo') ?>">
+            <img class="hero-feature-poster" src="<?= e($heroFeature['poster']) ?>" alt="" width="720" height="960">
+            <span class="hero-feature-play" aria-hidden="true"><?= icon('play', 'size-7 fill-current') ?></span>
+        </button>
+    <?php endif; ?>
 </section>
 <?php if (is_array($heroFeature ?? null)): ?>
     <div class="hero-feature-player" hidden data-hero-feature-player>
