@@ -65,6 +65,7 @@ $awards = SiteContent::awardRows();
 
         <div id="awards" class="<?= $awards === [] ? '' : 'mt-14 sm:mt-16' ?>">
         <?php if ($awards !== []): ?>
+            <?= revealStart(0, '', 'right') ?>
             <?php
             render('partials/section-header', [
                 'eyebrow' => t('awards.eyebrow'),
@@ -72,8 +73,10 @@ $awards = SiteContent::awardRows();
                 'description' => t('awards.desc'),
             ]);
             ?>
+            </div>
             <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-                <?php foreach ($awards as $award): ?>
+                <?php foreach ($awards as $index => $award): ?>
+                    <?= revealStart(($index % 6) * 70) ?>
                     <?php $caption = loc($award, 'caption'); ?>
                     <button type="button"
                             class="group text-left outline-none"
@@ -87,6 +90,7 @@ $awards = SiteContent::awardRows();
                         </span>
                         <span class="mt-2 block text-xs leading-snug text-warm-600"><?= e($caption) ?></span>
                     </button>
+                    </div>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
