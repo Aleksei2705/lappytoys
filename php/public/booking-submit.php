@@ -36,6 +36,9 @@ $phone = Phone::normalize((string) ($_POST['phone'] ?? ''));
 if ($phone === null) {
     redirectToSignup('error', 'signup.phoneErr');
 }
+if (!PhoneVerify::isVerified((string) ($_POST['phone'] ?? ''))) {
+    redirectToSignup('error', 'signup.errPhoneVerify');
+}
 
 $message = trim((string) ($_POST['message'] ?? ''));
 if (mb_strlen($message) > 1000) {

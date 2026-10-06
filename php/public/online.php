@@ -29,9 +29,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         $error = t('online.csrf');
     } else {
         $name = trim((string) ($_POST['name'] ?? ''));
-        $phone = preg_replace('/[^\d+]/', '', (string) ($_POST['phone'] ?? '')) ?? '';
-        if ($name === '' || mb_strlen($name) > 80 || preg_match('/^\+?[0-9]{10,15}$/', $phone) !== 1) {
+        $phone = Phone::normalize((string) ($_POST['phone'] ?? ''));
+        if ($name === '' || mb_strlen($name) > 80 || $phone === null) {
             $error = t('online.formError');
+        } elseif (!PhoneVerify::isVerified((string) ($_POST['phone'] ?? ''))) {
+            $error = t('online.phoneVerify');
         } else {
             $now = time();
             $hits = array_values(array_filter(
@@ -176,15 +178,21 @@ require APP_ROOT . '/templates/layout/header.php';
         <?php if ($error !== ''): ?>
             <p class="mt-8 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"><?= e($error) ?></p>
         <?php endif; ?>
-        <form method="post" class="card-soft mt-10 grid gap-4 p-6 sm:grid-cols-2">
+        <form method="post" class="card-soft mt-10 grid gap-4 p-6 sm:grid-cols-2" data-needs-phone-verify
+              data-phone-labels="<?= e((string) json_encode([
+                  'phoneVerifyError' => t('online.phoneVerify'),
+                  'phoneCodeError' => t('phone.codeErr'),
+                  'phoneCodeSent' => t('phone.codeSent'),
+              ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>">
             <?= Security::csrfField() ?>
             <div>
                 <label class="mb-2 block text-sm font-medium" for="shop-name"><?= t('online.name') ?></label>
                 <input id="shop-name" name="name" required maxlength="80" class="input-field" value="<?= e((string) ($_POST['name'] ?? '')) ?>">
             </div>
-            <div>
+            <div class="sm:col-span-2">
                 <label class="mb-2 block text-sm font-medium" for="shop-phone"><?= t('online.phone') ?></label>
                 <?php render('partials/phone-field', ['id' => 'shop-phone', 'value' => (string) ($_POST['phone'] ?? '')]); ?>
+                <?php render('partials/phone-verify', ['phoneInputId' => 'shop-phone']); ?>
             </div>
             <div class="sm:col-span-2">
                 <button type="submit" class="btn-primary h-12 px-8"><?= t('online.buy') ?></button>

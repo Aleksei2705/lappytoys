@@ -15,6 +15,9 @@ $waLabels = [
     'message' => I18n::translate('signup.waMessage'),
     'footer' => I18n::translate('signup.waFooter'),
     'phoneError' => I18n::translate('signup.phoneErr'),
+    'phoneVerifyError' => I18n::translate('signup.errPhoneVerify'),
+    'phoneCodeError' => I18n::translate('phone.codeErr'),
+    'phoneCodeSent' => I18n::translate('phone.codeSent'),
     'whatsapp' => (string) site('whatsapp'),
     'telegram' => (string) site('telegram'),
 ];
@@ -30,7 +33,7 @@ $waLabels = [
             ]);
             ?>
             <div class="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5" id="signup-form">
-                <form class="space-y-5" method="post" action="/booking-submit.php" data-signup-form
+                <form class="space-y-5" method="post" action="/booking-submit.php" data-signup-form data-needs-phone-verify
                       data-labels="<?= e((string) json_encode($waLabels, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>">
                     <?= Security::csrfField() ?>
                     <div class="absolute -left-[9999px] size-px overflow-hidden" aria-hidden="true">
@@ -45,6 +48,7 @@ $waLabels = [
                     <div>
                         <label for="phone" class="mb-2 block text-sm font-medium text-warm-700"><?= t('signup.phone') ?></label>
                         <?php render('partials/phone-field', ['id' => 'phone']); ?>
+                        <?php render('partials/phone-verify', ['phoneInputId' => 'phone']); ?>
                         <p id="phone-error" class="mt-2 hidden text-sm text-red-600" data-phone-error></p>
                     </div>
                     <div>

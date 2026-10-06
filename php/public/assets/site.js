@@ -546,6 +546,137 @@
     });
   };
 
+  const phoneVerifyApi = async (body) => {
+    const response = await fetch("/phone-verify.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(body),
+      credentials: "same-origin",
+    });
+    const data = await response.json().catch(() => ({}));
+    return { ok: response.ok, data };
+  };
+
+  const initPhoneVerify = () => {
+    document.querySelectorAll("[data-needs-phone-verify]").forEach((form) => {
+      const labels = JSON.parse(form.dataset.labels || form.dataset.phoneLabels || "{}");
+      const blocks = form.querySelectorAll("[data-phone-verify]");
+      if (!blocks.length) return;
+
+      const csrf = () => form.querySelector('input[name="_csrf"]')?.value ?? "";
+      const states = new Map();
+
+      blocks.forEach((block) => {
+        const phoneId = block.dataset.phoneFor || "phone";
+        const phoneInput = document.getElementById(phoneId) || form.querySelector("[data-phone-input]");
+        const codeInput = block.querySelector("[data-phone-code]");
+        const sendButton = block.querySelector("[data-phone-verify-send]");
+        const errorEl = block.querySelector("[data-phone-verify-error]");
+        const hintEl = block.querySelector("[data-phone-verify-hint]");
+        if (!phoneInput || !codeInput || !sendButton) return;
+
+        const state = { verified: false, sending: false };
+        states.set(block, state);
+
+        const setError = (message) => {
+          errorEl.textContent = message;
+          errorEl.classList.toggle("hidden", !message);
+          codeInput.setAttribute("aria-invalid", message ? "true" : "false");
+        };
+
+        const syncStatus = () => {
+          if (!isValidPhone(interpretPhone(phoneInput.value).digits)) {
+            state.verified = false;
+            return;
+          }
+          phoneVerifyApi({
+            action: "status",
+            phone: phoneInput.value,
+            _csrf: csrf(),
+          }).then(({ ok, data }) => {
+            state.verified = ok && data.verified === true;
+          });
+        };
+
+        const reset = () => {
+          state.verified = false;
+          codeInput.value = "";
+          setError("");
+          syncStatus();
+        };
+
+        phoneInput.addEventListener("input", reset);
+        syncStatus();
+
+        sendButton.addEventListener("click", async () => {
+          if (state.sending) return;
+          if (!isValidPhone(interpretPhone(phoneInput.value).digits)) {
+            setError(labels.phoneError || labels.phoneVerifyError || "");
+            phoneInput.focus();
+            return;
+          }
+          state.sending = true;
+          sendButton.disabled = true;
+          setError("");
+          const { ok, data } = await phoneVerifyApi({
+            action: "send",
+            phone: phoneInput.value,
+            _csrf: csrf(),
+          });
+          state.sending = false;
+          sendButton.disabled = false;
+          if (!ok || !data.botUrl) {
+            setError(labels.phoneVerifyError || labels.phoneCodeError || "");
+            return;
+          }
+          if (hintEl && labels.phoneCodeSent) hintEl.textContent = labels.phoneCodeSent;
+          window.open(data.botUrl, "_blank", "noopener,noreferrer");
+          codeInput.focus();
+        });
+
+        codeInput.addEventListener("input", () => {
+          const digits = codeInput.value.replace(/\D/g, "").slice(0, 6);
+          codeInput.value = digits;
+          if (digits.length < 6) {
+            state.verified = false;
+            setError("");
+            return;
+          }
+          phoneVerifyApi({
+            action: "confirm",
+            phone: phoneInput.value,
+            code: digits,
+            _csrf: csrf(),
+          }).then(({ ok }) => {
+            if (ok) {
+              state.verified = true;
+              setError("");
+              return;
+            }
+            state.verified = false;
+            setError(labels.phoneCodeError || "");
+          });
+        });
+      });
+
+      form.addEventListener("submit", (event) => {
+        const phoneInput = form.querySelector("[data-phone-input]");
+        const verified = [...states.values()].every((entry) => entry.verified);
+        if (!verified) {
+          event.preventDefault();
+          const block = form.querySelector("[data-phone-verify-error]:not(.hidden)")?.closest("[data-phone-verify]")
+            || form.querySelector("[data-phone-verify]");
+          const errorEl = block?.querySelector("[data-phone-verify-error]");
+          if (errorEl) {
+            errorEl.textContent = labels.phoneVerifyError || labels.phoneCodeError || "";
+            errorEl.classList.remove("hidden");
+          }
+          (form.querySelector("[data-phone-code]") || phoneInput)?.focus();
+        }
+      });
+    });
+  };
+
   const initSignupForm = () => {
     const form = document.querySelector("[data-signup-form]");
     if (!form) return;
@@ -567,6 +698,7 @@
         event.preventDefault();
         setPhoneError(labels.phoneError);
         phoneInput.focus();
+        return;
       }
     });
 
@@ -779,6 +911,7 @@
   initHeaderShadow();
   initMobileMenu();
   initPhoneFields();
+  initPhoneVerify();
   initSignupForm();
   initMedia();
   initSocialEmbeds();

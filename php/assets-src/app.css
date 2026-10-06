@@ -1075,6 +1075,29 @@ body {
   flex: 1 1 auto;
 }
 
+.phone-verify-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.phone-verify-row > [data-phone-code] {
+  width: 7.5rem;
+  flex: none;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.phone-verify-send {
+  flex: 1 1 auto;
+  min-width: 9rem;
+  height: 2.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  font-size: 0.875rem;
+}
+
 .input-field {
   @apply h-11 w-full rounded-xl border-2 border-brand-700 bg-white px-4 text-sm text-warm-900 outline-none transition-colors placeholder:text-warm-500/70 focus:border-brand-800 focus:ring-4 focus:ring-brand-300/70;
 }

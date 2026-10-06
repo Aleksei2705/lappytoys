@@ -117,6 +117,12 @@ final class TelegramWebhook
             return;
         }
         $text = trim((string) ($post['text'] ?? ''));
+        if (preg_match('#^/start(?:@\w+)?\s+pv([a-f0-9]{32})$#i', $text, $phoneMatches) === 1) {
+            if (!PhoneVerify::deliverTelegram($phoneMatches[1], $chatId)) {
+                error_log('[telegram] phone verify code not sent to chat ' . $chatId);
+            }
+            return;
+        }
         if (preg_match('#^/start(?:@\w+)?(?:\s+([a-f0-9]{32}))?$#i', $text, $matches) !== 1) {
             return;
         }
