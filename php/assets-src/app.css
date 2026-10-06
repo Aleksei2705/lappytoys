@@ -1428,8 +1428,8 @@ body {
     z-index: 20;
     top: 1rem;
     bottom: calc(0.35rem + 1rem);
-    left: calc(1.5rem + 42rem + 0.35rem - 2rem);
-    right: calc(0.35rem + 4.5rem);
+    left: calc(1.5rem + 42rem + 0.35rem);
+    right: calc(0.35rem + 2.5rem);
     width: auto;
     height: auto;
     min-width: 0;
