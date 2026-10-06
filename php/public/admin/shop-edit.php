@@ -18,6 +18,7 @@ $form = [
     'description_kk' => '',
     'price_kzt' => '',
     'preview_path' => '',
+    'image_path' => '',
     'file_path' => '',
     'file_name' => '',
     'channel_id' => '',
@@ -45,6 +46,7 @@ try {
         }
         $form['is_published'] = isset($_POST['is_published']) ? 1 : 0;
         $form['preview_path'] = (string) ($existing['preview_path'] ?? '');
+        $form['image_path'] = (string) ($existing['image_path'] ?? '');
         $form['file_path'] = (string) ($existing['file_path'] ?? '');
         $form['file_name'] = (string) ($existing['file_name'] ?? '');
 
@@ -67,6 +69,12 @@ try {
 
         $dropPreview = '';
         $dropFile = '';
+        $dropImage = '';
+        $image = $_FILES['image'] ?? null;
+        if (is_array($image) && (int) ($image['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            $form['image_path'] = Admin::storeImage($image, 'shop');
+            $dropImage = (string) ($existing['image_path'] ?? '');
+        }
         $preview = $_FILES['preview'] ?? null;
         if (is_array($preview) && (int) ($preview['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
             $form['preview_path'] = Shop::storePreview($preview);
@@ -98,6 +106,7 @@ try {
                 'description_kk' => mb_substr($form['description_kk'], 0, 800),
                 'price_kzt' => $price,
                 'preview_path' => $form['preview_path'] !== '' ? $form['preview_path'] : null,
+                'image_path' => Shop::imagePath($form['image_path']) !== '' ? $form['image_path'] : null,
                 'file_path' => $form['file_path'] !== '' ? $form['file_path'] : null,
                 'file_name' => $form['file_name'] !== '' ? $form['file_name'] : null,
                 'channel_id' => $form['channel_id'] !== '' ? $form['channel_id'] : null,
@@ -106,6 +115,9 @@ try {
             ]);
             if ($dropPreview !== '' && $dropPreview !== (string) $form['preview_path']) {
                 Shop::deletePreview($dropPreview);
+            }
+            if ($dropImage !== '' && $dropImage !== (string) $form['image_path']) {
+                Admin::deleteUploadedImage($dropImage);
             }
             if ($dropFile !== '' && $dropFile !== (string) $form['file_path']) {
                 Shop::deleteFile($dropFile);
@@ -165,6 +177,13 @@ require APP_ROOT . '/templates/admin/header.php';
     <div>
         <label class="mb-2 block text-sm font-medium" for="sort_order">Порядок</label>
         <input id="sort_order" name="sort_order" value="<?= e((string) $form['sort_order']) ?>" class="input-field">
+    </div>
+    <div class="sm:col-span-2">
+        <label class="mb-2 block text-sm font-medium" for="image">Фото товара, JPG, PNG или WebP</label>
+        <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" class="block text-sm">
+        <?php if (Shop::imagePath($form['image_path'] ?? '') !== ''): ?>
+            <img src="<?= e(Shop::imagePath($form['image_path'])) ?>" alt="" class="mt-3 h-32 w-auto rounded-xl object-cover">
+        <?php endif; ?>
     </div>
     <div>
         <label class="mb-2 block text-sm font-medium" for="preview">Превью, MP4 или WebM</label>

@@ -115,6 +115,11 @@ require APP_ROOT . '/templates/layout/header.php';
     <h1 class="mt-3 font-heading text-3xl font-bold text-warm-900 sm:text-4xl"><?= e($title) ?></h1>
     <p class="mt-4 font-heading text-2xl font-bold text-brand-700"><?= e(Shop::price((int) $product['price_kzt'])) ?></p>
 
+    <?php $photo = Shop::imagePath($product['image_path'] ?? ''); ?>
+    <?php if ($photo !== ''): ?>
+        <img src="<?= e($photo) ?>" alt="<?= e($title) ?>" class="mt-8 aspect-[4/3] w-full rounded-3xl object-cover shadow-lg">
+    <?php endif; ?>
+
     <?php if (is_string($product['preview_path']) && preg_match('#^/uploads/shop-preview/[a-f0-9]{16}\.(mp4|webm)$#', $product['preview_path']) === 1): ?>
         <video class="mt-8 w-full overflow-hidden rounded-3xl bg-warm-900 shadow-lg" controls playsinline preload="metadata">
             <source src="<?= e((string) $product['preview_path']) ?>">

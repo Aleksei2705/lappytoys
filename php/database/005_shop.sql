@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS shop_products (
   description_kk VARCHAR(800) NULL,
   price_kzt INT UNSIGNED NOT NULL,
   preview_path VARCHAR(255) NULL,
+  image_path VARCHAR(255) NULL,
   file_path VARCHAR(255) NULL,
   file_name VARCHAR(180) NULL,
   channel_id VARCHAR(22) NULL,

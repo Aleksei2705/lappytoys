@@ -15,6 +15,10 @@
         <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <?php foreach ($shopProducts as $product): ?>
                 <article class="card-hover flex h-full flex-col">
+                    <?php $photo = Shop::imagePath($product['image_path'] ?? ''); ?>
+                    <?php if ($photo !== ''): ?>
+                        <img src="<?= e($photo) ?>" alt="<?= e(loc($product, 'title')) ?>" class="aspect-[4/3] w-full object-cover" loading="lazy">
+                    <?php endif; ?>
                     <div class="flex flex-1 flex-col gap-3 p-5">
                         <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-600"><?= t('online.kind.' . (string) $product['kind']) ?></p>
                         <h3 class="font-heading text-xl font-semibold text-warm-900"><?= e(loc($product, 'title')) ?></h3>

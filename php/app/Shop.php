@@ -85,6 +85,13 @@ final class Shop
         } catch (RuntimeException) {
             // column already exists
         }
+        try {
+            Database::execute(
+                'ALTER TABLE shop_products ADD COLUMN image_path VARCHAR(255) NULL AFTER preview_path',
+            );
+        } catch (RuntimeException) {
+            // column already exists
+        }
     }
 
     public static function markTelegramSent(int $id): void
@@ -147,6 +154,7 @@ final class Shop
             $data['description_kk'],
             $data['price_kzt'],
             $data['preview_path'],
+            $data['image_path'],
             $data['file_path'],
             $data['file_name'],
             $data['channel_id'],
@@ -156,14 +164,14 @@ final class Shop
         if ($id > 0) {
             Database::execute(
                 'UPDATE shop_products SET slug = ?, kind = ?, title_ru = ?, title_kk = ?, description_ru = ?, description_kk = ?,
-                 price_kzt = ?, preview_path = ?, file_path = ?, file_name = ?, channel_id = ?, sort_order = ?, is_published = ? WHERE id = ?',
+                 price_kzt = ?, preview_path = ?, image_path = ?, file_path = ?, file_name = ?, channel_id = ?, sort_order = ?, is_published = ? WHERE id = ?',
                 [...$params, $id],
             );
             return $id;
         }
         Database::execute(
-            'INSERT INTO shop_products (slug, kind, title_ru, title_kk, description_ru, description_kk, price_kzt, preview_path, file_path, file_name, channel_id, sort_order, is_published)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO shop_products (slug, kind, title_ru, title_kk, description_ru, description_kk, price_kzt, preview_path, image_path, file_path, file_name, channel_id, sort_order, is_published)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $params,
         );
         return Database::lastInsertId();
@@ -178,6 +186,7 @@ final class Shop
         Database::execute('DELETE FROM shop_orders WHERE product_id = ?', [$id]);
         Database::execute('DELETE FROM shop_products WHERE id = ?', [$id]);
         self::deletePreview((string) ($product['preview_path'] ?? ''));
+        Admin::deleteUploadedImage((string) ($product['image_path'] ?? ''));
         self::deleteFile((string) ($product['file_path'] ?? ''));
     }
 
@@ -390,6 +399,12 @@ final class Shop
              ORDER BY FIELD(o.status, \'pending\', \'paid\', \'cancelled\'), o.id DESC
              LIMIT 200',
         );
+    }
+
+    public static function imagePath(mixed $path): string
+    {
+        $path = (string) $path;
+        return preg_match('#^/uploads/shop/[a-f0-9]{16}\.(jpg|png|webp)$#', $path) === 1 ? $path : '';
     }
 
     public static function price(int $amount): string
