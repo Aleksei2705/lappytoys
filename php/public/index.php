@@ -24,7 +24,7 @@ $returnPath = '/';
 
 require APP_ROOT . '/templates/layout/header.php';
 
-foreach (['hero', 'stats', 'about', 'courses', 'master-classes', 'online', 'schedule', 'works', 'instagram', 'tiktok', 'reviews', 'benefits', 'faq', 'contacts', 'signup'] as $section) {
+foreach (['hero', 'stats', 'about', 'awards', 'courses', 'master-classes', 'online', 'schedule', 'works', 'instagram', 'tiktok', 'reviews', 'benefits', 'faq', 'contacts', 'signup'] as $section) {
     require APP_ROOT . '/templates/home/' . $section . '.php';
 }
 

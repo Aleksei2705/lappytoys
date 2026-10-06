@@ -445,10 +445,6 @@ body {
   @apply py-10 sm:py-12;
 }
 
-#awards {
-  scroll-margin-top: calc(4rem + env(safe-area-inset-top, 0px));
-}
-
 .section-alt {
   @apply relative bg-white/40 backdrop-blur-[2px];
 }
