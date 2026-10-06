@@ -8,6 +8,17 @@
 :root {
   --font-manrope: "Manrope";
   --font-playfair: "Playfair Display";
+  --site-header-offset: calc(4rem + env(safe-area-inset-top, 0px));
+}
+
+html {
+  scroll-padding-top: var(--site-header-offset);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
+  }
 }
 
 /* Палитра Lappy Art — нежная женственная гамма */
@@ -440,9 +451,15 @@ body {
 /* Layout */
 .page-section {
   box-sizing: border-box;
-  min-height: calc(100svh - 4rem - env(safe-area-inset-top, 0px));
-  scroll-margin-top: calc(4rem + env(safe-area-inset-top, 0px));
-  @apply py-10 sm:py-12;
+  min-height: calc(100dvh - var(--site-header-offset));
+  scroll-margin-top: var(--site-header-offset);
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  @apply pb-10 pt-4 sm:pb-12 sm:pt-5;
+}
+
+.page-section[id] {
+  scroll-snap-stop: always;
 }
 
 .section-alt {
