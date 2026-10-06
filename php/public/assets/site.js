@@ -439,6 +439,113 @@
     return digits.length >= 10 && digits.length <= 15;
   };
 
+  const phoneCountries = (select) => Array.from(select.options).map((option) => ({
+    iso: option.value,
+    dial: option.dataset.dial || "",
+  }));
+
+  const foreignDials = (countries) => [...new Set(countries.map((country) => country.dial))]
+    .filter((dial) => dial !== "7")
+    .sort((a, b) => b.length - a.length);
+
+  const detectCountry = (digits, countries, current, explicitPlus) => {
+    const foreign = foreignDials(countries)
+      .map((dial) => countries.find((country) => country.dial === dial))
+      .find((country) => country && digits.startsWith(country.dial));
+    if (foreign && (explicitPlus || foreign.dial !== "86" || digits.length > 11)) return foreign.iso;
+    if (digits.startsWith("7") || digits.startsWith("8")) {
+      const national = digits.slice(1);
+      if (national.startsWith("9")) return countries.some((country) => country.iso === "ru") ? "ru" : current;
+      if (/^[670]/.test(national)) return countries.some((country) => country.iso === "kz") ? "kz" : current;
+      return current === "ru" || current === "kz" ? current : "kz";
+    }
+    return current;
+  };
+
+  const formatWithCountry = (digits, dial) => {
+    if (!digits) return "";
+    if (dial === "7") return formatPhone(digits.slice(0, 11), "cis");
+    const national = digits.startsWith(dial) ? digits.slice(dial.length) : digits;
+    const chunks = [];
+    for (let index = 0; index < national.length; index += 3) chunks.push(national.slice(index, index + 3));
+    return `+${dial}${chunks.length ? ` ${chunks.join(" ")}` : ""}`;
+  };
+
+  const initPhoneFields = () => {
+    document.querySelectorAll("[data-phone-field]").forEach((field) => {
+      const select = field.querySelector("[data-phone-country]");
+      const input = field.querySelector("[data-phone-input]");
+      if (!select || !input) return;
+      const countries = phoneCountries(select);
+      const dials = foreignDials(countries);
+      const dialOf = (iso) => countries.find((country) => country.iso === iso)?.dial || "7";
+      const matchedDial = (raw) => ["7", ...dials].sort((a, b) => b.length - a.length).find((dial) => raw.startsWith(dial)) || "";
+
+      const placeholderFor = (dial) => (dial === "7" ? "+7 (___) ___-__-__" : `+${dial}`);
+
+      const apply = (fromSelect) => {
+        const trimmed = input.value.trim();
+        const startsPlus = trimmed.startsWith("+") || trimmed.startsWith("00");
+        let raw = input.value.replace(/\D/g, "").slice(0, 15);
+        if (trimmed.startsWith("00")) raw = raw.replace(/^00/, "");
+        const previousDial = dialOf(select.value);
+
+        if (!raw && !fromSelect) {
+          input.value = "";
+          input.placeholder = placeholderFor(previousDial);
+          return;
+        }
+
+        if (fromSelect) {
+          const oldDial = matchedDial(raw);
+          const national = oldDial && raw.startsWith(oldDial) ? raw.slice(oldDial.length) : raw.replace(/^8/, "");
+          const dial = dialOf(select.value);
+          raw = `${dial}${national}`.slice(0, dial === "7" ? 11 : 15);
+          input.placeholder = placeholderFor(dial);
+          input.value = formatWithCountry(raw, dial);
+          return;
+        }
+
+        const unfinished = !startsPlus && dials.some((dial) => dial.startsWith(raw) && dial !== raw);
+        if (unfinished) return;
+
+        let full = raw;
+        if (startsPlus) {
+          const next = detectCountry(full, countries, select.value, true);
+          if (next !== select.value) select.value = next;
+        } else if (full.startsWith("8") && (full.length <= 11 || !full.startsWith("86"))) {
+          full = `7${full.slice(1)}`.slice(0, 11);
+          const next = detectCountry(full, countries, select.value, false);
+          if (next !== select.value) select.value = next;
+        } else if (full.startsWith("7") && full.length >= 11) {
+          full = full.slice(0, 11);
+          const next = detectCountry(full, countries, select.value, false);
+          if (next !== select.value) select.value = next;
+        } else if (dials.some((dial) => full.startsWith(dial))) {
+          const next = detectCountry(full, countries, select.value, false);
+          if (next !== select.value) select.value = next;
+          full = full.slice(0, 15);
+        } else {
+          const dial = dialOf(select.value);
+          const national = full;
+          full = `${dial}${national}`.slice(0, dial === "7" ? 11 : 15);
+          const next = detectCountry(full, countries, select.value, false);
+          if (next !== select.value) select.value = next;
+          const active = dialOf(select.value);
+          if (active !== dial) full = `${active}${national}`.slice(0, active === "7" ? 11 : 15);
+        }
+
+        const dial = dialOf(select.value);
+        input.placeholder = placeholderFor(dial);
+        input.value = formatWithCountry(full, dial);
+      };
+
+      select.addEventListener("change", () => apply(true));
+      input.addEventListener("input", () => apply(false));
+      if (input.value.trim()) apply(false);
+    });
+  };
+
   const initSignupForm = () => {
     const form = document.querySelector("[data-signup-form]");
     if (!form) return;
@@ -453,11 +560,7 @@
       phoneInput.setAttribute("aria-invalid", message ? "true" : "false");
     };
 
-    phoneInput.addEventListener("input", () => {
-      const parsed = interpretPhone(phoneInput.value);
-      phoneInput.value = formatPhone(parsed.digits, parsed.mode);
-      setPhoneError("");
-    });
+    phoneInput.addEventListener("input", () => setPhoneError(""));
 
     form.addEventListener("submit", (event) => {
       if (!isValidPhone(interpretPhone(phoneInput.value).digits)) {
@@ -675,6 +778,7 @@
 
   initHeaderShadow();
   initMobileMenu();
+  initPhoneFields();
   initSignupForm();
   initMedia();
   initSocialEmbeds();

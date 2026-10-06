@@ -1056,6 +1056,25 @@ body {
 }
 
 /* Form */
+.phone-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.phone-row > .phone-country {
+  width: 42%;
+  max-width: 11.5rem;
+  flex: none;
+  padding-left: 0.45rem;
+  padding-right: 0.3rem;
+}
+
+.phone-row > [data-phone-input] {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .input-field {
   @apply h-11 w-full rounded-xl border-2 border-brand-700 bg-white px-4 text-sm text-warm-900 outline-none transition-colors placeholder:text-warm-500/70 focus:border-brand-800 focus:ring-4 focus:ring-brand-300/70;
 }

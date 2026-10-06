@@ -140,6 +140,7 @@ return [
     'signup.name' => 'Атыңыз',
     'signup.namePh' => 'Сізге қалай жүгінейік?',
     'signup.phone' => 'Телефон',
+    'phone.country' => 'Ел',
     'signup.direction' => 'Бағыт',
     'signup.directionPh' => 'Курс немесе мастер-класс таңдаңыз',
     'signup.date' => 'Қалаған күн',

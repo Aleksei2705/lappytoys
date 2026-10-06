@@ -140,6 +140,7 @@ return [
     'signup.name' => 'Ваше имя',
     'signup.namePh' => 'Как к вам обращаться?',
     'signup.phone' => 'Телефон',
+    'phone.country' => 'Страна',
     'signup.direction' => 'Направление',
     'signup.directionPh' => 'Выберите курс или мастер-класс',
     'signup.date' => 'Желаемая дата',

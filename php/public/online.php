@@ -184,7 +184,7 @@ require APP_ROOT . '/templates/layout/header.php';
             </div>
             <div>
                 <label class="mb-2 block text-sm font-medium" for="shop-phone"><?= t('online.phone') ?></label>
-                <input id="shop-phone" name="phone" required maxlength="20" class="input-field" placeholder="+7" value="<?= e((string) ($_POST['phone'] ?? '')) ?>">
+                <?php render('partials/phone-field', ['id' => 'shop-phone', 'value' => (string) ($_POST['phone'] ?? '')]); ?>
             </div>
             <div class="sm:col-span-2">
                 <button type="submit" class="btn-primary h-12 px-8"><?= t('online.buy') ?></button>

@@ -44,8 +44,7 @@ $waLabels = [
                     </div>
                     <div>
                         <label for="phone" class="mb-2 block text-sm font-medium text-warm-700"><?= t('signup.phone') ?></label>
-                        <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required
-                               placeholder="+7 (___) ___-__-__" class="input-field" data-phone-input>
+                        <?php render('partials/phone-field', ['id' => 'phone']); ?>
                         <p id="phone-error" class="mt-2 hidden text-sm text-red-600" data-phone-error></p>
                     </div>
                     <div>
