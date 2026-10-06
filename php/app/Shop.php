@@ -372,7 +372,7 @@ final class Shop
 
     public static function isInviteLink(string $link): bool
     {
-        return preg_match('#^https://t\.me/(?:\+|joinchat/)[A-Za-z0-9_-]{8,80}$#', $link) === 1;
+        return preg_match('#^https://t\.me/(?:\+|joinchat/)[A-Za-z0-9_-]{6,}$#', $link) === 1;
     }
 
     /** @param array{slug?: string, token?: string} $order */

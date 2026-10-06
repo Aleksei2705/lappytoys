@@ -101,21 +101,26 @@ final class Telegram
             self::$lastError = 'ID канала должен быть числом вида -100…';
             return null;
         }
-        $response = self::call('createChatInviteLink', [
-            'chat_id' => $chatId,
-            'name' => mb_substr($name, 0, 32),
-            'member_limit' => 1,
-        ]);
-        $result = is_array($response) ? ($response['result'] ?? null) : null;
-        $ok = is_array($response) && ($response['ok'] ?? false) === true;
-        $link = is_array($result) ? (string) ($result['invite_link'] ?? '') : '';
-        if (!$ok || $link === '') {
-            self::$lastError = self::errorText($response);
-            error_log('[telegram] createChatInviteLink failed: ' . self::$lastError);
-            return null;
+        $name = mb_substr($name, 0, 32);
+        $attempts = [
+            ['chat_id' => $chatId, 'name' => $name, 'member_limit' => 1],
+            ['chat_id' => $chatId, 'name' => $name, 'creates_join_request' => true],
+            ['chat_id' => $chatId, 'name' => $name],
+        ];
+        $last = 'Telegram не вернул ссылку приглашения.';
+        foreach ($attempts as $payload) {
+            $response = self::call('createChatInviteLink', $payload);
+            $result = is_array($response) ? ($response['result'] ?? null) : null;
+            $link = is_array($result) ? trim((string) ($result['invite_link'] ?? '')) : '';
+            if (is_array($response) && ($response['ok'] ?? false) === true && $link !== '') {
+                self::$lastError = '';
+                return $link;
+            }
+            $last = self::errorText($response);
+            error_log('[telegram] createChatInviteLink failed: ' . $last);
         }
-        self::$lastError = '';
-        return $link;
+        self::$lastError = $last;
+        return null;
     }
 
     /** Public HTTPS endpoint Telegram calls when an inline button is pressed. */
