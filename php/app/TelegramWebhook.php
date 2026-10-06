@@ -7,6 +7,12 @@ final class TelegramWebhook
     /** @param array<string, mixed> $update */
     public static function handle(array $update): void
     {
+        $membership = $update['my_chat_member'] ?? null;
+        if (is_array($membership)) {
+            self::reportChatId($membership);
+            return;
+        }
+
         $callback = $update['callback_query'] ?? null;
         if (!is_array($callback)) {
             return;
@@ -69,6 +75,33 @@ final class TelegramWebhook
         Shop::cancel($orderId);
         self::answer($callback, 'Заявка отменена.');
         self::markMessageHandled($callback, '❌ Отменено');
+    }
+
+    /** @param array<string, mixed> $membership */
+    private static function reportChatId(array $membership): void
+    {
+        $chat = $membership['chat'] ?? null;
+        $next = $membership['new_chat_member'] ?? null;
+        if (!is_array($chat) || !is_array($next)) {
+            return;
+        }
+        $status = (string) ($next['status'] ?? '');
+        if (!in_array($status, ['member', 'administrator'], true)) {
+            return;
+        }
+        $chatId = (string) ($chat['id'] ?? '');
+        if (preg_match('/^-\d{5,20}$/', $chatId) !== 1) {
+            return;
+        }
+        $title = trim((string) ($chat['title'] ?? ''));
+        if ($title === '') {
+            $title = 'без названия';
+        }
+        Telegram::send(
+            "Канал подключён: <b>" . htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n"
+            . "ID: <code>{$chatId}</code>\n"
+            . "Вставьте это число в товар, в поле «Закрытый канал Telegram».",
+        );
     }
 
     private static function isAllowedOperator(int $userId): bool

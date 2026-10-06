@@ -81,7 +81,7 @@ try {
         }
         $form['channel_id'] = trim($form['channel_id']);
         if ($form['channel_id'] !== '' && preg_match('/^-\d{5,20}$/', $form['channel_id']) !== 1) {
-            $errors[] = 'ID канала — число вида -100… Его видно, если переслать сообщение из канала в @getidsbot.';
+            $errors[] = 'ID канала — число вида -100…. Его присылает @lappyart_orders_bot, когда его добавляют в канал.';
         }
         if ($form['is_published'] === 1 && $form['file_path'] === '' && $form['channel_id'] === '') {
             $errors[] = 'Чтобы показать товар, загрузите файл или укажите закрытый канал.';
@@ -179,7 +179,7 @@ require APP_ROOT . '/templates/admin/header.php';
     <div class="sm:col-span-2">
         <label class="mb-2 block text-sm font-medium" for="channel_id">Закрытый канал Telegram</label>
         <input id="channel_id" name="channel_id" maxlength="22" value="<?= e((string) ($form['channel_id'] ?? '')) ?>" placeholder="-1001234567890" class="input-field">
-        <p class="mt-2 text-xs leading-relaxed text-warm-500">После кнопки «Оплачено» бот создаст одноразовую ссылку в этот канал и отправит её покупателю. Бота нужно сделать администратором канала с правом приглашать. ID канала: перешлите любое сообщение из канала в @getidsbot — число начинается с -100.</p>
+        <p class="mt-2 text-xs leading-relaxed text-warm-500">После кнопки «Оплачено» бот создаст одноразовую ссылку в этот канал и отправит её покупателю. Добавьте @lappyart_orders_bot администратором канала с правом приглашать — он пришлёт сюда число ID, оно начинается с -100.</p>
     </div>
     <label class="flex items-center gap-2 text-sm sm:col-span-2">
         <input type="checkbox" name="is_published" value="1" <?= (int) ($form['is_published'] ?? 0) === 1 ? 'checked' : '' ?>>

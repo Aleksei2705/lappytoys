@@ -121,7 +121,7 @@ final class Telegram
     {
         $url = self::webhookUrl();
         $stamp = APP_ROOT . '/storage/telegram-webhook.url';
-        if (is_readable($stamp) && trim((string) file_get_contents($stamp)) === $url) {
+        if (is_readable($stamp) && trim((string) file_get_contents($stamp)) === $url . ' member') {
             return true;
         }
         $result = self::registerWebhook();
@@ -154,7 +154,7 @@ final class Telegram
 
         $payload = [
             'url' => $url,
-            'allowed_updates' => ['callback_query'],
+            'allowed_updates' => ['callback_query', 'my_chat_member'],
         ];
         if ($secret !== '') {
             $payload['secret_token'] = $secret;
@@ -169,7 +169,7 @@ final class Telegram
         }
 
         $stamp = APP_ROOT . '/storage/telegram-webhook.url';
-        file_put_contents($stamp, $url);
+        file_put_contents($stamp, $url . ' member');
         self::$lastError = '';
         return ['ok' => true, 'detail' => $url];
     }
