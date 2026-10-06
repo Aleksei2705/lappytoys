@@ -25,7 +25,7 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
             <div class="hero-reel-track">
                 <?php foreach ([false, true] as $copy): ?>
                     <?php foreach ($heroClips as $clip): ?>
-                        <video class="hero-reel-item" src="<?= e((string) $clip['path']) ?>" muted autoplay loop playsinline preload="metadata" <?= $copy ? 'aria-hidden="true" tabindex="-1"' : '' ?>></video>
+                        <video class="hero-reel-item" width="360" height="480" src="<?= e((string) $clip['path']) ?>" muted autoplay loop playsinline preload="metadata" disablepictureinpicture <?= $copy ? 'aria-hidden="true" tabindex="-1"' : '' ?>></video>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
             </div>
