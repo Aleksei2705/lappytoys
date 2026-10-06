@@ -1000,6 +1000,41 @@
   initMasterClasses();
   initRatingInput();
   initShare();
+
+  const initShopOrderTelegram = () => {
+    const block = document.querySelector("[data-order-watch][data-auto-telegram]");
+    if (!block) return;
+    const botUrl = block.dataset.autoTelegram?.trim();
+    if (!botUrl) return;
+
+    const params = new URLSearchParams(location.search);
+    if (params.get("tg") !== "1") return;
+
+    const orderToken = params.get("order") || "";
+    const storageKey = orderToken ? `lappy_tg_opened_${orderToken}` : "";
+    if (storageKey && sessionStorage.getItem(storageKey) === "1") {
+      params.delete("tg");
+      const query = params.toString();
+      history.replaceState(null, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`);
+      return;
+    }
+
+    params.delete("tg");
+    const query = params.toString();
+    history.replaceState(null, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`);
+
+    const openBot = () => {
+      const opened = window.open(botUrl, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        block.querySelector("[data-shop-telegram-open]")?.click();
+      }
+      if (storageKey) sessionStorage.setItem(storageKey, "1");
+    };
+
+    openBot();
+  };
+
+  initShopOrderTelegram();
   const initAssistant = () => {
     const root = document.querySelector("[data-assistant]");
     const dataNode = root?.querySelector("[data-assistant-data]");

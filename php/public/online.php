@@ -69,7 +69,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     } else {
                         error_log('[online] shop order #' . $token . ': Telegram failed — ' . Telegram::lastError());
                     }
-                    header('Location: /online/' . rawurlencode((string) $product['slug']) . '/?order=' . $token, true, 303);
+                    header(
+                        'Location: /online/' . rawurlencode((string) $product['slug']) . '/?order=' . $token . '&tg=1',
+                        true,
+                        303,
+                    );
                     exit;
                 } catch (RuntimeException) {
                     $error = t('online.formError');
@@ -155,13 +159,14 @@ require APP_ROOT . '/templates/layout/header.php';
             <?php endif; ?>
         </div>
     <?php elseif ($order !== null && $order['status'] === 'pending'): ?>
-        <div class="card-soft mt-10 p-6" data-order-watch>
+        <?php $botUrl = Shop::buyerBotUrl((string) $order['token']); ?>
+        <?php $needsTelegram = $botUrl !== '' && trim((string) ($order['buyer_chat_id'] ?? '')) === ''; ?>
+        <div class="card-soft mt-10 p-6" data-order-watch<?= $needsTelegram ? ' data-auto-telegram="' . e($botUrl) . '"' : '' ?>>
             <p class="text-base leading-relaxed text-warm-700"><?= t('online.pending') ?></p>
             <p class="mt-3 text-sm text-warm-500"><?= t('online.save') ?></p>
             <p class="mt-2 break-all text-sm"><a class="text-brand-700 underline" href="<?= e($orderUrl) ?>"><?= e($orderUrl) ?></a></p>
-            <?php $botUrl = Shop::buyerBotUrl((string) $order['token']); ?>
-            <?php if ($botUrl !== '' && trim((string) ($order['buyer_chat_id'] ?? '')) === ''): ?>
-                <a class="btn-primary mt-4 h-12 px-8" href="<?= e($botUrl) ?>" target="_blank" rel="noopener noreferrer"><?= t('online.telegram') ?></a>
+            <?php if ($needsTelegram): ?>
+                <a class="btn-primary mt-4 h-12 px-8" href="<?= e($botUrl) ?>" target="_blank" rel="noopener noreferrer" data-shop-telegram-open><?= t('online.telegram') ?></a>
                 <p class="mt-3 text-sm text-warm-500"><?= t('online.telegramNote') ?></p>
             <?php endif; ?>
         </div>
