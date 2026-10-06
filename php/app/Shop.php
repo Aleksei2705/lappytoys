@@ -48,6 +48,7 @@ final class Shop
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
         );
         self::ensureOrderColumns();
+        self::ensureProductColumns();
     }
 
     private static function ensureOrderColumns(): void
@@ -55,6 +56,24 @@ final class Shop
         try {
             Database::execute(
                 'ALTER TABLE shop_orders ADD COLUMN telegram_sent TINYINT(1) NOT NULL DEFAULT 0 AFTER status',
+            );
+        } catch (RuntimeException) {
+            // column already exists
+        }
+        try {
+            Database::execute(
+                'ALTER TABLE shop_orders ADD COLUMN invite_link VARCHAR(255) NULL AFTER telegram_sent',
+            );
+        } catch (RuntimeException) {
+            // column already exists
+        }
+    }
+
+    private static function ensureProductColumns(): void
+    {
+        try {
+            Database::execute(
+                'ALTER TABLE shop_products ADD COLUMN channel_id VARCHAR(22) NULL AFTER file_name',
             );
         } catch (RuntimeException) {
             // column already exists
@@ -72,7 +91,7 @@ final class Shop
     {
         self::ensureTables();
         return Database::fetchAll(
-            'SELECT * FROM shop_products WHERE is_published = 1 AND file_path IS NOT NULL ORDER BY sort_order, id',
+            'SELECT * FROM shop_products WHERE is_published = 1 AND (file_path IS NOT NULL OR channel_id IS NOT NULL) ORDER BY sort_order, id',
         );
     }
 
@@ -81,7 +100,7 @@ final class Shop
     {
         self::ensureTables();
         return Database::fetchOne(
-            'SELECT * FROM shop_products WHERE slug = ? AND is_published = 1 AND file_path IS NOT NULL',
+            'SELECT * FROM shop_products WHERE slug = ? AND is_published = 1 AND (file_path IS NOT NULL OR channel_id IS NOT NULL)',
             [$slug],
         );
     }
@@ -123,20 +142,21 @@ final class Shop
             $data['preview_path'],
             $data['file_path'],
             $data['file_name'],
+            $data['channel_id'],
             $data['sort_order'],
             $data['is_published'],
         ];
         if ($id > 0) {
             Database::execute(
                 'UPDATE shop_products SET slug = ?, kind = ?, title_ru = ?, title_kk = ?, description_ru = ?, description_kk = ?,
-                 price_kzt = ?, preview_path = ?, file_path = ?, file_name = ?, sort_order = ?, is_published = ? WHERE id = ?',
+                 price_kzt = ?, preview_path = ?, file_path = ?, file_name = ?, channel_id = ?, sort_order = ?, is_published = ? WHERE id = ?',
                 [...$params, $id],
             );
             return $id;
         }
         Database::execute(
-            'INSERT INTO shop_products (slug, kind, title_ru, title_kk, description_ru, description_kk, price_kzt, preview_path, file_path, file_name, sort_order, is_published)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO shop_products (slug, kind, title_ru, title_kk, description_ru, description_kk, price_kzt, preview_path, file_path, file_name, channel_id, sort_order, is_published)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $params,
         );
         return Database::lastInsertId();
@@ -235,7 +255,7 @@ final class Shop
         self::ensureTables();
         return $id > 0
             ? Database::fetchOne(
-                'SELECT o.*, p.slug, p.title_ru FROM shop_orders o JOIN shop_products p ON p.id = o.product_id WHERE o.id = ?',
+                'SELECT o.*, p.slug, p.title_ru, p.channel_id FROM shop_orders o JOIN shop_products p ON p.id = o.product_id WHERE o.id = ?',
                 [$id],
             )
             : null;
@@ -249,7 +269,7 @@ final class Shop
         }
         self::ensureTables();
         return Database::fetchOne(
-            'SELECT o.*, p.slug, p.title_ru, p.file_path, p.file_name
+            'SELECT o.*, p.slug, p.title_ru, p.file_path, p.file_name, p.channel_id
              FROM shop_orders o
              JOIN shop_products p ON p.id = o.product_id
              WHERE o.token = ?',
@@ -264,6 +284,44 @@ final class Shop
             'UPDATE shop_orders SET status = \'paid\', paid_at = NOW() WHERE id = ? AND status = \'pending\'',
             [$id],
         ) > 0;
+    }
+
+    /**
+     * One-time invite into the product's closed channel. The same link is reused for this order.
+     *
+     * @param array<string, mixed> $order
+     */
+    public static function grantChannel(array $order): string
+    {
+        self::ensureTables();
+        $existing = trim((string) ($order['invite_link'] ?? ''));
+        if (self::isInviteLink($existing)) {
+            return $existing;
+        }
+        $channelId = trim((string) ($order['channel_id'] ?? ''));
+        $orderId = (int) ($order['id'] ?? 0);
+        if ($orderId < 1 || preg_match('/^-\d{5,20}$/', $channelId) !== 1) {
+            return '';
+        }
+        $invite = Telegram::channelInvite($channelId, 'Заказ ' . $orderId);
+        if ($invite === null || !self::isInviteLink($invite)) {
+            return '';
+        }
+        $saved = Database::execute(
+            'UPDATE shop_orders SET invite_link = ? WHERE id = ? AND (invite_link IS NULL OR invite_link = \'\')',
+            [$invite, $orderId],
+        );
+        if ($saved > 0) {
+            return $invite;
+        }
+        $row = Database::fetchOne('SELECT invite_link FROM shop_orders WHERE id = ?', [$orderId]);
+        $stored = trim((string) ($row['invite_link'] ?? ''));
+        return self::isInviteLink($stored) ? $stored : $invite;
+    }
+
+    public static function isInviteLink(string $link): bool
+    {
+        return preg_match('#^https://t\.me/(?:\+|joinchat/)[A-Za-z0-9_-]{8,80}$#', $link) === 1;
     }
 
     /** @param array{slug?: string, token?: string} $order */

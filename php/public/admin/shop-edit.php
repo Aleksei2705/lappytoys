@@ -20,6 +20,7 @@ $form = [
     'preview_path' => '',
     'file_path' => '',
     'file_name' => '',
+    'channel_id' => '',
     'sort_order' => '0',
     'is_published' => 0,
 ];
@@ -39,7 +40,7 @@ try {
         $id = Admin::intParam($_POST, 'id');
         $form['id'] = $id;
         $existing = $id > 0 ? Shop::find($id) : null;
-        foreach (['slug', 'kind', 'title_ru', 'title_kk', 'description_ru', 'description_kk', 'price_kzt', 'sort_order'] as $field) {
+        foreach (['slug', 'kind', 'title_ru', 'title_kk', 'description_ru', 'description_kk', 'price_kzt', 'sort_order', 'channel_id'] as $field) {
             $form[$field] = Admin::text($_POST, $field);
         }
         $form['is_published'] = isset($_POST['is_published']) ? 1 : 0;
@@ -78,8 +79,12 @@ try {
             $form['file_path'] = $stored['path'];
             $form['file_name'] = $stored['name'];
         }
-        if ($form['is_published'] === 1 && $form['file_path'] === '') {
-            $errors[] = 'Чтобы показать товар на сайте, загрузите файл для покупателя.';
+        $form['channel_id'] = trim($form['channel_id']);
+        if ($form['channel_id'] !== '' && preg_match('/^-\d{5,20}$/', $form['channel_id']) !== 1) {
+            $errors[] = 'ID канала — число вида -100… Его видно, если переслать сообщение из канала в @getidsbot.';
+        }
+        if ($form['is_published'] === 1 && $form['file_path'] === '' && $form['channel_id'] === '') {
+            $errors[] = 'Чтобы показать товар, загрузите файл или укажите закрытый канал.';
         }
 
         if ($errors === []) {
@@ -95,6 +100,7 @@ try {
                 'preview_path' => $form['preview_path'] !== '' ? $form['preview_path'] : null,
                 'file_path' => $form['file_path'] !== '' ? $form['file_path'] : null,
                 'file_name' => $form['file_name'] !== '' ? $form['file_name'] : null,
+                'channel_id' => $form['channel_id'] !== '' ? $form['channel_id'] : null,
                 'sort_order' => (int) $form['sort_order'],
                 'is_published' => $form['is_published'],
             ]);
@@ -169,6 +175,11 @@ require APP_ROOT . '/templates/admin/header.php';
         <label class="mb-2 block text-sm font-medium" for="file">Файл после оплаты: MP4, WebM, PDF или ZIP</label>
         <input id="file" name="file" type="file" accept="video/mp4,video/webm,application/pdf,application/zip" class="block text-sm">
         <?php if (!empty($form['file_name'])): ?><p class="mt-2 text-xs text-warm-500">Сейчас: <?= e((string) $form['file_name']) ?></p><?php endif; ?>
+    </div>
+    <div class="sm:col-span-2">
+        <label class="mb-2 block text-sm font-medium" for="channel_id">Закрытый канал Telegram</label>
+        <input id="channel_id" name="channel_id" maxlength="22" value="<?= e((string) ($form['channel_id'] ?? '')) ?>" placeholder="-1001234567890" class="input-field">
+        <p class="mt-2 text-xs leading-relaxed text-warm-500">После кнопки «Оплачено» бот создаст одноразовую ссылку в этот канал и отправит её покупателю. Бота нужно сделать администратором канала с правом приглашать. ID канала: перешлите любое сообщение из канала в @getidsbot — число начинается с -100.</p>
     </div>
     <label class="flex items-center gap-2 text-sm sm:col-span-2">
         <input type="checkbox" name="is_published" value="1" <?= (int) ($form['is_published'] ?? 0) === 1 ? 'checked' : '' ?>>

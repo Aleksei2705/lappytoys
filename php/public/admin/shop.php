@@ -41,7 +41,8 @@ require APP_ROOT . '/templates/admin/header.php';
                     <?= e(Shop::KINDS[(string) $product['kind']] ?? '') ?>
                     · <?= e(Shop::price((int) $product['price_kzt'])) ?>
                     · <?= (int) $product['is_published'] === 1 ? 'на сайте' : 'скрыт' ?>
-                    <?= empty($product['file_path']) ? '· нет файла' : '' ?>
+                    <?php if (!empty($product['channel_id'])): ?> · канал<?php endif; ?>
+                    <?= empty($product['file_path']) && empty($product['channel_id']) ? '· нет доступа' : '' ?>
                 </p>
             </div>
             <div class="flex gap-3">

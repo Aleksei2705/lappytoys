@@ -23,17 +23,12 @@ try {
             } elseif (!Shop::markPaid($id)) {
                 Admin::flash('success', 'Оплата уже была отмечена.');
             } else {
-                $told = Notifier::shopPaid([
-                    'name' => (string) $order['name'],
-                    'phone' => (string) $order['phone'],
-                    'title' => (string) $order['title_ru'],
-                    'link' => Shop::orderUrl($order),
-                ]);
+                $told = Notifier::confirmPaid($order);
                 Admin::flash(
                     'success',
                     $told
-                        ? 'Оплата отмечена. В Telegram есть кнопка: она откроет WhatsApp покупателя с рабочей ссылкой.'
-                        : 'Оплата отмечена. Ссылка на скачивание открыта.',
+                        ? 'Оплата отмечена. В Telegram есть ссылка в закрытый канал и кнопка WhatsApp для покупателя.'
+                        : 'Оплата отмечена. Ссылка для покупателя открыта.',
                 );
             }
         } elseif ($id > 0 && $action === 'cancel') {

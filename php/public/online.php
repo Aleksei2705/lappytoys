@@ -88,6 +88,15 @@ if (($_GET['watch'] ?? '') === '1') {
     exit;
 }
 
+$invite = '';
+if (is_array($order) && (string) $order['status'] === 'paid') {
+    try {
+        $invite = Shop::grantChannel($order);
+    } catch (RuntimeException) {
+        $invite = '';
+    }
+}
+
 $title = loc($product, 'title');
 $pageTitle = $title;
 $pageDescription = loc($product, 'description');
@@ -118,9 +127,18 @@ require APP_ROOT . '/templates/layout/header.php';
     $orderUrl = $order !== null ? Shop::orderUrl($order) : '';
     ?>
     <?php if ($order !== null && $order['status'] === 'paid'): ?>
+        <?php $hasFile = preg_match('#^[a-f0-9]{16}\.(mp4|webm|pdf|zip)$#', (string) ($order['file_path'] ?? '')) === 1; ?>
         <div class="card-soft mt-10 p-6 text-center">
             <p class="text-base text-warm-700"><?= t('online.paid') ?></p>
-            <a class="btn-primary mt-4 h-12 px-8" href="/download.php?token=<?= e((string) $order['token']) ?>"><?= t('online.download') ?></a>
+            <?php if (Shop::isInviteLink($invite)): ?>
+                <a class="btn-primary mt-4 h-12 px-8" href="<?= e($invite) ?>" target="_blank" rel="noopener noreferrer"><?= t('online.channel') ?></a>
+                <p class="mt-3 text-sm text-warm-500"><?= t('online.channelNote') ?></p>
+            <?php elseif (trim((string) ($order['channel_id'] ?? '')) !== ''): ?>
+                <p class="mt-3 text-sm text-warm-500"><?= t('online.channelWait') ?></p>
+            <?php endif; ?>
+            <?php if ($hasFile): ?>
+                <a class="btn-primary mt-4 h-12 px-8" href="/download.php?token=<?= e((string) $order['token']) ?>"><?= t('online.download') ?></a>
+            <?php endif; ?>
             <p class="mt-4 text-sm text-warm-500"><?= t('online.save') ?></p>
             <p class="mt-2 break-all text-sm"><a class="text-brand-700 underline" href="<?= e($orderUrl) ?>"><?= e($orderUrl) ?></a></p>
         </div>

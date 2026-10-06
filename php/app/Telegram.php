@@ -65,6 +65,30 @@ final class Telegram
         return $ok;
     }
 
+    /** One-time invite into a closed channel. The bot must be an admin who can invite. */
+    public static function channelInvite(string $chatId, string $name): ?string
+    {
+        if (preg_match('/^-\d{5,20}$/', $chatId) !== 1) {
+            self::$lastError = 'ID канала должен быть числом вида -100…';
+            return null;
+        }
+        $response = self::call('createChatInviteLink', [
+            'chat_id' => $chatId,
+            'name' => mb_substr($name, 0, 32),
+            'member_limit' => 1,
+        ]);
+        $result = is_array($response) ? ($response['result'] ?? null) : null;
+        $ok = is_array($response) && ($response['ok'] ?? false) === true;
+        $link = is_array($result) ? (string) ($result['invite_link'] ?? '') : '';
+        if (!$ok || $link === '') {
+            self::$lastError = self::errorText($response);
+            error_log('[telegram] createChatInviteLink failed: ' . self::$lastError);
+            return null;
+        }
+        self::$lastError = '';
+        return $link;
+    }
+
     /** Public HTTPS endpoint Telegram calls when an inline button is pressed. */
     public static function webhookUrl(): string
     {
