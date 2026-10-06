@@ -1302,6 +1302,14 @@ body {
   animation-play-state: paused;
 }
 
+@media (min-width: 1024px) {
+  .hero-reel {
+    width: min(72rem, calc(100% - 3rem));
+    margin-inline: auto;
+    border-radius: 1.15rem;
+  }
+}
+
 .hero-reel-item {
   height: 100%;
   width: auto;
