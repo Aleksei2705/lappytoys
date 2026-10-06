@@ -1427,9 +1427,10 @@ body {
     position: absolute;
     z-index: 20;
     top: 0;
-    bottom: 0;
-    left: calc(42rem + 2.75rem);
-    width: var(--hero-feature-w);
+    bottom: 0.35rem;
+    left: calc(1.5rem + 42rem + 0.35rem);
+    right: 0.35rem;
+    width: auto;
     height: auto;
     min-width: 0;
     min-height: 0;
