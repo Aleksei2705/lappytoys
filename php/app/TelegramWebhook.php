@@ -13,6 +13,12 @@ final class TelegramWebhook
             return;
         }
 
+        $post = $update['channel_post'] ?? $update['message'] ?? null;
+        if (is_array($post)) {
+            self::replyIdCommand($post);
+            return;
+        }
+
         $callback = $update['callback_query'] ?? null;
         if (!is_array($callback)) {
             return;
@@ -93,15 +99,46 @@ final class TelegramWebhook
         if (preg_match('/^-\d{5,20}$/', $chatId) !== 1) {
             return;
         }
+        self::announceChat($chat);
+    }
+
+    /** @param array<string, mixed> $post */
+    private static function replyIdCommand(array $post): void
+    {
+        $text = trim((string) ($post['text'] ?? ''));
+        if (preg_match('#^/id(?:@\w+)?$#i', $text) !== 1) {
+            return;
+        }
+        $chat = $post['chat'] ?? null;
+        if (!is_array($chat)) {
+            return;
+        }
+        self::announceChat($chat);
+    }
+
+    /** @param array<string, mixed> $chat */
+    private static function announceChat(array $chat): void
+    {
+        $chatId = (string) ($chat['id'] ?? '');
+        if (preg_match('/^-\d{5,20}$/', $chatId) !== 1) {
+            return;
+        }
         $title = trim((string) ($chat['title'] ?? ''));
         if ($title === '') {
             $title = 'без названия';
         }
-        Telegram::send(
-            "Канал подключён: <b>" . htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n"
-            . "ID: <code>{$chatId}</code>\n"
-            . "Вставьте это число в товар, в поле «Закрытый канал Telegram».",
-        );
+        $text = 'ID: <code>' . $chatId . "</code>\n"
+            . '<b>' . htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</b>\n"
+            . 'Вставьте это число в товар, в поле «Закрытый канал Telegram».';
+        $posted = Telegram::sendTo($chatId, $text);
+        $adminId = Config::get('TELEGRAM_CHAT_ID');
+        if ($adminId === $chatId) {
+            return;
+        }
+        if (!$posted) {
+            $text .= "\nВ сам канал записать не удалось. Дайте боту право публиковать сообщения.";
+        }
+        Telegram::send($text);
     }
 
     private static function isAllowedOperator(int $userId): bool

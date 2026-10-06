@@ -54,6 +54,30 @@ final class Telegram
             $payload['reply_markup'] = $replyMarkup;
         }
 
+        return self::deliver($payload);
+    }
+
+    public static function sendTo(string $chatId, string $html): bool
+    {
+        if (Config::get('TELEGRAM_BOT_TOKEN') === '') {
+            self::$lastError = 'TELEGRAM_BOT_TOKEN пустой.';
+            return false;
+        }
+        if (preg_match('/^-?\d{5,20}$/', $chatId) !== 1) {
+            self::$lastError = 'Некорректный chat id.';
+            return false;
+        }
+        return self::deliver([
+            'chat_id' => $chatId,
+            'text' => $html,
+            'parse_mode' => 'HTML',
+            'disable_web_page_preview' => true,
+        ]);
+    }
+
+    /** @param array<string, mixed> $payload */
+    private static function deliver(array $payload): bool
+    {
         $response = self::call('sendMessage', $payload);
         $ok = is_array($response) && ($response['ok'] ?? false) === true;
         if (!$ok) {
@@ -121,7 +145,7 @@ final class Telegram
     {
         $url = self::webhookUrl();
         $stamp = APP_ROOT . '/storage/telegram-webhook.url';
-        if (is_readable($stamp) && trim((string) file_get_contents($stamp)) === $url . ' member') {
+        if (is_readable($stamp) && trim((string) file_get_contents($stamp)) === $url . ' id') {
             return true;
         }
         $result = self::registerWebhook();
@@ -154,7 +178,7 @@ final class Telegram
 
         $payload = [
             'url' => $url,
-            'allowed_updates' => ['callback_query', 'my_chat_member'],
+            'allowed_updates' => ['callback_query', 'my_chat_member', 'message', 'channel_post'],
         ];
         if ($secret !== '') {
             $payload['secret_token'] = $secret;
@@ -169,7 +193,7 @@ final class Telegram
         }
 
         $stamp = APP_ROOT . '/storage/telegram-webhook.url';
-        file_put_contents($stamp, $url . ' member');
+        file_put_contents($stamp, $url . ' id');
         self::$lastError = '';
         return ['ok' => true, 'detail' => $url];
     }
