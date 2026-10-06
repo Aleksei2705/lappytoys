@@ -12,6 +12,25 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
             <div class="hero-shimmer absolute inset-0"></div>
         </div>
     </div>
+    <?php
+    $heroClips = $heroVideos ?? [];
+    if (count($heroClips) === 1) {
+        $heroClips = array_fill(0, 4, $heroClips[0]);
+    } elseif (count($heroClips) === 2) {
+        $heroClips = array_merge($heroClips, $heroClips);
+    }
+    ?>
+    <?php if ($heroClips !== []): ?>
+        <div class="hero-reel" role="region" aria-label="<?= t('hero.reelAria') ?>">
+            <div class="hero-reel-track">
+                <?php foreach ([false, true] as $copy): ?>
+                    <?php foreach ($heroClips as $clip): ?>
+                        <video class="hero-reel-item" src="<?= e((string) $clip['path']) ?>" muted autoplay loop playsinline preload="metadata" <?= $copy ? 'aria-hidden="true" tabindex="-1"' : '' ?>></video>
+                    <?php endforeach; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif; ?>
     <div class="container-main relative z-10 flex min-h-0 w-full flex-1 items-end">
         <div class="hero-copy">
             <p class="font-heading text-[2.35rem] font-bold leading-[1.05] tracking-tight text-brand-800 sm:text-5xl lg:text-6xl"><?= e((string) site('brand_title')) ?></p>

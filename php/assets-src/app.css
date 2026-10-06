@@ -1268,6 +1268,60 @@ body {
   padding-bottom: max(0.85rem, env(safe-area-inset-bottom));
 }
 
+.hero-reel {
+  position: relative;
+  z-index: 10;
+  flex: 0 0 auto;
+  margin-top: 0.65rem;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.hero-reel-track {
+  display: flex;
+  width: max-content;
+  gap: 0.55rem;
+  animation: hero-reel-ltr 32s linear infinite;
+}
+
+.hero-reel:hover .hero-reel-track,
+.hero-reel:focus-within .hero-reel-track {
+  animation-play-state: paused;
+}
+
+.hero-reel-item {
+  width: 6.5rem;
+  height: 3.7rem;
+  flex: 0 0 auto;
+  border-radius: 0.85rem;
+  object-fit: cover;
+  background: #1f161a;
+  box-shadow: 0 8px 18px rgb(31 22 26 / 18%);
+}
+
+@media (min-width: 640px) {
+  .hero-reel-item {
+    width: 9rem;
+    height: 5rem;
+  }
+}
+
+@keyframes hero-reel-ltr {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-reel-track {
+    animation: none;
+  }
+}
+
 .hero-copy {
   display: flex;
   width: 100%;

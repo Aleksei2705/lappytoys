@@ -19,6 +19,13 @@ try {
     $shopProducts = [];
 }
 
+$heroVideos = [];
+try {
+    $heroVideos = SiteContent::heroVideoRows();
+} catch (RuntimeException) {
+    $heroVideos = [];
+}
+
 $canonicalPath = '/';
 $returnPath = '/';
 

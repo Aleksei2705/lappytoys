@@ -22,6 +22,7 @@ $navItems = [
     'shop' => ['/admin/shop.php', 'Онлайн', 0],
     'schedule' => ['/admin/schedule.php', 'Расписание', 0],
     'works' => ['/admin/gallery.php', 'Работы учеников', 0],
+    'hero' => ['/admin/hero-videos.php', 'Видео на главной', 0],
     'reviews' => ['/admin/reviews.php', 'Отзывы', $counters['reviews']],
     'faq' => ['/admin/content.php?part=faq', 'Вопросы и ответы', 0],
     'contacts' => ['/admin/content.php?part=contacts', 'Контакты', 0],

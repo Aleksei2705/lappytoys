@@ -81,6 +81,77 @@ final class SiteContent
         self::write('videos', $rows);
     }
 
+    /** @return list<array{path: string}> */
+    public static function heroVideoRows(): array
+    {
+        $rows = [];
+        foreach (self::stored('hero_videos') ?? [] as $row) {
+            $path = (string) ($row['path'] ?? '');
+            if (self::isHeroVideo($path)) {
+                $rows[] = ['path' => $path];
+            }
+        }
+        return $rows;
+    }
+
+    /** @param list<array{path: string}> $rows */
+    public static function saveHeroVideos(array $rows): void
+    {
+        $previous = self::heroVideoRows();
+        self::write('hero_videos', $rows);
+        $kept = array_column($rows, 'path');
+        foreach ($previous as $old) {
+            if (!in_array($old['path'], $kept, true)) {
+                self::deleteHeroVideo($old['path']);
+            }
+        }
+    }
+
+    /** @param array<string, mixed> $file */
+    public static function storeHeroVideo(array $file): string
+    {
+        $error = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+        if ($error === UPLOAD_ERR_INI_SIZE || $error === UPLOAD_ERR_FORM_SIZE) {
+            throw new InvalidArgumentException('Видео больше лимита сервера. Сожмите ролик или загрузите более короткий.');
+        }
+        if ($error !== UPLOAD_ERR_OK || !is_uploaded_file((string) $file['tmp_name'])) {
+            throw new InvalidArgumentException('Не удалось загрузить видео.');
+        }
+        if ((int) $file['size'] > 30 * 1024 * 1024) {
+            throw new InvalidArgumentException('Видео слишком большое (максимум 30 МБ).');
+        }
+        $extensions = ['video/mp4' => 'mp4', 'video/webm' => 'webm'];
+        $mime = mime_content_type((string) $file['tmp_name']);
+        if (!is_string($mime) || !isset($extensions[$mime])) {
+            throw new InvalidArgumentException('Допустимы только видео MP4 или WebM.');
+        }
+        $directory = APP_ROOT . '/public/uploads/hero';
+        if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
+            throw new InvalidArgumentException('Не удалось создать папку для видео.');
+        }
+        $name = bin2hex(random_bytes(8)) . '.' . $extensions[$mime];
+        if (!move_uploaded_file((string) $file['tmp_name'], $directory . '/' . $name)) {
+            throw new InvalidArgumentException('Не удалось сохранить видео.');
+        }
+        return '/uploads/hero/' . $name;
+    }
+
+    public static function isHeroVideo(string $path): bool
+    {
+        return preg_match('#^/uploads/hero/[a-f0-9]{16}\.(mp4|webm)$#', $path) === 1;
+    }
+
+    public static function deleteHeroVideo(string $path): void
+    {
+        if (!self::isHeroVideo($path)) {
+            return;
+        }
+        $file = APP_ROOT . '/public' . $path;
+        if (is_file($file)) {
+            @unlink($file);
+        }
+    }
+
     private static bool $tableReady = false;
 
     private static function ready(): bool
