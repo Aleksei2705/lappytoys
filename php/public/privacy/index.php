@@ -21,6 +21,9 @@ require APP_ROOT . '/templates/layout/header.php';
                     <p><?= t('privacy.p5a') ?> <a class="text-brand-700 underline" href="mailto:<?= e((string) site('notify_email')) ?>"><?= e((string) site('notify_email')) ?></a> <?= t('privacy.p5b') ?> <a class="text-brand-700 underline" href="<?= e((string) site('telegram')) ?>"><?= e((string) site('telegram_handle')) ?></a>.</p>
                 <?php else: ?>
                     <p><?= t('privacy.p' . ($index + 1)) ?></p>
+                    <?php if ($index === 3): ?>
+                        <p><?= t('privacy.turnstileBefore') ?> <a class="text-brand-700 underline" href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank" rel="noopener noreferrer"><?= t('privacy.turnstileLink') ?></a>.</p>
+                    <?php endif; ?>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
