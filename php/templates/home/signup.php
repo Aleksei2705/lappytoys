@@ -15,11 +15,6 @@ $waLabels = [
     'message' => I18n::translate('signup.waMessage'),
     'footer' => I18n::translate('signup.waFooter'),
     'phoneError' => I18n::translate('signup.phoneErr'),
-    'phoneVerifyError' => I18n::translate('signup.errPhoneVerify'),
-    'phoneCodeError' => I18n::translate('phone.codeErr'),
-    'phoneCodeSent' => I18n::translate('phone.codeSent'),
-    'phoneCodeResend' => I18n::translate('phone.codeResend'),
-    'phoneCodeResendWait' => I18n::translate('phone.codeResendWait'),
     'whatsapp' => (string) site('whatsapp'),
     'telegram' => (string) site('telegram'),
     'dayOffer' => I18n::translate('offer.short'),
@@ -36,7 +31,7 @@ $waLabels = [
             ]);
             ?>
             <div class="card-soft mt-10 px-5 pb-5 pt-3 shadow-lg sm:px-7 sm:pb-7 sm:pt-3.5" id="signup-form">
-                <form class="space-y-5" method="post" action="/booking-submit.php" data-signup-form data-needs-phone-verify
+                <form class="space-y-5" method="post" action="/booking-submit.php" data-signup-form
                       data-labels="<?= e((string) json_encode($waLabels, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>">
                     <?= Security::csrfField() ?>
                     <div class="absolute -left-[9999px] size-px overflow-hidden" aria-hidden="true">
@@ -51,7 +46,6 @@ $waLabels = [
                     <div>
                         <label for="phone" class="mb-2 block text-sm font-medium text-warm-700"><?= t('signup.phone') ?></label>
                         <?php render('partials/phone-field', ['id' => 'phone']); ?>
-                        <?php render('partials/phone-verify', ['phoneInputId' => 'phone']); ?>
                         <p id="phone-error" class="mt-2 hidden text-sm text-red-600" data-phone-error></p>
                     </div>
                     <div data-day-offer hidden>
@@ -81,7 +75,12 @@ $waLabels = [
                     </div>
 
                     <div class="flex flex-col gap-3">
-                        <button type="submit" class="btn-primary h-11 w-full" data-goal="signup_form" disabled aria-disabled="true">
+                        <?php if (Turnstile::enabled()): ?>
+                            <div data-turnstile data-sitekey="<?= e(Turnstile::siteKey()) ?>"></div>
+                            <p class="hidden text-center text-sm text-red-600" data-captcha-error role="alert"><?= t('signup.errCaptcha') ?></p>
+                            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+                        <?php endif; ?>
+                        <button type="submit" class="btn-primary h-11 w-full" data-goal="signup_form">
                             <?= icon('send', 'size-4') ?><?= t('signup.submit') ?>
                         </button>
                         <p class="text-center text-xs uppercase tracking-wider text-warm-500"><?= t('signup.or') ?></p>

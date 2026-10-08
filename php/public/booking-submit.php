@@ -26,6 +26,10 @@ if (trim((string) ($_POST['website'] ?? '')) !== '') {
     redirectToSignup('success', 'signup.thanks');
 }
 
+if (!Turnstile::verify(isset($_POST['cf-turnstile-response']) ? (string) $_POST['cf-turnstile-response'] : null)) {
+    redirectToSignup('error', 'signup.errCaptcha');
+}
+
 $name = trim((string) ($_POST['name'] ?? ''));
 $nameLength = mb_strlen($name);
 if ($nameLength < 2 || $nameLength > 80) {
@@ -35,9 +39,6 @@ if ($nameLength < 2 || $nameLength > 80) {
 $phone = Phone::normalize((string) ($_POST['phone'] ?? ''));
 if ($phone === null) {
     redirectToSignup('error', 'signup.phoneErr');
-}
-if (!PhoneVerify::isVerified((string) ($_POST['phone'] ?? ''))) {
-    redirectToSignup('error', 'signup.errPhoneVerify');
 }
 
 $message = trim((string) ($_POST['message'] ?? ''));

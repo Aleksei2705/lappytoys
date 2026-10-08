@@ -401,7 +401,7 @@
 
     let widgetId = null;
     const button = form.querySelector("[type=submit]");
-    const error = form.querySelector("[data-review-captcha-error]");
+    const error = form.querySelector("[data-captcha-error]");
 
     const showError = () => {
       error?.classList.remove("hidden");
@@ -426,6 +426,8 @@
 
     form.addEventListener("submit", (event) => {
       if (form.dataset.captchaOk === "1") return;
+      const phoneInput = form.querySelector("[data-phone-input]");
+      if (phoneInput && !isValidPhone(interpretPhone(phoneInput.value).digits)) return;
       event.preventDefault();
       error?.classList.add("hidden");
       if (button) button.disabled = true;
@@ -1028,6 +1030,8 @@
         window.open(`${base}?text=${encodeURIComponent(buildMessage())}`, "_blank", "noopener,noreferrer");
       }),
     );
+
+    bindReviewCaptcha(form);
   };
 
   const initMedia = () => {
