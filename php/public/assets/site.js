@@ -1232,6 +1232,7 @@
   initPhoneVerify();
   initDayOffer();
   initSignupForm();
+  document.querySelectorAll("[data-shop-order]").forEach(bindReviewCaptcha);
   initMedia();
   initSocialEmbeds();
   initDesktopNav();

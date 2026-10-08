@@ -32,8 +32,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         $phone = Phone::normalize((string) ($_POST['phone'] ?? ''));
         if ($name === '' || mb_strlen($name) > 80 || $phone === null) {
             $error = t('online.formError');
-        } elseif (!PhoneVerify::isVerified((string) ($_POST['phone'] ?? ''))) {
-            $error = t('online.phoneVerify');
+        } elseif (!Turnstile::verify(isset($_POST['cf-turnstile-response']) ? (string) $_POST['cf-turnstile-response'] : null)) {
+            $error = t('online.errCaptcha');
         } else {
             $now = time();
             $hits = array_values(array_filter(
@@ -183,14 +183,7 @@ require APP_ROOT . '/templates/layout/header.php';
         <?php if ($error !== ''): ?>
             <p class="mt-8 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"><?= e($error) ?></p>
         <?php endif; ?>
-        <form method="post" class="card-soft mt-10 grid gap-4 p-6 sm:grid-cols-2" data-needs-phone-verify
-              data-phone-labels="<?= e((string) json_encode([
-                  'phoneVerifyError' => t('online.phoneVerify'),
-                  'phoneCodeError' => t('phone.codeErr'),
-                  'phoneCodeSent' => t('phone.codeSent'),
-                  'phoneCodeResend' => t('phone.codeResend'),
-                  'phoneCodeResendWait' => t('phone.codeResendWait'),
-              ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>">
+        <form method="post" class="card-soft mt-10 grid gap-4 p-6 sm:grid-cols-2" data-shop-order>
             <?= Security::csrfField() ?>
             <div>
                 <label class="mb-2 block text-sm font-medium" for="shop-name"><?= t('online.name') ?></label>
@@ -199,10 +192,14 @@ require APP_ROOT . '/templates/layout/header.php';
             <div class="sm:col-span-2">
                 <label class="mb-2 block text-sm font-medium" for="shop-phone"><?= t('online.phone') ?></label>
                 <?php render('partials/phone-field', ['id' => 'shop-phone', 'value' => (string) ($_POST['phone'] ?? '')]); ?>
-                <?php render('partials/phone-verify', ['phoneInputId' => 'shop-phone']); ?>
             </div>
             <div class="sm:col-span-2">
-                <button type="submit" class="btn-primary h-12 px-8" disabled aria-disabled="true"><?= t('online.buy') ?></button>
+                <?php if (Turnstile::enabled()): ?>
+                    <div data-turnstile data-sitekey="<?= e(Turnstile::siteKey()) ?>"></div>
+                    <p class="mb-3 hidden text-sm text-red-600" data-captcha-error role="alert"><?= t('online.errCaptcha') ?></p>
+                    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+                <?php endif; ?>
+                <button type="submit" class="btn-primary h-12 px-8"><?= t('online.buy') ?></button>
                 <p class="mt-3 text-sm leading-relaxed text-warm-500"><?= t('online.note') ?></p>
             </div>
         </form>
