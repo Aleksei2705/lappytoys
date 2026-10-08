@@ -93,6 +93,16 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
                         <?= icon('sparkles', 'size-4 shrink-0 text-brand-700') ?><?= t('hero.masters') ?>
                     </a>
                 </div>
+                <a href="<?= e((string) site('telegram_group')) ?>" target="_blank" rel="noopener noreferrer" class="hero-guide">
+                    <span class="hero-guide-icon" aria-hidden="true">
+                        <img src="/images/telegram.svg" alt="" width="128" height="128" class="size-7">
+                    </span>
+                    <span class="min-w-0 flex-1">
+                        <span class="hero-guide-kicker"><?= t('hero.guide.kicker') ?></span>
+                        <span class="hero-guide-title"><?= t('hero.guide.title') ?></span>
+                    </span>
+                    <?= icon('chevron-right', 'size-5 shrink-0 text-[#1a8bc4]') ?>
+                </a>
             </div>
         </div>
         <?php if (is_array($heroFeature ?? null)): ?>
