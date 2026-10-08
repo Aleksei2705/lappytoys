@@ -36,12 +36,12 @@ final class Security
         header(
             "Content-Security-Policy: default-src 'self'; " .
             "base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; " .
-            "script-src 'self' 'unsafe-inline' https://mc.yandex.ru https://mc.yandex.com https://informer.yandex.ru https://www.instagram.com https://www.tiktok.com https://lf16-tiktok-web.tiktokcdn-us.com https://sf16-website-login.neutral.ttwstatic.com; " .
+            "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://mc.yandex.ru https://mc.yandex.com https://informer.yandex.ru https://www.instagram.com https://www.tiktok.com https://lf16-tiktok-web.tiktokcdn-us.com https://sf16-website-login.neutral.ttwstatic.com; " .
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://lf16-tiktok-web.tiktokcdn-us.com https://sf16-website-login.neutral.ttwstatic.com; " .
             "font-src 'self' https://fonts.gstatic.com; " .
             "img-src 'self' data: https://mc.yandex.ru https://mc.yandex.com https://informer.yandex.ru https://i.ytimg.com https://*.cdninstagram.com https://*.fbcdn.net https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://*.tiktokcdn-eu.com; " .
-            "frame-src https://yandex.ru https://www.youtube.com https://www.instagram.com https://www.tiktok.com https://*.tiktok.com; " .
-            "connect-src 'self' https://mc.yandex.ru https://mc.yandex.com https://www.instagram.com https://www.tiktok.com https://*.tiktok.com https://lf16-tiktok-web.tiktokcdn-us.com https://libraweb.tiktokw.us https://libraweb-va.tiktok.com https://libraweb-sg.tiktok.com https://libraweb.tiktokw.eu"
+            "frame-src https://challenges.cloudflare.com https://yandex.ru https://www.youtube.com https://www.instagram.com https://www.tiktok.com https://*.tiktok.com; " .
+            "connect-src 'self' https://challenges.cloudflare.com https://mc.yandex.ru https://mc.yandex.com https://www.instagram.com https://www.tiktok.com https://*.tiktok.com https://lf16-tiktok-web.tiktokcdn-us.com https://libraweb.tiktokw.us https://libraweb-va.tiktok.com https://libraweb-sg.tiktok.com https://libraweb.tiktokw.eu"
         );
     }
 

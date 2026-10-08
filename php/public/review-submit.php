@@ -26,6 +26,10 @@ if (trim((string) ($_POST['website'] ?? '')) !== '') {
     redirectToReviews('success', 'review.thanks');
 }
 
+if (!Turnstile::verify(isset($_POST['cf-turnstile-response']) ? (string) $_POST['cf-turnstile-response'] : null)) {
+    redirectToReviews('error', 'review.errCaptcha');
+}
+
 $name = trim((string) ($_POST['name'] ?? ''));
 $text = trim((string) ($_POST['text'] ?? ''));
 $rating = (int) ($_POST['rating'] ?? 5);

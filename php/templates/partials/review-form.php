@@ -91,6 +91,12 @@ $textMax = ReviewRepository::TEXT_MAX;
                 </div>
             </div>
 
+            <?php if (Turnstile::enabled()): ?>
+                <div data-turnstile data-sitekey="<?= e(Turnstile::siteKey()) ?>"></div>
+                <p class="hidden text-center text-sm text-red-600" data-review-captcha-error role="alert"><?= t('review.errCaptcha') ?></p>
+                <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+            <?php endif; ?>
+
             <button type="submit" class="btn-primary h-11 w-full">
                 <?= icon('send', 'size-4') ?><?= t('review.send') ?>
             </button>

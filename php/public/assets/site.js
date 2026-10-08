@@ -390,6 +390,55 @@
         photoImg.src = previewUrl;
         photoPreview.classList.remove("hidden");
       });
+
+      bindReviewCaptcha(form);
+    });
+  };
+
+  const bindReviewCaptcha = (form) => {
+    const box = form.querySelector("[data-turnstile]");
+    if (!box) return;
+
+    let widgetId = null;
+    const button = form.querySelector("[type=submit]");
+    const error = form.querySelector("[data-review-captcha-error]");
+
+    const showError = () => {
+      error?.classList.remove("hidden");
+      if (button) button.disabled = false;
+    };
+
+    const ensureWidget = () => {
+      if (widgetId !== null || !window.turnstile) return widgetId;
+      widgetId = window.turnstile.render(box, {
+        sitekey: box.dataset.sitekey,
+        size: "invisible",
+        execution: "execute",
+        callback: () => {
+          form.dataset.captchaOk = "1";
+          form.submit();
+        },
+        "error-callback": showError,
+        "timeout-callback": showError,
+      });
+      return widgetId;
+    };
+
+    form.addEventListener("submit", (event) => {
+      if (form.dataset.captchaOk === "1") return;
+      event.preventDefault();
+      error?.classList.add("hidden");
+      if (button) button.disabled = true;
+      if (!window.turnstile) {
+        showError();
+        return;
+      }
+      const id = ensureWidget();
+      if (id == null) {
+        showError();
+        return;
+      }
+      window.turnstile.execute(id);
     });
   };
 
