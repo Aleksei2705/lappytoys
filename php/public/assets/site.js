@@ -1451,7 +1451,7 @@
       } catch {
         /* Браузер может запретить звук до первого нажатия. */
       }
-    }, 2500);
+    }, 5000);
 
     const setOpen = (open, options = {}) => {
       panel.hidden = !open;
@@ -1590,8 +1590,15 @@
     video.addEventListener("webkitendfullscreen", close);
   };
 
+  const initWhatsappFloat = () => {
+    const link = document.querySelector(".wa-float");
+    if (!link) return;
+    window.setTimeout(() => link.classList.add("is-in"), 2500);
+  };
+
   initHeroParallax();
   initHeroFeature();
+  initWhatsappFloat();
   initAssistant();
   initGoals();
   initBackLinks();
