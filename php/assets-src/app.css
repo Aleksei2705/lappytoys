@@ -2265,6 +2265,39 @@ body.is-admin [data-password-toggle] {
   -webkit-overflow-scrolling: touch;
 }
 
+.wa-float {
+  position: fixed;
+  z-index: 40;
+  right: calc(1rem + 3.75rem + 0.75rem);
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  width: 3.75rem;
+  height: 3.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 10px 24px rgb(18 140 70 / 0.28);
+  transition: transform 0.18s ease;
+}
+
+.wa-float:hover {
+  transform: translateY(-2px);
+}
+
+.wa-float svg {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+@media (max-width: 640px) {
+  .wa-float {
+    right: calc(0.75rem + 3.75rem + 0.65rem);
+    bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (min-width: 640px) {
   [data-reviews-carousel] {
     padding-inline: 2.75rem;

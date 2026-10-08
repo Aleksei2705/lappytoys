@@ -38,4 +38,6 @@ foreach (['hero', 'stats', 'about', 'awards', 'courses', 'master-classes', 'onli
     require APP_ROOT . '/templates/home/' . $section . '.php';
 }
 
+render('partials/whatsapp-float');
+
 require APP_ROOT . '/templates/layout/footer.php';
