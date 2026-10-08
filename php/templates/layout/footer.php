@@ -88,6 +88,7 @@ $socialClass = 'flex size-11 items-center justify-center rounded-full border bor
     </div>
 </footer>
 
+<?php render('partials/guide-exit'); ?>
 <?php render('partials/assistant'); ?>
 <script src="<?= e(asset('assets/site.js')) ?>" defer></script>
 </body>

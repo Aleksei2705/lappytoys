@@ -84,7 +84,10 @@ require APP_ROOT . '/templates/layout/header.php';
         <a href="/#courses" class="btn-secondary h-12 px-8 text-base" data-back>
             <?= icon('arrow-left', 'size-4') ?><?= t('cta.back') ?>
         </a>
-        <a href="/#signup"<?= (string) $course['slug'] === 'trial' ? ' data-signup-direction="course:trial"' : '' ?> class="btn-primary h-12 px-8 text-base"><?= t('cta.signupCourse') ?></a>
+        <a href="/#signup" data-signup-direction="course:trial" class="btn-primary h-12 px-8 text-center text-base"><?= t('cta.trial') ?></a>
+        <?php if ((string) $course['slug'] !== 'trial'): ?>
+            <a href="/#signup" data-signup-direction="course:<?= e((string) $course['slug']) ?>" class="btn-secondary h-12 px-8 text-base"><?= t('cta.signupCourse') ?></a>
+        <?php endif; ?>
     </div>
 </div>
 <?php

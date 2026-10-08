@@ -1596,9 +1596,123 @@
     window.setTimeout(() => link.classList.add("is-in"), 2500);
   };
 
+  const initGuideExit = () => {
+    const root = document.querySelector("[data-guide-exit]");
+    const form = root?.querySelector("[data-guide-form]");
+    if (!root || !form) return;
+
+    const storageKey = "lappy-guide-exit";
+    if (sessionStorage.getItem(storageKey) === "1") return;
+
+    const phoneInput = form.querySelector("[data-phone-input]");
+    const errorEl = form.querySelector("[data-guide-error]");
+    const thanks = root.querySelector("[data-guide-thanks]");
+    const formBlock = root.querySelector("[data-guide-exit-form]");
+    const closeButtons = root.querySelectorAll("[data-guide-exit-close]");
+    let opened = false;
+    let armed = false;
+    let widgetId = null;
+
+    const showError = (message) => {
+      if (!errorEl) return;
+      errorEl.textContent = message;
+      errorEl.classList.toggle("hidden", !message);
+    };
+
+    const close = () => {
+      root.hidden = true;
+      document.body.style.overflow = "";
+      sessionStorage.setItem(storageKey, "1");
+    };
+
+    const open = () => {
+      if (!armed || opened || sessionStorage.getItem(storageKey) === "1") return;
+      opened = true;
+      root.hidden = false;
+      document.body.style.overflow = "hidden";
+      phoneInput?.focus();
+    };
+
+    closeButtons.forEach((button) => button.addEventListener("click", close));
+    root.addEventListener("click", (event) => {
+      if (event.target === root) close();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (!root.hidden && event.key === "Escape") close();
+    });
+
+    const send = async (body) => {
+      const response = await fetch(form.action, { method: "POST", body, credentials: "same-origin" });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.ok !== true) {
+        showError(data.error || "");
+        const button = form.querySelector("[type=submit]");
+        if (button) button.disabled = false;
+        return;
+      }
+      sessionStorage.setItem(storageKey, "1");
+      if (formBlock) formBlock.hidden = true;
+      if (thanks) thanks.hidden = false;
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      showError("");
+      if (phoneInput && !isValidPhone(interpretPhone(phoneInput.value).digits)) {
+        showError(form.dataset.phoneError || "");
+        phoneInput.focus();
+        return;
+      }
+      const button = form.querySelector("[type=submit]");
+      if (button) button.disabled = true;
+      const body = new FormData(form);
+      const box = form.querySelector("[data-turnstile]");
+      if (!box || !window.turnstile) {
+        send(body);
+        return;
+      }
+      const run = (id) => window.turnstile.execute(id);
+      if (widgetId !== null) {
+        run(widgetId);
+        return;
+      }
+      widgetId = window.turnstile.render(box, {
+        sitekey: box.dataset.sitekey,
+        size: "invisible",
+        execution: "execute",
+        callback: (token) => {
+          const next = new FormData(form);
+          next.set("cf-turnstile-response", token);
+          send(next);
+        },
+        "error-callback": () => {
+          if (button) button.disabled = false;
+        },
+      });
+      run(widgetId);
+    });
+
+    window.setTimeout(() => {
+      armed = true;
+      if (!window.matchMedia("(pointer: coarse)").matches) return;
+      history.pushState({ guideExit: 1 }, "", location.href);
+    }, 4000);
+
+    document.documentElement.addEventListener("mouseleave", (event) => {
+      if (event.clientY > 0) return;
+      open();
+    });
+    window.addEventListener("popstate", () => {
+      if (!armed || sessionStorage.getItem(storageKey) === "1") return;
+      open();
+      history.pushState({ guideExit: 1 }, "", location.href);
+    });
+  };
+
   initHeroParallax();
   initHeroFeature();
   initWhatsappFloat();
+  initGuideExit();
   initAssistant();
   initGoals();
   initBackLinks();

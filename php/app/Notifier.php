@@ -208,6 +208,30 @@ final class Notifier
         return Telegram::sendTo($chatId, $html, $keyboard);
     }
 
+    public static function guide(string $phone): bool
+    {
+        $buyerText = "Здравствуйте!\n\nВы оставляли номер на lappytoys.kz. Бесплатный гайд по выбору спиц для новичков — в этом сообщении.";
+        $lines = [
+            '📎 <b>Гайд по спицам</b> — lappytoys.kz',
+            '',
+            'Телефон: ' . self::h($phone),
+            'Просит прислать бесплатный гайд в WhatsApp.',
+            '',
+            '🕒 ' . date('d.m.Y H:i'),
+        ];
+        $whatsapp = self::whatsappToBuyer($phone, $buyerText);
+        $markup = $whatsapp !== null
+            ? ['inline_keyboard' => [[['text' => 'Отправить гайд в WhatsApp', 'url' => $whatsapp]]]]
+            : null;
+        $sent = Telegram::send(implode("\n", $lines), $markup);
+        Mail::send(
+            (string) site('notify_email'),
+            'Гайд по спицам — ' . $phone,
+            "Телефон: {$phone}\nПросит прислать бесплатный гайд в WhatsApp.\n" . date('d.m.Y H:i'),
+        );
+        return $sent;
+    }
+
     private static function whatsappToBuyer(string $phone, string $text): ?string
     {
         $digits = preg_replace('/\D/', '', $phone) ?? '';

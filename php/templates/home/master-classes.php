@@ -39,7 +39,7 @@
                                 <div class="flex items-baseline gap-3 pt-1">
                                     <p class="font-heading text-2xl font-bold text-brand-700"><?= priceText((string) $mc['price_label']) ?></p>
                                 </div>
-                                <p class="text-sm leading-snug text-brand-800"><?= t('offer.short') ?></p>
+                                <?php render('partials/day-offer', ['offerTone' => 'compact']); ?>
                                 <a href="#signup" data-signup-direction="mc:<?= e((string) $mc['slug']) ?>" class="btn-primary mt-1 h-10 w-full"><?= t('masters.signup') ?></a>
                                 <a href="<?= e((string) site('instagram')) ?>" target="_blank" rel="noopener noreferrer"
                                    class="block text-center text-xs font-medium text-brand-700 underline-offset-2 transition hover:text-brand-800 hover:underline"><?= t('masters.instagram') ?></a>

@@ -22,7 +22,7 @@
             <?php endforeach; ?>
         </div>
         <div class="mt-8 flex justify-center">
-            <a href="/#signup" class="btn-primary h-11 px-6"><?= t('cta.schedule') ?></a>
+            <a href="/#signup" data-signup-direction="course:trial" class="btn-primary h-11 px-6 text-center"><?= t('cta.trial') ?></a>
         </div>
     </div>
 </section>

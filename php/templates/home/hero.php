@@ -82,24 +82,17 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
             <p class="hero-lead max-w-md text-sm leading-snug text-warm-700 sm:text-base sm:leading-relaxed"><?= t('hero.lead') ?></p>
 
             <div class="hero-actions flex w-full max-w-xl flex-col gap-2.5">
+                <a href="#signup" data-signup-direction="course:trial" class="<?= $heroBtn ?> bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-brand-900/15 hover:from-brand-700 hover:to-brand-800">
+                    <?= icon('calendar-check', 'size-4 shrink-0') ?><?= t('cta.trial') ?>
+                </a>
                 <div class="grid grid-cols-2 gap-2.5">
-                    <a href="#courses" class="<?= $heroBtn ?> bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-brand-900/15 hover:from-brand-700 hover:to-brand-800">
-                        <?= icon('book-open', 'size-4 shrink-0') ?><?= t('hero.courses') ?>
+                    <a href="#courses" class="<?= $heroBtn ?> border border-white/80 bg-white/90 text-warm-900 shadow-warm-900/10 backdrop-blur-md hover:bg-white">
+                        <?= icon('book-open', 'size-4 shrink-0 text-brand-700') ?><?= t('hero.courses') ?>
                     </a>
                     <a href="#master-classes" class="<?= $heroBtn ?> border border-white/80 bg-white/90 text-warm-900 shadow-warm-900/10 backdrop-blur-md hover:bg-white">
                         <?= icon('sparkles', 'size-4 shrink-0 text-brand-700') ?><?= t('hero.masters') ?>
                     </a>
                 </div>
-                <a href="<?= e((string) site('telegram_group')) ?>" target="_blank" rel="noopener noreferrer" class="hero-guide">
-                    <span class="hero-guide-icon" aria-hidden="true">
-                        <img src="/images/telegram.svg" alt="" width="128" height="128" class="size-7">
-                    </span>
-                    <span class="min-w-0 flex-1">
-                        <span class="hero-guide-kicker"><?= t('hero.guide.kicker') ?></span>
-                        <span class="hero-guide-title"><?= t('hero.guide.title') ?></span>
-                    </span>
-                    <?= icon('chevron-right', 'size-5 shrink-0 text-[#1a8bc4]') ?>
-                </a>
             </div>
         </div>
         <?php if (is_array($heroFeature ?? null)): ?>
