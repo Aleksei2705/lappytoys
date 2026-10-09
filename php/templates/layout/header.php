@@ -98,9 +98,11 @@ ym(<?= (int) $metricaId ?>,"init",{clickmap:true,trackLinks:true,accurateTrackBo
 
         <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-2.5 lg:ml-0">
             <?php render('partials/language-toggle', ['returnPath' => $returnPath]); ?>
-            <div class="hidden lg:block">
-                <?php render('partials/booking-button', ['class' => 'h-auto min-h-9 max-w-[15rem] px-3 py-1.5 text-[13px] xl:max-w-none xl:px-4 xl:text-sm']); ?>
-            </div>
+            <?php if (empty($hideHeaderBooking)): ?>
+                <div class="hidden lg:block">
+                    <?php render('partials/booking-button', ['class' => 'h-auto min-h-9 max-w-[15rem] px-3 py-1.5 text-[13px] xl:max-w-none xl:px-4 xl:text-sm']); ?>
+                </div>
+            <?php endif; ?>
             <button type="button"
                     class="inline-flex size-9 items-center justify-center rounded-xl border border-cream-200 bg-white lg:hidden"
                     aria-label="<?= t('aria.openMenu') ?>"
@@ -126,9 +128,11 @@ ym(<?= (int) $metricaId ?>,"init",{clickmap:true,trackLinks:true,accurateTrackBo
                 <a href="<?= e($href) ?>" class="mobile-nav-link" data-menu-close><?= t('nav.' . $href) ?></a>
             <?php endforeach; ?>
         </div>
-        <div class="mobile-nav-cta">
-            <?php render('partials/booking-button', ['class' => 'h-11 w-full', 'menuClose' => true]); ?>
-        </div>
+        <?php if (empty($hideHeaderBooking)): ?>
+            <div class="mobile-nav-cta">
+                <?php render('partials/booking-button', ['class' => 'h-11 w-full', 'menuClose' => true]); ?>
+            </div>
+        <?php endif; ?>
     </nav>
 </div>
 

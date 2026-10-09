@@ -28,6 +28,7 @@ try {
 
 $canonicalPath = '/';
 $returnPath = '/';
+$hideHeaderBooking = true;
 
 require APP_ROOT . '/templates/layout/header.php';
 
