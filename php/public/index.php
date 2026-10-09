@@ -19,13 +19,10 @@ try {
     $shopProducts = [];
 }
 
-$heroVideos = [];
 $heroFeature = null;
 try {
-    $heroVideos = SiteContent::heroVideoRows();
     $heroFeature = SiteContent::heroFeature();
 } catch (RuntimeException) {
-    $heroVideos = [];
     $heroFeature = null;
 }
 
