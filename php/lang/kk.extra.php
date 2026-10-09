@@ -21,6 +21,7 @@ return [
     'wa.floatLabel' => 'Ольгаға WhatsApp арқылы жазу',
     'cta.trial' => 'Тегін сынақ сабағына жазылу',
     'hero.facts' => '30 минут · нөлден · 7 жастан бастап балалар мен ересектерге',
+    'hero.chatKicker' => 'Telegram',
     'hero.chat' => 'Студияның шығармашылық чаты',
     'guide.kicker' => 'Тегін',
     'guide.title' => 'Кетіп барасыз ба?',

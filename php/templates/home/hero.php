@@ -36,9 +36,15 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
                 <a href="#signup" data-signup-direction="course:trial" class="<?= $heroBtn ?> bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-brand-900/15 hover:from-brand-700 hover:to-brand-800">
                     <?= icon('calendar-check', 'size-4 shrink-0') ?><?= t('cta.trial') ?>
                 </a>
-                <a href="<?= e((string) site('telegram_group')) ?>" target="_blank" rel="noopener noreferrer" class="hero-chat">
-                    <img src="/images/telegram.svg" alt="" width="128" height="128" class="size-4" aria-hidden="true">
-                    <?= t('hero.chat') ?>
+                <a href="<?= e((string) site('telegram_group')) ?>" target="_blank" rel="noopener noreferrer" class="hero-guide">
+                    <span class="hero-guide-icon" aria-hidden="true">
+                        <img src="/images/telegram.svg" alt="" width="128" height="128" class="size-7">
+                    </span>
+                    <span class="min-w-0 flex-1">
+                        <span class="hero-guide-kicker"><?= t('hero.chatKicker') ?></span>
+                        <span class="hero-guide-title"><?= t('hero.chat') ?></span>
+                    </span>
+                    <?= icon('chevron-right', 'size-5 shrink-0 text-[#1a8bc4]') ?>
                 </a>
             </div>
         </div>

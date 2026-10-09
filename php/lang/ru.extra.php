@@ -21,6 +21,7 @@ return [
     'wa.floatLabel' => 'Написать Ольге в WhatsApp',
     'cta.trial' => 'Записаться на бесплатный пробный урок',
     'hero.facts' => '30 минут · с нуля · детям от 7 лет и взрослым',
+    'hero.chatKicker' => 'Telegram',
     'hero.chat' => 'Творческий чат студии',
     'guide.kicker' => 'Бесплатно',
     'guide.title' => 'Уже уходите?',
