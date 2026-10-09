@@ -1424,37 +1424,43 @@ body {
 
 @media (min-width: 1024px) {
   .hero-screen:has(.hero-feature) {
-    --hero-edge: 1.25rem;
-    --hero-feature-w: min(26rem, 32vw);
+    --hero-pad: 1.5rem;
+    --hero-gap: 2rem;
+    --hero-copy-w: 36rem;
+    --hero-feature-w: min(
+      30rem,
+      calc((100svh - var(--site-header-offset) - (var(--hero-pad) * 2)) * 3 / 4),
+      calc(100% - var(--hero-copy-w) - var(--hero-gap) - (var(--hero-pad) * 2))
+    );
   }
 
-  .hero-screen:has(.hero-feature) .hero-reel,
   .hero-screen:has(.hero-feature) > .container-main {
-    width: auto;
-    max-width: none;
-    margin-left: max(var(--hero-edge), calc((100% - 72rem) / 2));
-    margin-right: calc(var(--hero-feature-w) + (var(--hero-edge) * 2));
+    width: 100%;
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  .hero-screen:has(.hero-feature) .hero-reel {
-    margin-top: var(--hero-edge);
-    border-radius: 1.15rem;
+  .hero-screen:has(.hero-feature) .hero-copy {
+    max-width: calc(100% - var(--hero-feature-w) - var(--hero-gap));
   }
 
   .hero-feature {
     display: block;
     position: absolute;
     z-index: 20;
-    top: 1rem;
-    bottom: calc(0.35rem + 1rem);
-    left: calc(1.5rem + 42rem + 0.35rem);
-    right: calc(0.35rem + 2.5rem);
-    width: auto;
+    top: 50%;
+    right: var(--hero-pad);
+    bottom: auto;
+    left: auto;
+    width: var(--hero-feature-w);
     height: auto;
+    aspect-ratio: 3 / 4;
     min-width: 0;
     min-height: 0;
     flex: none;
     margin: 0;
+    transform: translateY(-50%);
   }
 }
 
