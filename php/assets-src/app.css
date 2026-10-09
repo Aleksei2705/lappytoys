@@ -1430,7 +1430,7 @@ body {
     --hero-feature-w: min(
       30rem,
       calc((100svh - var(--site-header-offset) - (var(--hero-pad) * 2)) * 3 / 4),
-      calc(100% - var(--hero-copy-w) - var(--hero-gap) - (var(--hero-pad) * 2))
+      calc(min(100vw, 72rem) - var(--hero-copy-w) - var(--hero-gap) - (var(--hero-pad) * 2))
     );
   }
 
@@ -1439,10 +1439,18 @@ body {
     max-width: 72rem;
     margin-left: auto;
     margin-right: auto;
+    align-items: center;
+    padding-bottom: 0;
   }
 
   .hero-screen:has(.hero-feature) .hero-copy {
     max-width: calc(100% - var(--hero-feature-w) - var(--hero-gap));
+    height: calc(var(--hero-feature-w) * 4 / 3);
+    max-height: calc(100svh - var(--site-header-offset) - (var(--hero-pad) * 2));
+  }
+
+  .hero-screen:has(.hero-feature) .hero-actions {
+    margin-top: auto;
   }
 
   .hero-feature {
