@@ -26,17 +26,7 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
             </h1>
             <p class="font-heading text-3xl font-bold leading-none tracking-tight text-brand-800 sm:text-4xl"><?= e((string) site('brand_title')) ?></p>
             <p class="text-sm font-medium tracking-wide text-warm-700"><?= t('brand.subtitle') ?></p>
-            <a href="/courses/trial/" class="hero-offer">
-                <span class="hero-offer-aura" aria-hidden="true"></span>
-                <span class="hero-offer-card">
-                    <span class="hero-offer-shine" aria-hidden="true"></span>
-                    <?= icon('gift', 'relative z-[1] size-5 shrink-0 text-brand-700') ?>
-                    <span class="relative z-[1]">
-                        <span class="hero-offer-title"><?= t('hero.offer') ?></span>
-                        <span class="mt-0.5 block text-[0.7rem] font-medium tracking-wide text-brand-800/80"><?= t('hero.offerHint') ?></span>
-                    </span>
-                </span>
-            </a>
+            <p class="hero-facts"><?= t('hero.facts') ?></p>
             <p class="hero-slogan">
                 <?= t('hero.slogan.before') ?> <span class="hero-slogan-accent"><?= t('hero.slogan.accent') ?></span>
             </p>
@@ -46,23 +36,9 @@ $heroBtn = 'inline-flex min-h-12 w-full items-center justify-center gap-2 rounde
                 <a href="#signup" data-signup-direction="course:trial" class="<?= $heroBtn ?> bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow-brand-900/15 hover:from-brand-700 hover:to-brand-800">
                     <?= icon('calendar-check', 'size-4 shrink-0') ?><?= t('cta.trial') ?>
                 </a>
-                <div class="grid grid-cols-2 gap-2.5">
-                    <a href="#courses" class="<?= $heroBtn ?> border border-white/80 bg-white/90 text-warm-900 shadow-warm-900/10 backdrop-blur-md hover:bg-white">
-                        <?= icon('book-open', 'size-4 shrink-0 text-brand-700') ?><?= t('hero.courses') ?>
-                    </a>
-                    <a href="#master-classes" class="<?= $heroBtn ?> border border-white/80 bg-white/90 text-warm-900 shadow-warm-900/10 backdrop-blur-md hover:bg-white">
-                        <?= icon('sparkles', 'size-4 shrink-0 text-brand-700') ?><?= t('hero.masters') ?>
-                    </a>
-                </div>
-                <a href="<?= e((string) site('telegram_group')) ?>" target="_blank" rel="noopener noreferrer" class="hero-guide">
-                    <span class="hero-guide-icon" aria-hidden="true">
-                        <img src="/images/telegram.svg" alt="" width="128" height="128" class="size-7">
-                    </span>
-                    <span class="min-w-0 flex-1">
-                        <span class="hero-guide-kicker"><?= t('hero.guide.kicker') ?></span>
-                        <span class="hero-guide-title"><?= t('hero.guide.title') ?></span>
-                    </span>
-                    <?= icon('chevron-right', 'size-5 shrink-0 text-[#1a8bc4]') ?>
+                <a href="<?= e((string) site('telegram_group')) ?>" target="_blank" rel="noopener noreferrer" class="hero-chat">
+                    <img src="/images/telegram.svg" alt="" width="128" height="128" class="size-4" aria-hidden="true">
+                    <?= t('hero.chat') ?>
                 </a>
             </div>
         </div>

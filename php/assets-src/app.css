@@ -1722,6 +1722,31 @@ body {
   }
 }
 
+.hero-facts {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-brand-800);
+}
+
+.hero-chat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  align-self: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-warm-700);
+  text-decoration: none;
+}
+
+.hero-chat:hover {
+  color: var(--color-brand-800);
+}
+
 .hero-offer {
   position: relative;
   display: inline-flex;
